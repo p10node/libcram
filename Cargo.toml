@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/libcram-core", "crates/libcram-ffi", "bindings/python"]
+members = ["crates/libcram-core", "crates/libcram-ffi", "crates/libcram-bench", "bindings/python"]
 exclude = ["crates/libcram-ebpf"]
 resolver = "2"
 

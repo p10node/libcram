@@ -1,0 +1,22 @@
+[package]
+name = "libcram-bench"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+libcram-core = { path = "../libcram-core" }
+libcram-ffi = { path = "../libcram-ffi" }
+libc.workspace = true
+criterion = "0.5"
+
+[[bench]]
+name = "entropy"
+path = "../../benches/entropy.rs"
+harness = false
+
+[[bench]]
+name = "allocation"
+path = "../../benches/allocation.rs"
+harness = false
