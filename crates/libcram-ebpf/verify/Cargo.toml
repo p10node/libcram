@@ -1,0 +1,14 @@
+[package]
+name="libcram-profiling-check"
+version="0.1.0"
+edition="2024"
+publish=false
+[workspace]
+[features]
+ebpf=["dep:aya","dep:libc"]
+[target.'cfg(target_os = "linux")'.dependencies]
+aya={version="0.13.1",optional=true}
+libc={version="0.2",optional=true}
+[[example]]
+name="pebs_probe"
+required-features=["ebpf"]

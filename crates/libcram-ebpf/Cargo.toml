@@ -1,0 +1,14 @@
+[package]
+name="libcram-ebpf"
+version="0.1.0"
+edition="2024"
+[workspace]
+[dependencies]
+aya-ebpf="0.1"
+[[bin]]
+name="libcram-pebs"
+path="src/main.rs"
+[profile.release]
+panic="abort"
+lto=true
+codegen-units=1
