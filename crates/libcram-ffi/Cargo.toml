@@ -1,0 +1,10 @@
+[package]
+name="libcram-ffi"
+version.workspace=true
+edition.workspace=true
+license.workspace=true
+[lib]
+name="cram"
+crate-type=["rlib","cdylib","staticlib"]
+[dependencies]
+libcram-core={path="../libcram-core"}

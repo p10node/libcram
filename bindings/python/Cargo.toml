@@ -1,0 +1,11 @@
+[package]
+name = "libcram-python"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[lib]
+name = "libcram"
+crate-type = ["cdylib"]
+[dependencies]
+pyo3 = "=0.29.3"
+libcram-ffi = { path = "../../crates/libcram-ffi" }
