@@ -1,0 +1,9 @@
+/target/
+**/target/
+.venv/
+__pycache__/
+*.so
+*.dylib
+*.a
+*.egg-info/
+/bench-results/

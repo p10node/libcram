@@ -1,0 +1,18 @@
+[workspace]
+members = ["crates/libcram-core", "crates/libcram-ffi", "bindings/python"]
+exclude = ["crates/libcram-ebpf"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.89"
+license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+libc = "0.2"
+thiserror = "2"
+anyhow = "1"
+
+[profile.release]
+lto = "thin"
