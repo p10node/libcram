@@ -83,9 +83,92 @@ impl PoisonStormGuard {
     }
 }
 
+/// Freshness-aware device admission; unavailable telemetry never admits CRAM.
+pub struct DeviceHealth {
+    observation: Option<(std::time::Instant, PressureLevel)>,
+    poison: PoisonStormGuard,
+}
+impl Default for DeviceHealth {
+    fn default() -> Self {
+        Self {
+            observation: None,
+            poison: PoisonStormGuard {
+                window_ms: 1000,
+                threshold: 3,
+                history: std::collections::VecDeque::new(),
+                last_timestamp: 0,
+                tripped: false,
+            },
+        }
+    }
+}
+impl DeviceHealth {
+    pub fn observe_usage(
+        &mut self,
+        used: u64,
+        capacity: u64,
+        now: std::time::Instant,
+    ) -> Option<PressureLevel> {
+        let level = capacity_level(used, capacity);
+        self.observation = level.map(|level| (now, level));
+        level
+    }
+    pub fn level(&self, now: std::time::Instant) -> PressureLevel {
+        if self.poison.tripped() {
+            return PressureLevel::Emergency;
+        }
+        match self.observation {
+            Some((observed, level))
+                if now
+                    .checked_duration_since(observed)
+                    .is_some_and(|age| age < std::time::Duration::from_secs(1)) =>
+            {
+                level
+            }
+            _ => PressureLevel::Critical,
+        }
+    }
+    pub fn report_poison(&mut self, timestamp_ms: u64, page_id: u64) -> Option<bool> {
+        self.poison.record(timestamp_ms, page_id)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn device_health_requires_fresh_observations_and_poison_is_sticky() {
+        use std::time::{Duration, Instant};
+        let now = Instant::now();
+        let mut health = DeviceHealth::default();
+        assert_eq!(health.level(now), PressureLevel::Critical);
+        assert_eq!(
+            health.observe_usage(20, 100, now),
+            Some(PressureLevel::Normal)
+        );
+        assert_eq!(health.level(now), PressureLevel::Normal);
+        assert_eq!(
+            health.level(now + Duration::from_secs(1)),
+            PressureLevel::Critical
+        );
+        assert_eq!(
+            health.observe_usage(85, 100, now),
+            Some(PressureLevel::Critical)
+        );
+        assert_eq!(health.level(now), PressureLevel::Critical);
+        assert_eq!(health.observe_usage(20, 0, now), None);
+        assert_eq!(health.level(now), PressureLevel::Critical);
+        health.observe_usage(0, 100, now);
+        assert_eq!(health.report_poison(1, 10), Some(false));
+        assert_eq!(health.report_poison(2, 20), Some(false));
+        assert_eq!(health.report_poison(3, 30), Some(true));
+        assert_eq!(health.level(now), PressureLevel::Emergency);
+        health.observe_usage(0, 100, now + Duration::from_secs(2));
+        assert_eq!(
+            health.level(now + Duration::from_secs(2)),
+            PressureLevel::Emergency
+        );
+    }
     #[test]
     fn exact_watermark_edges_and_invalid_capacity() {
         assert_eq!(capacity_level(0, 0), None);
