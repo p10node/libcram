@@ -65,6 +65,9 @@ impl Pressure {
             0
         };
         *self.sample.lock().map_err(|_| Error::Poisoned)? = (sample, level);
+        Ok(())
+    }
+    pub(crate) fn notify(&self, level: u32) -> Result<(), Error> {
         let generation = self.callback.lock().map_err(|_| Error::Poisoned)?.0;
         // Bounded, best-effort notifications: slow callbacks cannot block allocation or monitoring.
         let _ = self.tx.try_send((generation, level));
@@ -92,6 +95,7 @@ impl Monitor {
                     if let Ok(sample) = crate::telemetry::read_memory_pressure() {
                         let _ = inner.pressure.submit(sample);
                     }
+                    let _ = inner.pressure.notify(inner.pressure_level());
                     let report = match crate::migration::step(&inner, 32, 256) {
                         Ok(report) => report,
                         Err(error) => crate::migration::MigrationReport {
@@ -121,7 +125,61 @@ impl Drop for Monitor {
         }
     }
 }
+impl Inner {
+    pub(crate) fn pressure_level(&self) -> u32 {
+        let psi = self
+            .pressure
+            .sample
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .1;
+        let device = if self.topology.cram_node().is_some() {
+            self.device
+                .lock()
+                .unwrap_or_else(|e| e.into_inner())
+                .level(std::time::Instant::now()) as u32
+        } else {
+            0
+        };
+        psi.max(device)
+    }
+}
 impl CramAllocator {
+    /// Supply trusted physical device occupancy. Reports expire after one second.
+    /// Unknown/zero capacity blocks CRAM; process allocation bytes are not a valid substitute.
+    pub fn submit_device_usage(&self, used: u64, capacity: u64) -> Result<(), Error> {
+        let valid = self
+            .inner
+            .device
+            .lock()
+            .map_err(|_| Error::Poisoned)?
+            .observe_usage(used, capacity, std::time::Instant::now())
+            .is_some();
+        self.inner.pressure.notify(self.inner.pressure_level())?;
+        if valid {
+            Ok(())
+        } else {
+            Err(Error::InvalidSample)
+        }
+    }
+    /// Ingest a hardware adapter's physical page identity. Three distinct reports
+    /// within one second latch Emergency for this allocator's lifetime.
+    pub fn report_poison(&self, page_id: u64) -> Result<(), Error> {
+        let elapsed = self
+            .inner
+            .started
+            .elapsed()
+            .as_millis()
+            .min(u128::from(u64::MAX)) as u64;
+        self.inner
+            .device
+            .lock()
+            .map_err(|_| Error::Poisoned)?
+            .report_poison(elapsed, page_id)
+            .ok_or(Error::InvalidSample)?;
+        self.inner.pressure.notify(self.inner.pressure_level())
+    }
+
     /// Replaces the callback. Queued old-generation notifications are discarded;
     /// an already selected/in-flight callback may finish AFTER this call or Drop.
     /// Not a quiescence barrier. Captured state must remain valid through invocation;
@@ -142,7 +200,8 @@ impl CramAllocator {
         Ok(())
     }
     pub fn submit_pressure(&self, sample: PsiSample) -> Result<(), Error> {
-        self.inner.pressure.submit(sample)
+        self.inner.pressure.submit(sample)?;
+        self.inner.pressure.notify(self.inner.pressure_level())
     }
     /// Starts at most one bounded monitor. Custom/mock backends are opt-in; new()
     /// enables this automatically on Linux. Drop joins monitoring, not callbacks.

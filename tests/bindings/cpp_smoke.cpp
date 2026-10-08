@@ -1,11 +1,13 @@
-#include "libcram.hpp"
+#include "../../bindings/cpp/cram_resource.hpp"
 #include <cassert>
 #include <cstdint>
 #include <memory_resource>
 #include <vector>
 struct alignas(256) Record { int value; };
 int main() {
-    cram::memory_resource a, b;
+    cram::pmr::memory_resource a, b;
+    cram::pmr::polymorphic_allocator<int> allocator(&a);
+    int* number = allocator.allocate(1); *number = 42; assert(*number == 42); allocator.deallocate(number, 1);
     assert(a.is_equal(a)); assert(!a.is_equal(b));
     std::pmr::vector<Record> values(&a);
     values.resize(32);

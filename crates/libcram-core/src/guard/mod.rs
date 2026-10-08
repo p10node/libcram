@@ -1,4 +1,5 @@
-//! A trailing canary, not a signal handler or protection against arbitrary writes.
+//! Device health policies and allocation canaries are distinct safety mechanisms.
+pub mod device;
 #[derive(Debug)]
 pub struct PoisonGuard {
     address: usize,

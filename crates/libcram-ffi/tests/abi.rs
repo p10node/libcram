@@ -62,3 +62,34 @@ fn parallel_allocations_and_thread_local_errors() {
     }
     assert_eq!(cram_last_error(), CRAM_INVALID_ARGUMENT);
 }
+
+#[test]
+fn canary_error_distinguishes_consumed_native_ownership() {
+    let p = cram_alloc(64, 64, CRAM_AUTO);
+    assert!(!p.is_null());
+    // SAFETY: this fixture owns the allocation, including its mapped trailing canary.
+    unsafe {
+        p.cast::<u8>().add(64).write(0);
+    }
+    // Status 5 explicitly means the corrupted allocation was consumed.
+    assert_eq!(unsafe { cram_free(p) }, 5);
+}
+
+#[test]
+fn metadata_admission_rejects_invalid_samples_and_accepts_owned_updates() {
+    assert_eq!(cram_submit_device_usage(0, 0), CRAM_INVALID_ARGUMENT);
+    assert_eq!(cram_submit_device_usage(20, 100), CRAM_OK);
+    let p = cram_alloc(64, 64, CRAM_AUTO);
+    assert!(!p.is_null());
+    assert_eq!(
+        cram_record_access_sample(p, 10, 0, f64::NAN),
+        CRAM_INVALID_ARGUMENT
+    );
+    assert_eq!(cram_record_access_sample(p, 10, 0, 2.0), CRAM_OK);
+    assert_eq!(
+        cram_record_access_sample(std::ptr::null_mut(), 10, 0, 2.0),
+        CRAM_INVALID_ARGUMENT
+    );
+    // SAFETY: this fixture exclusively owns the live allocation.
+    assert_eq!(unsafe { cram_free(p) }, CRAM_OK);
+}

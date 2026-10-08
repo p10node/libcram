@@ -54,6 +54,8 @@ pub(crate) struct Inner {
     pub(crate) cursor: Mutex<usize>,
     pub(crate) last_migration: Mutex<Option<crate::migration::MigrationReport>>,
     pub(crate) pressure: pressure::Pressure,
+    pub(crate) device: Mutex<crate::guard::device::DeviceHealth>,
+    pub(crate) started: std::time::Instant,
 }
 /// Raw allocations live until deallocated or this allocator is dropped. The caller
 /// must stop all pointer accesses before either event. Use owned allocations for
@@ -80,6 +82,8 @@ impl CramAllocator {
                 cursor: Mutex::new(0),
                 last_migration: Mutex::new(None),
                 pressure: pressure::Pressure::new()?,
+                device: Mutex::new(crate::guard::device::DeviceHealth::default()),
+                started: std::time::Instant::now(),
             }),
             monitor: Mutex::new(None),
         })
@@ -124,7 +128,7 @@ impl CramAllocator {
             len,
         };
         let address = (mapping.base + align - 1) & !(align - 1);
-        let target = if hint == AccessHint::ReadHeavy {
+        let target = if hint == AccessHint::ReadHeavy && self.inner.pressure_level() < 2 {
             self.inner.topology.cram_node()
         } else {
             self.inner.topology.dram_node()
@@ -214,7 +218,7 @@ impl CramAllocator {
                 .map(|r| r.cram_bytes.load(std::sync::atomic::Ordering::Relaxed))
                 .sum(),
             allocation_count: records.len() as u64,
-            pressure_level: level,
+            pressure_level: level.max(self.inner.pressure_level()),
             psi_some_avg10: sample.some.avg10,
             psi_full_avg10: sample.full.avg10,
         }

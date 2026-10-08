@@ -21,7 +21,7 @@ impl AccessSample {
         }
     }
     fn compressed(&self) -> bool {
-        self.entropy <= 4.0 && self.reads > 0 && self.reads / 4 > self.writes
+        self.entropy < 4.5 && self.reads > 0 && self.reads / 4 > self.writes
     }
 }
 pub(crate) struct State {
@@ -98,8 +98,11 @@ pub(crate) fn step(
         }
         *cursor = record.address;
         let mut state = record.state.lock().map_err(|_| Error::Poisoned)?;
-        let Some(sample) = state.sample else { continue };
-        let target = if sample.compressed() {
+        let pressured = inner.pressure_level() >= 2;
+        if state.sample.is_none() && !pressured {
+            continue;
+        }
+        let target = if !pressured && state.sample.is_some_and(|s| s.compressed()) {
             inner.topology.cram_node()
         } else {
             inner.topology.dram_node()

@@ -17,6 +17,15 @@
 
 #define CRAM_PANIC 3
 
+#define CRAM_ERR_OUT_OF_MEMORY 4
+
+/**
+ * The allocation has been freed; retrying this pointer is invalid.
+ */
+#define CRAM_GUARD_CORRUPTED 5
+
+#define CRAM_SUCCESS CRAM_OK
+
 #define CRAM_AUTO 0
 
 #define CRAM_READ_HEAVY 1
@@ -45,12 +54,15 @@ int32_t cram_init(void);
 
 /**
  * Allocate uninitialized memory. Size must be nonzero; alignment a power of two.
- * The allocation belongs to the process-wide allocator until cram_free succeeds.
+ * The allocation belongs to the process-wide allocator until cram_free consumes it (including CRAM_GUARD_CORRUPTED).
  */
-void *cram_alloc(size_t size, size_t alignment, uint32_t hint);
+void *cram_alloc(size_t size,
+                 size_t alignment,
+                 uint32_t hint);
 
 /**
  * Free an allocation; null is a successful no-op.
+ * CRAM_GUARD_CORRUPTED reports corruption AFTER consuming the allocation; never retry.
  * # Safety
  * All accesses to ptr must have stopped, including on other threads. A valid live
  * allocation may be freed only once. Foreign addresses are rejected by the core
@@ -81,6 +93,18 @@ int32_t cram_get_telemetry(cram_telemetry *output);
  * core locks. Do not call this with Go-managed userdata.
  */
 int32_t cram_register_pressure_callback(CramPressureCallback callback, void *user);
+
+/**
+ * Report trusted physical usage for the selected CRAM node. Reports expire after one second.
+ * Zero capacity means unknown, blocks CRAM admission and returns INVALID_ARGUMENT.
+ */
+int32_t cram_submit_device_usage(uint64_t used, uint64_t capacity);
+
+/**
+ * Submit synchronized access metadata. This function never reads the payload.
+ * ptr must identify a current allocation; entropy is finite in [0,8].
+ */
+int32_t cram_record_access_sample(void *ptr, uint64_t reads, uint64_t writes, double entropy);
 
 #ifdef __cplusplus
 }  // extern "C"

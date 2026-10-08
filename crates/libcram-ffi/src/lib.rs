@@ -13,16 +13,30 @@ pub const CRAM_OK: i32 = 0;
 pub const CRAM_ERROR: i32 = 1;
 pub const CRAM_INVALID_ARGUMENT: i32 = 2;
 pub const CRAM_PANIC: i32 = 3;
+pub const CRAM_ERR_OUT_OF_MEMORY: i32 = 4;
+/// The allocation has been freed; retrying this pointer is invalid.
+pub const CRAM_GUARD_CORRUPTED: i32 = 5;
+pub const CRAM_SUCCESS: i32 = CRAM_OK;
+fn status(error: libcram_core::Error) -> i32 {
+    match error {
+        libcram_core::Error::OutOfMemory => CRAM_ERR_OUT_OF_MEMORY,
+        libcram_core::Error::GuardCorrupted => CRAM_GUARD_CORRUPTED,
+        libcram_core::Error::InvalidLayout | libcram_core::Error::InvalidSample => {
+            CRAM_INVALID_ARGUMENT
+        }
+        _ => CRAM_ERROR,
+    }
+}
 pub const CRAM_AUTO: u32 = 0;
 pub const CRAM_READ_HEAVY: u32 = 1;
 pub const CRAM_WRITE_HEAVY: u32 = 2;
-static ALLOCATOR: OnceLock<Result<CramAllocator, ()>> = OnceLock::new();
+static ALLOCATOR: OnceLock<Result<CramAllocator, i32>> = OnceLock::new();
 thread_local! { static LAST_ERROR: Cell<i32> = const { Cell::new(CRAM_OK) }; }
 fn allocator() -> Result<&'static CramAllocator, i32> {
     ALLOCATOR
-        .get_or_init(|| CramAllocator::new().map_err(|_| ()))
+        .get_or_init(|| CramAllocator::new().map_err(status))
         .as_ref()
-        .map_err(|_| CRAM_ERROR)
+        .map_err(|status| *status)
 }
 fn boundary<T>(f: impl FnOnce() -> Result<T, i32>) -> Result<T, i32> {
     let result = match catch_unwind(AssertUnwindSafe(f)) {
@@ -45,7 +59,7 @@ pub extern "C" fn cram_init() -> i32 {
         .unwrap_or(CRAM_OK)
 }
 /// Allocate uninitialized memory. Size must be nonzero; alignment a power of two.
-/// The allocation belongs to the process-wide allocator until cram_free succeeds.
+/// The allocation belongs to the process-wide allocator until cram_free consumes it (including CRAM_GUARD_CORRUPTED).
 #[no_mangle]
 pub extern "C" fn cram_alloc(size: usize, alignment: usize, hint: u32) -> *mut c_void {
     boundary(|| {
@@ -61,11 +75,12 @@ pub extern "C" fn cram_alloc(size: usize, alignment: usize, hint: u32) -> *mut c
         allocator()?
             .allocate(size, alignment, hint)
             .map(|p| p.as_ptr().cast())
-            .map_err(|_| CRAM_ERROR)
+            .map_err(status)
     })
     .unwrap_or(std::ptr::null_mut())
 }
 /// Free an allocation; null is a successful no-op.
+/// CRAM_GUARD_CORRUPTED reports corruption AFTER consuming the allocation; never retry.
 /// # Safety
 /// All accesses to ptr must have stopped, including on other threads. A valid live
 /// allocation may be freed only once. Foreign addresses are rejected by the core
@@ -74,7 +89,7 @@ pub extern "C" fn cram_alloc(size: usize, alignment: usize, hint: u32) -> *mut c
 pub unsafe extern "C" fn cram_free(ptr: *mut c_void) -> i32 {
     boundary(|| match NonNull::new(ptr.cast::<u8>()) {
         None => Ok(()),
-        Some(p) => unsafe { allocator()?.deallocate(p).map_err(|_| CRAM_ERROR) },
+        Some(p) => unsafe { allocator()?.deallocate(p).map_err(status) },
     })
     .err()
     .unwrap_or(CRAM_OK)
@@ -148,7 +163,44 @@ pub unsafe extern "C" fn cram_register_pressure_callback(
         let callback = callback_bridge(callback, user);
         allocator()?
             .register_pressure_callback(callback)
-            .map_err(|_| CRAM_ERROR)
+            .map_err(status)
+    })
+    .err()
+    .unwrap_or(CRAM_OK)
+}
+/// Report trusted physical usage for the selected CRAM node. Reports expire after one second.
+/// Zero capacity means unknown, blocks CRAM admission and returns INVALID_ARGUMENT.
+#[no_mangle]
+pub extern "C" fn cram_submit_device_usage(used: u64, capacity: u64) -> i32 {
+    boundary(|| {
+        allocator()?
+            .submit_device_usage(used, capacity)
+            .map_err(status)
+    })
+    .err()
+    .unwrap_or(CRAM_OK)
+}
+/// Submit synchronized access metadata. This function never reads the payload.
+/// ptr must identify a current allocation; entropy is finite in [0,8].
+#[no_mangle]
+pub extern "C" fn cram_record_access_sample(
+    ptr: *mut c_void,
+    reads: u64,
+    writes: u64,
+    entropy: f64,
+) -> i32 {
+    boundary(|| {
+        let pointer = NonNull::new(ptr.cast::<u8>()).ok_or(CRAM_INVALID_ARGUMENT)?;
+        allocator()?
+            .record_sample(
+                pointer,
+                libcram_core::migration::AccessSample {
+                    reads,
+                    writes,
+                    entropy,
+                },
+            )
+            .map_err(status)
     })
     .err()
     .unwrap_or(CRAM_OK)

@@ -72,12 +72,14 @@ func (s *storage) close() error {
 	if s.ptr == nil {
 		return nil
 	}
-	status := C.cram_free(s.ptr)
+	ptr := s.ptr
+	s.ptr = nil
+	s.size = 0
+	// Guard corruption is reported after native ownership has been consumed.
+	status := C.cram_free(ptr)
 	if status != C.CRAM_OK {
 		return StatusError(status)
 	}
-	s.ptr = nil
-	s.size = 0
 	return nil
 }
 func (b *Buffer) Close() error {

@@ -24,10 +24,12 @@ struct Storage {
 impl Storage {
     fn free(&mut self) -> PyResult<()> {
         if self.address != 0 {
-            if unsafe { cram::cram_free(self.address as *mut c_void) } != cram::CRAM_OK {
+            let address = std::mem::replace(&mut self.address, 0);
+            // SAFETY: no exports remain and this Storage exclusively owns the mapping.
+            // A canary error is returned after native ownership has been consumed.
+            if unsafe { cram::cram_free(address as *mut c_void) } != cram::CRAM_OK {
                 return Err(failure());
             }
-            self.address = 0;
         }
         Ok(())
     }

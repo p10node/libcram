@@ -51,8 +51,8 @@ fn unavailable_sysfs_falls_back_to_uncompressed_uma() {
 
 #[test]
 fn mock_sysfs_discovers_cxl_but_requires_compression_provenance() {
-    let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../target/topology-fixture")
+    let base = std::env::temp_dir()
+        .join("libcram-topology-fixture")
         .join(std::process::id().to_string());
     let nodes = base.join("node");
     let cxl = base.join("cxl");
@@ -65,4 +65,23 @@ fn mock_sysfs_discovers_cxl_but_requires_compression_provenance() {
     assert!(t.nodes[1].is_cxl);
     assert_eq!(t.cram_node(), None);
     std::fs::remove_dir_all(base).expect("cleanup");
+}
+
+#[test]
+fn explicit_driver_flag_has_enabled_disabled_and_malformed_controls() {
+    let base = std::env::temp_dir().join(format!("libcram-flags-{}", std::process::id()));
+    let nodes = base.join("node");
+    std::fs::create_dir_all(nodes.join("node0")).expect("dram");
+    std::fs::create_dir_all(nodes.join("node7/cram")).expect("adapter");
+    let flag = nodes.join("node7/cram/compression_enabled");
+    for (value, expected) in [("1\n", Some(7)), ("0\n", None), ("yes", None)] {
+        std::fs::write(&flag, value).expect("fixture flag");
+        assert_eq!(
+            Topology::discover_at(&nodes, &base.join("absent-cxl"))
+                .expect("topology")
+                .cram_node(),
+            expected
+        );
+    }
+    std::fs::remove_dir_all(base).expect("owned fixture cleanup");
 }

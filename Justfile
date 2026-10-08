@@ -68,7 +68,7 @@ python-test:
 
 go-test:
     cargo build -p libcram-ffi --locked
-    cd bindings/go && go test -race ./...
+    cd bindings/go && CGO_LDFLAGS="-L$PWD/../../target/debug -Wl,-rpath,$PWD/../../target/debug" go test -race ./...
 
 cpp-test:
     cargo build -p libcram-ffi --locked

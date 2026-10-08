@@ -78,3 +78,20 @@ def test_cross_thread_close_rejects_live_export():
     view.release()
     buf.close()
     assert buf.closed
+
+
+def test_corrupted_canary_close_still_consumes_native_owner():
+    import ctypes
+    import pytest
+    import libcram
+    buffer = libcram.MemoryPool().allocate(64)
+    view = memoryview(buffer)
+    address = ctypes.addressof(ctypes.c_char.from_buffer(view))
+    view.release()
+    # The extra canary is inside the mapping exclusively owned by this fixture.
+    ctypes.c_ubyte.from_address(address + 64).value = 0
+    with pytest.raises(RuntimeError):
+        buffer.close()
+    with pytest.raises(BufferError):
+        memoryview(buffer)
+    buffer.close()

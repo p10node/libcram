@@ -71,6 +71,7 @@ fn background_holds_mapping_lease_after_owner_drop() {
         }),
     )
     .expect("allocator");
+    a.submit_device_usage(0, 100).expect("fixture occupancy");
     let mut p = a
         .allocate_owned(page_size() * 300, page_size(), AccessHint::Auto)
         .expect("owned");
@@ -119,6 +120,7 @@ fn reports_partial_failures_without_marking_entire_allocation_cram() {
         )
         .expect("allocator"),
     );
+    a.submit_device_usage(0, 100).expect("fixture occupancy");
     let mut p = a
         .allocate_owned(page_size() * 2, page_size(), AccessHint::Auto)
         .expect("owned");

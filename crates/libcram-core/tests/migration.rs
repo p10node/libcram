@@ -50,6 +50,7 @@ fn owned_sampling_moves_without_reading_mutable_caller_memory() {
         fail_bind: false,
     });
     let a = CramAllocator::with_backend(topology(), backend.clone()).expect("allocator");
+    a.submit_device_usage(0, 100).expect("fixture occupancy");
     let mut p = a
         .allocate_owned(page_size() * 2, page_size(), AccessHint::Auto)
         .expect("owned");
@@ -148,6 +149,7 @@ fn explicit_owned_entropy_sampling_uses_a_synchronized_borrow() {
         }),
     )
     .expect("allocator");
+    a.submit_device_usage(0, 100).expect("fixture occupancy");
     let mut p = a.allocate_owned(4096, 64, AccessHint::Auto).expect("owned");
     p.as_mut_slice().fill(9);
     assert_eq!(p.profile(100, 0).expect("sample").entropy, 0.0);

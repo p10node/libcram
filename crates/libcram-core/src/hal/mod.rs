@@ -9,6 +9,8 @@ use std::path::Path;
 pub enum CompressionProvenance {
     OperatorConfigured,
     HardwareVerified,
+    /// Explicit driver adapter flag, not independent hardware validation.
+    DriverReported,
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Node {
@@ -90,7 +92,14 @@ impl Topology {
                 found.push(Node {
                     id,
                     is_cxl: cxl_nodes.contains(&id),
-                    compression: None,
+                    // Optional libcram driver-adapter convention, not a generic CXL ABI.
+                    // Missing, disabled and malformed flags all remain uncompressed.
+                    compression: std::fs::read_to_string(
+                        entry.path().join("cram/compression_enabled"),
+                    )
+                    .ok()
+                    .filter(|text| text.trim() == "1")
+                    .map(|_| CompressionProvenance::DriverReported),
                 });
             }
         }
