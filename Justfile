@@ -87,6 +87,9 @@ cpp-test:
 linux-bindings:
     bash scripts/linux-bindings.sh
 
+linux-torch:
+    LIBCRAM_TEST_TORCH=1 bash scripts/linux-bindings.sh
+
 # Native C, C++ and Go checks, including cgo's stricter pointer checker.
 native-test:
     bash tests/bindings/native-smoke.sh
