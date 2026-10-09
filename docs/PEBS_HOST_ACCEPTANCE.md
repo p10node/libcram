@@ -56,6 +56,23 @@ The sampler now exposes raw event counts to distinguish an unscheduled counter
 from missing samples. `AccessWindow::snapshot` provides a bounded, expiring,
 stably ordered diagnostic view without exposing its mutable retained state.
 
+## Managed own-process collector follow-up
+
+The new `managed_pebs_acceptance` example executed on native `s5` and in the
+owned guest. [Logs and source hashes](evidence/2026-10-09/managed-pebs/) record:
+
+- Thread sampler membership **1 → 2 → 1** around an owned helper thread.
+- Native hot-page attribution: **20,889 reads**, **24,243 writes**, no opposite-kind
+  samples in either controlled range in the recorded run.
+- Actual `/proc/self/fd` counts return to baseline after exited-thread cleanup,
+  collector destruction and deliberate partial-attachment failure.
+- Guest precise-sampling rejection is reported as `MissingCapability`, not a
+  healthy zero-sample stream; failed attachment leaves no extra descriptors.
+
+Both recorded commands exited 0. These checks qualify lifecycle and this
+explicit L1-hot profile only; all-load attribution and total CPU overhead remain
+open. The follow-up has its own source manifest, separate from earlier probes.
+
 ## Reproduction and retained evidence
 
 Build on Linux x86_64 with Rust 1.89+:

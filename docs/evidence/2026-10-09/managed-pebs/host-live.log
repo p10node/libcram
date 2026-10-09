@@ -1,0 +1,5 @@
+thread_attachment_history=1,2,1
+l1_reads=20889 stores=24243 wrong_reads=0 wrong_writes=0 status=Sampling
+partial_attach_error=PEBS perf_event_open failed (unsupported precise event, invalid CPU/event, perf_event_paranoid or missing CAP_PERFMON): Invalid argument (os error 22)
+MANAGED_PEBS_LIFECYCLE_L1_ATTRIBUTION_PASS
+EXIT=0

@@ -1,0 +1,3 @@
+expected_failure=PEBS perf_event_open failed (unsupported precise event, invalid CPU/event, perf_event_paranoid or missing CAP_PERFMON): Operation not supported (os error 95) status=MissingCapability
+MANAGED_PEBS_DENIAL_CLEANUP_PASS
+EXIT=0

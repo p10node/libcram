@@ -1,0 +1,12 @@
+{
+  "upper_mean_ns": {
+    "zero": 243.75576598973674,
+    "ascii": 2970.973159912531,
+    "random": 2937.337571990377
+  },
+  "budget_ns": 1000.0,
+  "failures": [
+    "ascii: upper mean confidence bound 2970.973159912531 ns is not < 1000.0 ns",
+    "random: upper mean confidence bound 2937.337571990377 ns is not < 1000.0 ns"
+  ]
+}

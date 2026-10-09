@@ -1,0 +1,36 @@
+{
+  "runs": [
+    {
+      "name": "host-live",
+      "command": "ssh s5 'timeout 20 /tmp/libcram-owned-pebs.hkloGk/managed-probe /tmp/libcram-owned-pebs.hkloGk/program.bpf 12'",
+      "exit": 0
+    },
+    {
+      "name": "guest-denial",
+      "command": "ssh s5 'incus exec libcram-numa-test -- timeout 20 /root/libcram/target/release/examples/managed_pebs_acceptance /root/libcram/target/program.bpf 0 expect-denied'",
+      "exit": 0
+    }
+  ],
+  "sha256": {
+    "crates/libcram-core/src/runtime.rs": "cbf08eff32d47bea80734bb0931f3ab3503049c9249fd571b6de180975864da7",
+    "crates/libcram-core/src/device_adapter.rs": "cb0944216e70cfb0b22ea647f2acec48c49aeb38eb9040561ae70021725a2bec",
+    "crates/libcram-core/src/lib.rs": "52d0ceeae3474dc03c290acb8baa4b888c052e49e09f94a8c96d9bb747964e2e",
+    "crates/libcram-core/src/hal/mod.rs": "ca1c6298c1e88e049768983b12fcce1102593f9f07319bc608613e698ae65a69",
+    "crates/libcram-core/src/hal/numa.rs": "b01af0e5a6ca6aba46387eeb16b37b4566352845557537e683818d4ee9682b6e",
+    "crates/libcram-core/src/entropy/mod.rs": "fb05adbe76e08f068e0acb2d4691070d76cedec332dd0f02c666901390303709",
+    "crates/libcram-core/src/entropy/differential.rs": "00690aaaa7569413d5286a8541dfc3704f95d3a675a1dd579804cfbae18132a7",
+    "crates/libcram-core/src/entropy/bench.rs": "0ea80291b5abe48376bbc3bf49f876a50f549dec6f6f1ff9471ce1c9c97d330f",
+    "crates/libcram-core/src/allocator/pressure.rs": "43134bcc83e44b5b60a9a9b547af7a1e227dae7a02cce2bb4fdb5782c6270f0b",
+    "crates/libcram-core/src/allocator/mod.rs": "a7b09e509a02b2527b80f2b6324ef730eaf0bee7ace85d5663ddb8d09d2e1626",
+    "crates/libcram-core/src/telemetry/access.rs": "891a256190f86e3cae3c9821f94debac8b6ffb38eeb815c33cb3b550dd53a23d",
+    "crates/libcram-core/src/telemetry/mod.rs": "0750417e4773efaa49358474c624d227cecd39a1fede871e35764e755772681f",
+    "crates/libcram-core/src/telemetry/process_pebs.rs": "e767786b70a922079d22589172b86ab8c0991881e4a040430a4859a976a65d5c",
+    "crates/libcram-core/src/telemetry/sampling.rs": "6884283bcfa59505bc743ccd37479b2c7991e4dfc68481c98f1ce3d8b2588f84",
+    "crates/libcram-core/src/telemetry/pebs.rs": "12946ceef7369bcf377d76f1cac0ed234f17680a1ec67236b2615f7ac3036889",
+    "crates/libcram-core/src/guard/device.rs": "e46603b0d8c273f3c6b2989de1b5a659051b1bee92fc17dbdbc57ccc9f2655fa",
+    "crates/libcram-core/src/guard/mod.rs": "f0deced06b30634dd8b609c0d9ba754534076f0a336b1c5b79f37d715b01ca2f",
+    "crates/libcram-core/src/migration/mod.rs": "216c09a81508af49c2cc8e65d9348fca36eb5040c05d14c359c41d7811d0e798",
+    "crates/libcram-core/examples/managed_pebs_acceptance.rs": "88293fb8b4ff3735e7be4fd105f971d0ce69fc5da63bfb000ede60cd263dcce8",
+    "Cargo.lock": "2c7aeddd5047c12183407cbd1d04309cf5863ae95263bd3023f5d94145bb2975"
+  }
+}
