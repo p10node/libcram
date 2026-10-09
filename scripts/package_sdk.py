@@ -8,6 +8,7 @@ import gzip
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -30,13 +31,17 @@ def make_archive(root, output, source, epoch):
         name: hashlib.sha256(data).hexdigest() for name, data in payload.items()
     }}
     payload['MANIFEST.json'] = (json.dumps(manifest, indent=2, sort_keys=True) + '\n').encode()
-    with output.open('xb') as raw:
+    with tempfile.NamedTemporaryFile(dir=output.parent, prefix='.libcram-archive-') as raw:
         with gzip.GzipFile(filename='', fileobj=raw, mode='wb', mtime=epoch) as zipped:
             with tarfile.open(fileobj=zipped, mode='w') as archive:
                 for name, data in sorted(payload.items()):
                     info = tarfile.TarInfo(f'{root.name}/{name}')
                     info.size, info.mtime, info.mode = len(data), epoch, 0o644
                     archive.addfile(info, io.BytesIO(data))
+        raw.flush()
+        os.fsync(raw.fileno())
+        # Same-filesystem link publishes complete bytes without overwriting.
+        os.link(raw.name, output)
 
 
 def command(root, *args):
@@ -83,11 +88,19 @@ def main():
         shutil.copyfile(target / 'libcram.a', stage / 'lib/libcram.a')
         for filename in ('README.md', 'LICENSE-MIT', 'LICENSE-APACHE'):
             shutil.copyfile(root / filename, stage / filename)
-        shutil.copytree(root / 'docs', stage / 'docs')
+        for filename in filter(None, command(root, 'git', 'ls-files', '-z', '--', 'docs').split('\0')):
+            src = root / filename
+            if src.is_symlink():
+                raise ValueError(f'symlink documentation: {src}')
+            dst = stage / filename
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, dst)
         pc = ('prefix=${pcfiledir}/../..\nlibdir=${prefix}/lib\nincludedir=${prefix}/include\n\n'
               'Name: libcram\nDescription: Linux NUMA tier orchestration SDK\n'
               f'Version: {version}\nLibs: -L${{libdir}} -lcram\nCflags: -I${{includedir}}\n')
         (stage / 'lib/pkgconfig/libcram.pc').write_text(pc)
+        if command(root, 'git', 'status', '--porcelain') or command(root, 'git', 'rev-parse', 'HEAD') != commit:
+            raise RuntimeError('source changed while staging SDK')
         make_archive(stage, archive_path, {'commit': commit, 'rustc': rustc, 'target': host,
                      'acceptance': 'engineering build; see bundled docs for open gates'}, epoch)
     print(archive_path)

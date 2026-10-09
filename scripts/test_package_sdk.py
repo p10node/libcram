@@ -4,6 +4,7 @@ from pathlib import Path
 import tarfile
 import tempfile
 import unittest
+from unittest import mock
 import package_sdk
 
 
@@ -29,6 +30,16 @@ class PackageTests(unittest.TestCase):
                 self.assertEqual(archive.extractfile('sdk/lib/a').read(), b'fixture-library-A')
             with self.assertRaises(FileExistsError):
                 package_sdk.make_archive(root, output, {}, 1234)
+
+    def test_failed_archive_is_not_published(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / 'sdk'; root.mkdir()
+            (root / 'file').write_bytes(b'owned fixture')
+            output = Path(tmp) / 'sdk.tar.gz'
+            with mock.patch('tarfile.TarFile.addfile', side_effect=OSError('owned injected I/O failure')):
+                with self.assertRaises(OSError):
+                    package_sdk.make_archive(root, output, {}, 123)
+            self.assertFalse(output.exists(), 'failed bytes must not look like a published SDK')
 
 
 if __name__ == '__main__':

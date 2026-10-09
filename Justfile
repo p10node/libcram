@@ -96,5 +96,15 @@ native-test:
 
 bindings: native-test python-test
 
+# Clean-source engineering archive; does not waive open hardware/performance gates.
+sdk-package:
+    python3 -m unittest discover -s scripts -p test_package_sdk.py
+    python3 scripts/package_sdk.py
+
+# Verify manifest and actual loaded library in an extracted, owned prefix.
+sdk-verify archive:
+    python3 scripts/verify_sdk.py "{{archive}}"
+
 check: fmt-check test lint bench-build
     python3 -m unittest discover -s scripts -p test_entropy_budget.py
+    python3 -m unittest discover -s scripts -p test_package_sdk.py
