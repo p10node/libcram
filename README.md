@@ -7,6 +7,15 @@ This is a userspace SDK, not a compressed-memory kernel driver. It requires an
 actual accessible CRAM NUMA node to place memory on compressed RAM. Ordinary CXL
 memory is not automatically treated as CRAM. See docs/KERNEL_INTEGRATION.md.
 
+## Acceptance status
+
+Software correctness and binding gates pass on macOS and Linux, including real
+CPU PyTorch alias/lifetime tests. The 4 KiB entropy gate still fails for ASCII and
+pseudorandom input on the measured Apple M1 Pro. Physical CRAM/PEBS and active
+sampling overhead are not accepted on the available environment. This is not a
+production-ready or all-requirements-complete claim. See docs/VERIFICATION.md for
+executed commands, archived evidence, open requirements and worktree closure.
+
 ## Build
 
 Prerequisites: Rust 1.89 or newer, a C/C++ compiler, and `just`. Python and Go are

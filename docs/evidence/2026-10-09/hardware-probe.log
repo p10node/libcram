@@ -1,0 +1,8 @@
+Linux 3577eb8ed9a1 7.0.14-linuxkit #1 SMP PREEMPT Sun Sep 20 16:14:09 UTC 2026 x86_64 GNU/Linux
+CPU PMU: False
+CXL devices: []
+CRAM adapter flags: []
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.56s
+     Running `/target/debug/examples/pebs_probe`
+Error: MapError(CreateError { name: "EVENTS", code: -1, io_error: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" } })
+VERIFIER_PROBE_EXIT=1

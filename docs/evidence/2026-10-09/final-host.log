@@ -1,0 +1,174 @@
+cargo fmt --all --check
+cargo test --workspace --locked
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running unittests src/lib.rs (target/debug/deps/libcram_core-f10286b1f9bec48c)
+
+running 11 tests
+test telemetry::access::tests::late_samples_from_interleaved_rings_survive_query_and_expire_in_time_order ... ok
+test telemetry::sampling::tests::sample_decode_and_config_rejection ... ok
+test guard::device::tests::exact_watermark_edges_and_invalid_capacity ... ok
+test guard::device::tests::device_health_requires_fresh_observations_and_poison_is_sticky ... ok
+test telemetry::access::tests::aligned_window_eviction ... ok
+test guard::device::tests::storm_counts_unique_pages_expires_and_latches ... ok
+test telemetry::sampling::tests::ring_order_and_query_between_bounded_drains_do_not_change_retained_samples ... ok
+test telemetry::tests::psi ... ok
+test entropy::tests::reference_and_dispatch ... ok
+test entropy::differential::random_unaligned_all_available_kernels ... ok
+test entropy::tests::exhaustive_lengths_alignments_and_uniform_transitions ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.63s
+
+     Running tests/allocation.rs (target/debug/deps/allocation-d5ac50f307a6f2be)
+
+running 1 test
+test ownership_alignment_accounting_and_poison ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/device_policy.rs (target/debug/deps/device_policy-fbf2ee46d9696961)
+
+running 2 tests
+test auto_initial_placement_is_size_based_and_pressure_gated ... ok
+test missing_usage_pressure_and_poison_gate_real_allocation_policy ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running ../../tests/integration/fallback.rs (target/debug/deps/fallback-a60e4b51b589fad1)
+
+running 1 test
+test portable_dram_allocation_preserves_distinct_owned_buffers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/guard.rs (target/debug/deps/guard-3287b8e974ddd791)
+
+running 1 test
+test catches_each_poison_byte_without_reading_payload ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/migration.rs (target/debug/deps/migration-2299af401f012edd)
+
+running 4 tests
+test raw_sample_reversal_reclaims_first_page_immediately ... ok
+test failed_binding_is_not_reported_as_cram ... ok
+test owned_sampling_moves_without_reading_mutable_caller_memory ... ok
+test explicit_owned_entropy_sampling_uses_a_synchronized_borrow ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/migration_lifetime.rs (target/debug/deps/migration_lifetime-2c142b6a21341f8b)
+
+running 2 tests
+test reports_partial_failures_without_marking_entire_allocation_cram ... ok
+test background_holds_mapping_lease_after_owner_drop ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/numa.rs (target/debug/deps/numa-bea05a6413eb9262)
+
+running 1 test
+test validates_page_ranges_and_reports_platform_capability ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/pressure.rs (target/debug/deps/pressure-4d65d1d797b82af4)
+
+running 1 test
+test callback_is_async_reentrant_replaceable_and_panic_isolated ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-a038927f1b8d0500)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running ../../tests/unit/topology.rs (target/debug/deps/topology-683027aa0d7c94d6)
+
+running 4 tests
+test unavailable_sysfs_falls_back_to_uncompressed_uma ... ok
+test cxl_is_not_compressed_without_explicit_provenance ... ok
+test mock_sysfs_discovers_cxl_but_requires_compression_provenance ... ok
+test explicit_driver_flag_has_enabled_disabled_and_malformed_controls ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/cram-3af22e6377466d0c)
+
+running 3 tests
+test edge_tests::callback_bridge_preserves_userdata_and_allows_reentry ... ok
+test tests::panic_is_status_not_unwind ... ok
+test edge_tests::panic_payload_destructor_cannot_escape_boundary ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/abi.rs (target/debug/deps/abi-5d967ff866d6446a)
+
+running 5 tests
+test telemetry_and_invalid_arguments ... ok
+test metadata_admission_rejects_invalid_samples_and_accepts_owned_updates ... ok
+test canary_error_distinguishes_consumed_native_ownership ... ok
+test aligned_allocation_round_trip ... ok
+test parallel_allocations_and_thread_local_errors ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/libcram-bc70aa0931cd1beb)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests libcram_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests cram
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+cargo clippy --workspace --all-targets --locked -- -D warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.16s
+cargo bench -p libcram-bench --no-run --locked
+    Finished `bench` profile [optimized] target(s) in 0.14s
+  Executable ../../benches/allocation.rs (target/release/deps/allocation-0055dd7ae078310b)
+  Executable ../../benches/entropy.rs (target/release/deps/entropy-b29b988cacadee13)
+python3 -m unittest discover -s scripts -p test_entropy_budget.py
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.094s
+
+OK
+bash tests/bindings/native-smoke.sh
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.02s
+# libcram.test
+ld: warning: duplicate -rpath '$WORKSPACE/libcram/target/debug' ignored
+ok  	libcram	1.365s
+C, C++17 and Go native smokes passed
+VIRTUAL_ENV="$PWD/target/python-venv" target/python-venv/bin/maturin develop --release --manifest-path bindings/python/Cargo.toml --locked
+🐍 Found CPython 3.14 at $WORKSPACE/libcram/target/python-venv/bin/python
+🔗 Found pyo3 bindings
+📡 Using build options features from pyproject.toml
+    Finished `release` profile [optimized] target(s) in 0.06s
+📦 Built wheel for CPython 3.14 to /var/folders/ws/hhlmghps1mjf1_lchf2qfh5h0000gn/T/.tmptyXDkR/libcram-0.1.0-cp314-cp314-macosx_11_0_arm64.whl
+✏️ Setting installed package as editable
+🛠 Installed libcram-0.1.0
+target/python-venv/bin/python -m pytest tests/bindings/test_python.py -q
+..........                                                               [100%]
+10 passed in 0.53s
+target/python-venv/bin/python -m pytest tests/bindings/test_torch.py -q
+..                                                                       [100%]
+2 passed in 1.33s
+mkdir -p target
+target/tools/bin/cbindgen --config cbindgen.toml --crate libcram-ffi --output target/libcram.h
+WARN: Skip libcram-ffi::ALLOCATOR - (not `no_mangle`).
+diff -u include/libcram.h target/libcram.h
+PATH="$PWD/target/tools/bin:$PATH" CARGO_TARGET_BPFEL_UNKNOWN_NONE_LINKER=bpf-linker RUSTFLAGS="--cfg bpf_target_arch=\"x86_64\"" cargo +nightly build --manifest-path crates/libcram-ebpf/Cargo.toml --release --target bpfel-unknown-none -Z build-std=core --locked
+    Finished `release` profile [optimized] target(s) in 0.30s

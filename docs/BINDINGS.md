@@ -23,13 +23,20 @@ new allocations but does not invalidate existing buffers. Closing a buffer while
 it has exported views is rejected. Derived views can keep the export alive even
 after the original view is released.
 
-For PyTorch/vLLM CPU offload integration, `torch.frombuffer(buffer, dtype=...)`
-is a possible consumer of this protocol. The consumer must retain the owning
-buffer/export for its full lifetime. This does not create a CUDA tensor, pin host
-memory, install a vLLM cache backend, or make arbitrary vLLM versions automatically
-compatible. A production GPU KV-cache integration needs a separately validated
-allocator/offload adapter. No GPU/vLLM integration is claimed by buffer-protocol
-tests alone.
+For PyTorch CPU KV-shaped storage, use `buffer.tensor(torch.float32)` and reshape
+the resulting one-dimensional CPU tensor. This adapter passes an owning memoryview
+to `torch.frombuffer`: the tensor storage retains that view, so `buffer.close()`
+remains blocked even after the original tensor is dropped while tensor views live.
+Do not substitute `torch.frombuffer(buffer)` directly: retaining a Python owner
+alone does not establish the same outstanding-export contract for explicit close.
+
+Run `just python-tools torch-tools torch-test` on the host, or `just linux-torch`
+for the read-only-source Linux container, to install optional CPU PyTorch and
+exercise real zero-copy lifetime, distinct storage, values and dtype errors.
+PyTorch is not a mandatory dependency for the ordinary buffer protocol.
+This does not create a CUDA tensor, pin host memory, install a vLLM cache backend,
+or make arbitrary vLLM versions automatically compatible. A production GPU
+KV-cache integration still requires a separately validated allocator/offload adapter.
 
 ## C and callbacks
 
@@ -46,6 +53,8 @@ Callbacks should enqueue short application notifications and return promptly.
 
 ## C++
 
+Include `bindings/cpp/cram_resource.hpp` (with `include/` on the include path) for
+`cram::pmr::memory_resource` and `cram::pmr::polymorphic_allocator<T>`.
 The PMR resource uses the same process-wide native allocator. The resource must
 outlive every container using it. Do not destroy a resource while allocations or
 concurrent operations still refer to it. Allocation hints affect placement policy,

@@ -1,0 +1,57 @@
+{
+  "tested_code_commit": "74a15524530a8ab9c4a0fe42e49adab0c78acf1f",
+  "host": "Apple M1 Pro, aarch64 macOS, rustc 1.99.0",
+  "linux": "linux/amd64 Docker image libcram-sdk-test:local; functional checks only, not bare-metal performance",
+  "gates": {
+    "host_workspace_lint_bindings_torch_header_ebpf_bench_build": 0,
+    "linux_core_ffi_ebpf_feature_lint_release_and_bindings": 0,
+    "msrv_1_89_host_workspace": 0,
+    "msrv_1_89_linux_x86_core_ebpf_all_targets": 0,
+    "entropy_budget": 1,
+    "hardware_verifier_probe": 1,
+    "linux_cpu_torch_storage_and_alias_lifetime": 0
+  },
+  "entropy_budget": {
+    "upper_mean_ns": {
+      "random": 1110.0676093546572,
+      "ascii": 1159.2217221771039,
+      "zero": 153.36450012487032
+    },
+    "budget_ns": 1000.0,
+    "failures": [
+      "ascii: upper mean confidence bound 1159.2217221771039 ns is not < 1000.0 ns",
+      "random: upper mean confidence bound 1110.0676093546572 ns is not < 1000.0 ns"
+    ]
+  },
+  "hardware_blockers": [
+    "No CPU PMU in Linux container",
+    "No CXL devices or CRAM adapter flags",
+    "BPF map creation denied: EPERM; verifier load and PEBS attach NOT accepted",
+    "CRAM migration, sample attribution and <1% CPU telemetry NOT measured"
+  ],
+  "artifact_sha256": {
+    "final-host.log": "13fe3adaaa1c75ef78e3de1724c6a10409f325af91c11a64e11d17b4f6bc9064",
+    "final-linux.log": "5e1c9f4ae2f0d510883ad5f79dff9af4645d236902c5c71d73325b36935f6432",
+    "final-msrv-host.log": "ec3275bd7cdb61fe7edc4fadcb9a7a8d1c03aef38d75c8a6d05652c57a1d448e",
+    "final-msrv-linux.log": "8c233a54790c4800d3dd585436af679aa838da259bfdb129412e2d51cdb75cdc",
+    "final-entropy.log": "1baa01bc003276c194fc890dff458f845c33ee97a7be65b727959bccf61f432b",
+    "final-entropy-budget.json": "806301f257039bf39a36cd7a1363f32eafe7167505e3b318224e3846f29150c6",
+    "final-allocation.log": "47c4138af5130f6d4db7c7e01c4baff5446c2026388c230a3316e2bba0865a6b",
+    "hardware-probe.log": "a1b96ef1472a529990bed7d324491e75e970b31fed431ad6ef0e0fa1c6f86eb5",
+    "criterion/entropy/dispatch_zero/4096/new/benchmark.json": "7de32e8a871bed8cac87f73107b15cb193f280300c9a480bc16ad92830c76b38",
+    "criterion/entropy/dispatch_zero/4096/new/estimates.json": "62f30274f361c818d8bf11869f3bbc1bc050d232791be1fa3f5fef4b34908e6b",
+    "criterion/entropy/dispatch_ascii/4096/new/benchmark.json": "37f577cda8ff4b2c35219a426a6ede3f27a12175e9e6d09201323dddb83dfd0c",
+    "criterion/entropy/dispatch_ascii/4096/new/estimates.json": "17b323b06ce9b27ac4546de3b5f34f51c102500bc267b74139f462e8a5e3d066",
+    "criterion/entropy/dispatch_random/4096/new/benchmark.json": "9c67d715ad5b24bfd88f24a9ea2fedef30cdb471a3378ef7722524c3b125d75c",
+    "criterion/entropy/dispatch_random/4096/new/estimates.json": "f19ae78f1ac280811f10924d29ca9e76e4069eb1aec1a68eab38fb971ea5fac8",
+    "final-linux-torch.log": "ca8c92cf003514ca66f522f3d2c6b16ea5aa7f540dc4512a8d3e1d35d4d44b1e"
+  },
+  "archive_report_from_repository_root": "../libcram-worktree-archive/20261009T033928Z/report.json",
+  "performance_library_commit": "002458d50bdf19eb748f8ad60172c042d1fc2690",
+  "performance_library_identical_to_tested_commit": true,
+  "log_normalization": "Repeated blank lines at EOF removed from two logs; all measurement and diagnostic content retained.",
+  "original_log_sha256": {
+    "final-allocation.log": "dbc3ceadab4276f12b9125a20fbf9db3b31ffc3de3fc68423e08c0fde106a612",
+    "final-entropy.log": "f1fce732bf383708d03e8b463422a65d82e58cd940ec4090ad68e4e90ebb129c"
+  }
+}

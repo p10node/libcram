@@ -1,6 +1,11 @@
 # Hardware acceptance checklist
 
 These are deployment gates, not claims that ordinary CI has physical CRAM/PEBS.
+Current recorded outcome: see `VERIFICATION.md` and `evidence/2026-10-09/`.
+The available Linux container lacks CPU PMU/CXL/CRAM; real BPF load returned
+EPERM. ASCII/random entropy also remains over budget on the measured host.
+These checklist items are therefore still open, not waived by passing CI.
+
 Run only against an explicitly owned test workload and the intended Linux kernel.
 Do not change system-wide NUMA/perf settings or induce pressure on production data.
 
