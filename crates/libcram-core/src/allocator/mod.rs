@@ -36,6 +36,7 @@ pub(crate) struct Mapping {
 }
 impl Drop for Mapping {
     fn drop(&mut self) {
+        // SAFETY: Mapping owns this mmap extent; Arc leases prevent dropping it during migration.
         unsafe { libc::munmap(self.base as *mut libc::c_void, self.len) };
     }
 }
@@ -110,6 +111,7 @@ impl CramAllocator {
             .checked_add(align)
             .filter(|n| *n <= isize::MAX as usize)
             .ok_or(Error::InvalidLayout)?;
+        // SAFETY: anonymous private mapping, validated nonzero length, no borrowed pointers.
         let base = unsafe {
             libc::mmap(
                 std::ptr::null_mut(),
@@ -128,19 +130,25 @@ impl CramAllocator {
             len,
         };
         let address = (mapping.base + align - 1) & !(align - 1);
-        let target = if hint == AccessHint::ReadHeavy && self.inner.pressure_level() < 2 {
+        let target = if (hint == AccessHint::ReadHeavy
+            || (hint == AccessHint::Auto && size >= 65536))
+            && self.inner.pressure_level() < 2
+        {
             self.inner.topology.cram_node()
         } else {
             self.inner.topology.dram_node()
         };
         let mut cram = false;
         if let Some(node) = target {
+            // SAFETY: the page-aligned range lies inside the live mapping owned above.
             if unsafe { self.inner.numa.bind(address, mapped_len, node) }.is_ok() {
                 cram = Some(node) == self.inner.topology.cram_node();
             } else if let Some(dram) = self.inner.topology.dram_node() {
+                // SAFETY: same live page-aligned mapping; fallback changes only its policy.
                 let _ = unsafe { self.inner.numa.bind(address, mapped_len, dram) };
             }
         }
+        // SAFETY: checked mapped_len reserves LEN bytes after the exclusive payload.
         let guard = unsafe { PoisonGuard::initialize((address + size) as *mut u8) };
         let record = Arc::new(Allocation {
             address,
@@ -173,6 +181,7 @@ impl CramAllocator {
             .map_err(|_| Error::Poisoned)?
             .remove(&(ptr.as_ptr() as usize))
             .ok_or(Error::UnknownAllocation)?;
+        // SAFETY: record retains the mapping; caller guarantees all payload accesses have stopped.
         if unsafe { record.guard.check() } {
             Ok(())
         } else {
@@ -233,9 +242,11 @@ pub struct OwnedAllocation {
 }
 impl OwnedAllocation {
     pub fn as_slice(&self) -> &[u8] {
+        // SAFETY: Arc retains initialized mmap bytes; shared borrow prevents safe mutable access.
         unsafe { std::slice::from_raw_parts(self.record.address as *const u8, self.record.size) }
     }
     pub fn as_mut_slice(&mut self) -> &mut [u8] {
+        // SAFETY: unique owner borrow excludes payload aliases; migration only changes page placement.
         unsafe { std::slice::from_raw_parts_mut(self.record.address as *mut u8, self.record.size) }
     }
     pub fn record_sample(&self, sample: crate::migration::AccessSample) -> Result<(), Error> {
@@ -263,6 +274,7 @@ impl OwnedAllocation {
         Ok(sample)
     }
     pub fn check_guard(&self) -> Result<(), Error> {
+        // SAFETY: live mapping retains the canary outside the safely borrowable payload range.
         if unsafe { self.record.guard.check() } {
             Ok(())
         } else {

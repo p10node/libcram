@@ -89,6 +89,7 @@ pub extern "C" fn cram_alloc(size: usize, alignment: usize, hint: u32) -> *mut c
 pub unsafe extern "C" fn cram_free(ptr: *mut c_void) -> i32 {
     boundary(|| match NonNull::new(ptr.cast::<u8>()) {
         None => Ok(()),
+        // SAFETY: forwarded from the C caller contract; core validates current ownership.
         Some(p) => unsafe { allocator()?.deallocate(p).map_err(status) },
     })
     .err()
@@ -121,6 +122,7 @@ pub unsafe extern "C" fn cram_get_telemetry(output: *mut cram_telemetry) -> i32 
             return Err(CRAM_INVALID_ARGUMENT);
         }
         let t = allocator()?.telemetry();
+        // SAFETY: caller guarantees alignment, exclusive writable storage and adequate size.
         unsafe {
             output.write(cram_telemetry {
                 allocated_bytes: t.allocated_bytes,
@@ -142,6 +144,7 @@ fn callback_bridge(
 ) -> Option<std::sync::Arc<dyn Fn(u32) + Send + Sync>> {
     let address = user as usize;
     callback.map(|cb| {
+        // SAFETY: registration contract keeps callback/userdata live and thread-safe until exit.
         std::sync::Arc::new(move |level| unsafe { cb(level, address as *mut c_void) })
             as std::sync::Arc<dyn Fn(u32) + Send + Sync>
     })

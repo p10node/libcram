@@ -66,16 +66,32 @@ python-test:
     VIRTUAL_ENV="$PWD/target/python-venv" target/python-venv/bin/maturin develop --release --manifest-path bindings/python/Cargo.toml --locked
     target/python-venv/bin/python -m pytest tests/bindings/test_python.py -q
 
+torch-tools:
+    uv pip install --python target/python-venv/bin/python torch numpy --index-url https://download.pytorch.org/whl/cpu
+
+torch-test: python-test
+    target/python-venv/bin/python -m pytest tests/bindings/test_torch.py -q
+
+pebs-probe:
+    cargo run -p libcram-core --example pebs_probe --features ebpf --locked
+
 go-test:
     cargo build -p libcram-ffi --locked
-    cd bindings/go && CGO_LDFLAGS="-L$PWD/../../target/debug -Wl,-rpath,$PWD/../../target/debug" go test -race ./...
+    cd bindings/go && CGO_LDFLAGS="-L$PWD/../../target/debug -Wl,-rpath,$PWD/../../target/debug" go test -race -count=1 ./...
 
 cpp-test:
     cargo build -p libcram-ffi --locked
     c++ -std=c++17 -Wall -Wextra -Werror -Iinclude tests/bindings/cpp_smoke.cpp -Ltarget/debug -lcram -Wl,-rpath,$PWD/target/debug -o target/cpp-smoke
     target/cpp-smoke
 
-bindings: cpp-test go-test python-test
+linux-bindings:
+    bash scripts/linux-bindings.sh
+
+# Native C, C++ and Go checks, including cgo's stricter pointer checker.
+native-test:
+    bash tests/bindings/native-smoke.sh
+
+bindings: native-test python-test
 
 check: fmt-check test lint bench-build
     python3 -m unittest discover -s scripts -p test_entropy_budget.py

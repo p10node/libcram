@@ -101,3 +101,21 @@ fn missing_usage_pressure_and_poison_gate_real_allocation_policy() {
     );
     drop((unknown, healthy, fallback, psi, poisoned));
 }
+
+#[test]
+fn auto_initial_placement_is_size_based_and_pressure_gated() {
+    let (a, _) = allocator();
+    a.submit_device_usage(0, 100).expect("fixture occupancy");
+    let small = a.allocate_owned(1024, 64, AccessHint::Auto).expect("small");
+    assert_eq!(a.telemetry().cram_bytes, 0);
+    let large = a
+        .allocate_owned(65536, 64, AccessHint::Auto)
+        .expect("large");
+    assert_eq!(a.telemetry().cram_bytes, 65536);
+    a.submit_device_usage(96, 100).expect("emergency");
+    let fallback = a
+        .allocate_owned(65536, 64, AccessHint::Auto)
+        .expect("fallback");
+    assert_eq!(a.telemetry().cram_bytes, 65536);
+    drop((small, large, fallback));
+}

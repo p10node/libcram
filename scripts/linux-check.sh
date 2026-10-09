@@ -12,7 +12,9 @@ docker run --rm --platform "$PLATFORM" \
   -e CARGO_TARGET_DIR=/target -w /src "$IMAGE" \
   sh -eu -c '
     rustc --version
+    rustup component add clippy
     cargo test --locked -p libcram-core -p libcram-ffi
-    cargo check --locked -p libcram-core --features ebpf
+    cargo test --locked -p libcram-core --features ebpf
+    cargo clippy --locked -p libcram-core -p libcram-ffi --all-targets --features libcram-core/ebpf -- -D warnings
     cargo build --locked -p libcram-ffi --release
   '

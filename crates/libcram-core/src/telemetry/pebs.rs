@@ -90,7 +90,10 @@ impl PebsSampler {
         }
         #[cfg(target_arch = "x86_64")]
         {
-            let vendor = std::arch::x86_64::__cpuid(0);
+            // SAFETY: CPUID leaf zero is available on every x86_64 CPU. Rust 1.89
+            // declares this intrinsic unsafe; newer toolchains make it safe.
+            #[allow(unused_unsafe)]
+            let vendor = unsafe { std::arch::x86_64::__cpuid(0) };
             if vendor.ebx != 0x756e6547 || vendor.edx != 0x49656e69 || vendor.ecx != 0x6c65746e {
                 return Err(io::Error::new(
                     io::ErrorKind::Unsupported,

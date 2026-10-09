@@ -47,6 +47,21 @@ struct Buffer {
 }
 #[pymethods]
 impl Buffer {
+    /// Zero-copy CPU tensor. PyTorch retains the memoryview, keeping the original
+    /// export alive across tensor views and preventing close until storage release.
+    /// PyTorch is optional and imported only when this adapter is used.
+    fn tensor<'py>(slf: Bound<'py, Self>, dtype: Bound<'py, PyAny>) -> PyResult<Bound<'py, PyAny>> {
+        let py = slf.py();
+        let view = py
+            .import("builtins")?
+            .getattr("memoryview")?
+            .call1((slf,))?;
+        let kwargs = pyo3::types::PyDict::new(py);
+        kwargs.set_item("dtype", dtype)?;
+        py.import("torch")?
+            .getattr("frombuffer")?
+            .call((view,), Some(&kwargs))
+    }
     fn __enter__(slf: Bound<'_, Self>) -> PyResult<Bound<'_, Self>> {
         if slf.get().closed()? {
             return Err(PyBufferError::new_err("buffer is closed"));
@@ -91,6 +106,8 @@ impl Buffer {
         if view.is_null() {
             return Err(PyBufferError::new_err("null Py_buffer"));
         }
+        // SAFETY: Python supplies writable view storage; the lock prevents closing the live mapping.
+        // FillInfo acquires a Python owner reference, released only after buffer release.
         let result = unsafe {
             ffi::PyBuffer_FillInfo(
                 view,
@@ -105,6 +122,7 @@ impl Buffer {
             return Err(PyErr::fetch(slf.py()));
         }
         if flags & ffi::PyBUF_FORMAT != 0 {
+            // SAFETY: FillInfo succeeded; the static NUL-terminated format outlives every export.
             unsafe {
                 (*view).format = c"B".as_ptr().cast_mut();
             }
@@ -170,6 +188,7 @@ impl MemoryPool {
         if ptr.is_null() {
             return Err(failure());
         }
+        // SAFETY: fresh allocation is exclusively owned and has at least size writable bytes.
         // Never expose uninitialized native bytes to Python.
         unsafe {
             ptr.cast::<u8>().write_bytes(0, size);

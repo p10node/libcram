@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-cargo build -p libcram-ffi
+cargo build -p libcram-ffi --locked
 # Set CARGO_TARGET_DIR to the same directory used by Cargo if customized.
 libdir="${CARGO_TARGET_DIR:-$PWD/target}/debug"
 libdir="$(cd "$libdir" && pwd)"

@@ -95,6 +95,7 @@ fn failed_binding_is_not_reported_as_cram() {
         }),
     )
     .expect("allocator");
+    a.submit_device_usage(0, 100).expect("fixture occupancy");
     let p = a
         .allocate(4096, 8, AccessHint::ReadHeavy)
         .expect("fallback");
@@ -115,6 +116,9 @@ fn raw_sample_reversal_reclaims_first_page_immediately() {
     let p = a
         .allocate(page_size() * 4, page_size(), AccessHint::Auto)
         .expect("alloc");
+    // Admission is deliberately unknown during allocation, then healthy for promotion.
+    a.submit_device_usage(0, 100).expect("fixture occupancy");
+    assert_eq!(a.telemetry().cram_bytes, 0);
     a.record_sample(
         p,
         AccessSample {
@@ -125,6 +129,7 @@ fn raw_sample_reversal_reclaims_first_page_immediately() {
     )
     .expect("sample");
     a.migrate_once(1, 1).expect("promote");
+    assert_eq!(a.telemetry().cram_bytes, page_size() as u64);
     a.record_sample(
         p,
         AccessSample {

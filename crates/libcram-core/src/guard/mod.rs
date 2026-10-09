@@ -10,6 +10,7 @@ impl PoisonGuard {
     /// `pointer` must be writable for LEN bytes. Keep it alive until the final check.
     pub unsafe fn initialize(pointer: *mut u8) -> Self {
         for i in 0..Self::LEN {
+            // SAFETY: caller reserves LEN writable bytes; i is bounded by LEN.
             unsafe { pointer.add(i).write(Self::pattern(i)) };
         }
         Self {
@@ -22,6 +23,7 @@ impl PoisonGuard {
     /// # Safety
     /// The original storage must remain live and no writer may concurrently touch it.
     pub unsafe fn check(&self) -> bool {
+        // SAFETY: caller keeps the complete initialized canary live and excludes writers.
         (0..Self::LEN)
             .all(|i| unsafe { (self.address as *const u8).add(i).read() == Self::pattern(i) })
     }

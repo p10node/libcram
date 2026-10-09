@@ -123,6 +123,8 @@ pub(crate) fn step(
         let mut bytes = record.cram_bytes.load(Ordering::Relaxed);
         let address = record.address + start * page;
         report.pages_attempted += count;
+        // SAFETY: this Arc lease retains the full aligned mapping through the blocking syscall.
+        // The backend migrates pages without reading or referencing mutable payload bytes.
         let result = unsafe { inner.numa.move_pages(address, count * page, target) };
         match result {
             Ok(result) if result.pages.len() == count => {
