@@ -128,13 +128,12 @@ fn concurrent_atomic_publications_never_mix_physical_fields() {
     assert_eq!(reader.read().expect("initial").used_bytes, 1);
     std::thread::scope(|scope| {
         let writer = scope.spawn(|| {
+            let mut observed = stamp;
             for generation in 2..=200 {
-                f.publish(
-                    generation,
-                    stamp + generation,
-                    generation,
-                    10000 + generation,
-                );
+                // Refresh the owned producer timestamp on slow filesystems; do
+                // not extend the real adapter's one-second freshness contract.
+                observed = (observed + 1).max(now() - 500);
+                f.publish(generation, observed, generation, 10000 + generation);
             }
         });
         for _ in 0..400 {
@@ -145,7 +144,7 @@ fn concurrent_atomic_publications_never_mix_physical_fields() {
         }
         writer.join().expect("writer");
     });
-    f.publish(201, stamp + 201, 777, 17777);
+    f.publish(201, now(), 777, 17777);
     let last = reader.read().expect("distinct final publication");
     assert_eq!((last.used_bytes, last.capacity_bytes), (777, 17777));
 }
