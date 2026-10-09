@@ -31,7 +31,7 @@ def main():
         prefix = prefixes[0]
         manifest = json.loads((prefix / 'MANIFEST.json').read_text())
         actual = {p.relative_to(prefix).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
-                  for p in prefix.rglob('*') if p.is_file() and p.name != 'MANIFEST.json'}
+                  for p in prefix.rglob('*') if p.is_file() and p != prefix / 'MANIFEST.json'}
         assert actual == manifest['sha256'], 'package bytes differ from manifest'
         env = os.environ.copy()
         # The extracted archive, never the repository build directory, owns the lookup.

@@ -6,6 +6,40 @@ import tempfile
 import unittest
 from unittest import mock
 import package_sdk
+import verify_sdk
+import io
+
+
+class VerifierTests(unittest.TestCase):
+    def verify_nested_manifest(self, listed):
+        with tempfile.TemporaryDirectory() as tmp:
+            payload = {'header.h': b'owned header', 'docs/MANIFEST.json': b'nested payload'}
+            hashes = {name: hashlib.sha256(data).hexdigest() for name, data in payload.items()
+                      if listed or name != 'docs/MANIFEST.json'}
+            payload['MANIFEST.json'] = json.dumps({'source': {'commit': 'fixture'}, 'sha256': hashes}).encode()
+            archive_path = Path(tmp) / 'sdk.tar.gz'
+            with tarfile.open(archive_path, 'w:gz') as archive:
+                for name, data in payload.items():
+                    entry = tarfile.TarInfo('sdk/' + name)
+                    entry.size = len(data)
+                    archive.addfile(entry, io.BytesIO(data))
+            with mock.patch('sys.argv', ['verify_sdk.py', str(archive_path)]), \
+                    mock.patch.object(verify_sdk.subprocess, 'check_output', return_value='') as pkg_config, \
+                    mock.patch.object(verify_sdk.subprocess, 'run') as consumer:
+                if listed:
+                    verify_sdk.main()
+                    self.assertEqual(consumer.call_count, 4)
+                else:
+                    with self.assertRaisesRegex(AssertionError, 'package bytes differ'):
+                        verify_sdk.main()
+                    pkg_config.assert_not_called()
+                    consumer.assert_not_called()
+
+    def test_unlisted_nested_manifest_rejected_before_consumers(self):
+        self.verify_nested_manifest(False)
+
+    def test_listed_nested_manifest_is_regular_payload(self):
+        self.verify_nested_manifest(True)
 
 
 class PackageTests(unittest.TestCase):
