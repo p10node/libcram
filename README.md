@@ -1,7 +1,9 @@
 # libcram
 
 Rust SDK for Linux NUMA memory-tier orchestration, with a C ABI and C++17, Python
-and Go bindings. macOS is supported for DRAM-only development and binding tests.
+and Go bindings. Verified on Linux x86_64 with real two-node NUMA placement and
+page migration in a dedicated KVM/Incus VM. macOS is also supported for DRAM-only
+development and binding tests.
 
 This is a userspace SDK, not a compressed-memory kernel driver. It requires an
 actual accessible CRAM NUMA node to place memory on compressed RAM. Ordinary CXL
@@ -9,12 +11,31 @@ memory is not automatically treated as CRAM. See docs/KERNEL_INTEGRATION.md.
 
 ## Acceptance status
 
-Software correctness and binding gates pass on macOS and Linux, including real
-CPU PyTorch alias/lifetime tests. The 4 KiB entropy gate still fails for ASCII and
-pseudorandom input on the measured Apple M1 Pro. Physical CRAM/PEBS and active
-sampling overhead are not accepted on the available environment. This is not a
-production-ready or all-requirements-complete claim. See docs/VERIFICATION.md for
-executed commands, archived evidence, open requirements and worktree closure.
+Validation includes real Linux NUMA execution, not only macOS development or
+mock-topology/container fallback tests:
+
+- **Linux x86_64 NUMA VM:** core/FFI tests and 64-thread stress pass on Ubuntu
+  24.04 with two NUMA nodes. Real `mbind` placement and `move_pages` migration
+  of 16 owned pages from node 0 -> 1 -> 0 pass, with independent placement queries
+  and byte-for-byte payload verification. This testing found and fixed an
+  `mbind` nodemask boundary bug.
+- **Kernel BPF and PMU:** both `sample_load` and `sample_store` pass the Linux
+  kernel verifier; basic PMU cycle counting works. Precise sampling is refused
+  by the guest PMU (`max_precise=0`), so PEBS attribution and active sampling
+  overhead below 1% CPU remain unverified.
+- **Bindings and portability:** software correctness and binding gates pass on
+  macOS and Linux, including real CPU PyTorch alias/lifetime tests.
+
+The tested NUMA nodes are DRAM, not CRAM. Physical CRAM placement, compression
+and device-occupancy integration still require compatible hardware and a driver.
+The unchanged 4 KiB entropy budget of 1000 ns still fails for ASCII and
+pseudorandom input on both the Apple M1 Pro and the Linux x86_64 VM. VM timings
+are not isolated bare-metal performance results. This is not a production-ready
+or all-requirements-complete claim.
+
+See [Linux NUMA VM acceptance](docs/S5_VM_ACCEPTANCE.md) for the latest real
+Linux results and archived evidence, and [verification history](docs/VERIFICATION.md)
+for earlier cross-platform gates and their scope.
 
 ## Build
 
@@ -75,8 +96,11 @@ header for callback lifetime and telemetry contracts.
 
 ## Verification and deployment
 
-`docs/VERIFICATION.md` records executed gates and their limits. Do not equate
-passing mock-topology or container fallback tests with physical CRAM support.
+[Linux NUMA VM acceptance](docs/S5_VM_ACCEPTANCE.md) records real placement,
+migration, kernel verifier and PMU results. [Verification history](docs/VERIFICATION.md)
+records earlier cross-platform gates and their limits. Real DRAM NUMA migration
+has been tested; neither it nor passing mock-topology/container fallback tests
+establishes physical CRAM support.
 The requested <1 microsecond per 4KB entropy and <1% sampling CPU targets are
 hardware/workload acceptance gates, not unconditional API guarantees.
 
