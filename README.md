@@ -40,7 +40,8 @@ pseudorandom input on both the Apple M1 Pro and the Linux x86_64 VM. VM timings
 are not isolated bare-metal performance results. This is not a production-ready
 or all-requirements-complete claim.
 
-See [Linux NUMA VM acceptance](docs/S5_VM_ACCEPTANCE.md),
+See [current A–E feature matrix and open acceptance gates](docs/IMPLEMENTATION_STATUS.md),
+[Linux NUMA VM acceptance](docs/S5_VM_ACCEPTANCE.md),
 [native PEBS scope/evidence](docs/PEBS_HOST_ACCEPTANCE.md),
 [updated strict entropy measurements](docs/performance/entropy-update.md), and
 [verification history](docs/VERIFICATION.md). These separate software correctness,

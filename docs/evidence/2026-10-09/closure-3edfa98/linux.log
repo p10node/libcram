@@ -1,0 +1,226 @@
+   Compiling libcram-core v0.1.0 (/root/libcram/crates/libcram-core)
+   Compiling libcram-ffi v0.1.0 (/root/libcram/crates/libcram-ffi)
+   Compiling libcram-python v0.1.0 (/root/libcram/bindings/python)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.76s
+     Running unittests src/lib.rs (target/debug/deps/libcram_core-080cc91e77b3f70e)
+
+running 20 tests
+test entropy::tests::reference_and_dispatch ... ok
+test guard::device::tests::device_health_requires_fresh_observations_and_poison_is_sticky ... ok
+test guard::device::tests::exact_watermark_edges_and_invalid_capacity ... ok
+test guard::device::tests::storm_counts_unique_pages_expires_and_latches ... ok
+test hal::numa::mask_tests::kernel_maxnode_minus_one_still_includes_requested_bit ... ok
+test telemetry::access::tests::aligned_window_eviction ... ok
+test telemetry::access::tests::late_samples_from_interleaved_rings_survive_query_and_expire_in_time_order ... ok
+test telemetry::access::tests::snapshots_preserve_identity_counts_and_expiry ... ok
+test telemetry::pebs::tests::precise_address_sampling_required ... ok
+test telemetry::process_pebs::tests::bounded_stat_parser_handles_parentheses ... ok
+test telemetry::process_pebs::tests::budget_rotates_even_when_smaller_than_ring_count ... ok
+test telemetry::process_pebs::tests::lifecycle_reuse_exit_and_capacity ... ok
+test telemetry::sampling::tests::bounded_drain_counts_decode_and_window_rejections ... ok
+test telemetry::sampling::tests::ring_order_and_query_between_bounded_drains_do_not_change_retained_samples ... ok
+test telemetry::sampling::tests::sample_decode_and_config_rejection ... ok
+test telemetry::sampling::tests::typed_decoder_matches_ingestion_and_rejects_malformed ... ok
+test telemetry::tests::psi ... ok
+test entropy::differential::random_unaligned_all_available_kernels ... ok
+test entropy::differential::banked_histogram_collisions_tails_and_batch_boundaries ... ok
+test entropy::tests::exhaustive_lengths_alignments_and_uniform_transitions ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 25.74s
+
+     Running tests/allocation.rs (target/debug/deps/allocation-f2d991c78e12d04c)
+
+running 1 test
+test ownership_alignment_accounting_and_poison ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/device_adapter_parser.rs (target/debug/deps/device_adapter_parser-539fcf8fff421a10)
+
+running 2 tests
+test preserves_distinct_physical_snapshots ... ok
+test rejects_invalid_bounds_and_freshness ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-778e8ed5b111c652)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/device_policy.rs (target/debug/deps/device_policy-e99e52f5130a63e5)
+
+running 2 tests
+test auto_initial_placement_is_size_based_and_pressure_gated ... ok
+test missing_usage_pressure_and_poison_gate_real_allocation_policy ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running ../../tests/integration/fallback.rs (target/debug/deps/fallback-949cca0754c0285c)
+
+running 1 test
+test portable_dram_allocation_preserves_distinct_owned_buffers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/guard.rs (target/debug/deps/guard-8b1122e7b69c5624)
+
+running 1 test
+test catches_each_poison_byte_without_reading_payload ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/migration.rs (target/debug/deps/migration-2d7af5a0f038c425)
+
+running 4 tests
+test owned_sampling_moves_without_reading_mutable_caller_memory ... ok
+test failed_binding_is_not_reported_as_cram ... ok
+test explicit_owned_entropy_sampling_uses_a_synchronized_borrow ... ok
+test raw_sample_reversal_reclaims_first_page_immediately ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/migration_lifetime.rs (target/debug/deps/migration_lifetime-88d2bac566a0b47b)
+
+running 2 tests
+test reports_partial_failures_without_marking_entire_allocation_cram ... ok
+test background_holds_mapping_lease_after_owner_drop ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/numa.rs (target/debug/deps/numa-6b963d96975a07b9)
+
+running 2 tests
+test validates_page_ranges_and_reports_platform_capability ... ok
+test real_linux_syscalls_return_results_or_kernel_errors ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/pressure.rs (target/debug/deps/pressure-0bdaa9a58d782716)
+
+running 1 test
+test callback_is_async_reentrant_replaceable_and_panic_isolated ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-e306d014841e3731)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-43a6240253bcbb01)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-646e58446cc843a0)
+
+running 8 tests
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-9e07cef03138c3df)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.03s
+
+     Running ../../tests/unit/topology.rs (target/debug/deps/topology-fa3221a15f9961fe)
+
+running 4 tests
+test cxl_is_not_compressed_without_explicit_provenance ... ok
+test unavailable_sysfs_falls_back_to_uncompressed_uma ... ok
+test mock_sysfs_discovers_cxl_but_requires_compression_provenance ... ok
+test explicit_driver_flag_has_enabled_disabled_and_malformed_controls ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/cram-94d745eac8d2b78f)
+
+running 4 tests
+test tests::panic_is_status_not_unwind ... ok
+test edge_tests::panic_payload_destructor_cannot_escape_boundary ... ok
+test tests::quiescent_ffi_unregister_allows_userdata_release ... ok
+test edge_tests::callback_bridge_preserves_userdata_and_allows_reentry ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/abi.rs (target/debug/deps/abi-4490d839664093fa)
+
+running 5 tests
+test aligned_allocation_round_trip ... ok
+test metadata_admission_rejects_invalid_samples_and_accepts_owned_updates ... ok
+test telemetry_and_invalid_arguments ... ok
+test canary_error_distinguishes_consumed_native_ownership ... ok
+test parallel_allocations_and_thread_local_errors ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running unittests src/lib.rs (target/debug/deps/libcram-50420370e42e08a2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests libcram_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests cram
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+    Checking libcram-core v0.1.0 (/root/libcram/crates/libcram-core)
+    Checking libcram-ffi v0.1.0 (/root/libcram/crates/libcram-ffi)
+    Checking libcram-python v0.1.0 (/root/libcram/bindings/python)
+    Checking libcram-bench v0.1.0 (/root/libcram/crates/libcram-bench)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.55s
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.664s
+
+OK
+SDK_MANIFEST_AND_NATIVE_CONSUMERS_PASS fixture

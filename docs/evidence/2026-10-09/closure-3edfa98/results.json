@@ -1,0 +1,53 @@
+{
+  "source_commit": "3edfa98d95e039cdaca20e9906de3d10db301f2a",
+  "macos_command": "just check native-test torch-test header-check; workspace all-targets/all-features Clippy; sdk-package; verify_sdk",
+  "macos_exit": 0,
+  "linux_workspace_all_features_and_clippy_exit": 0,
+  "linux_bindings": {
+    "exit_code": 0,
+    "source": "3edfa98d95e039cdaca20e9906de3d10db301f2a"
+  },
+  "linux_sdk_foreground_verification_exit": 0,
+  "rust_tests_passed_in_logs": {
+    "macos.log": 83,
+    "linux.log": 85
+  },
+  "short_soak": {
+    "source_commit": "3edfa98d95e039cdaca20e9906de3d10db301f2a",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "libcram-core",
+      "--locked",
+      "--offline",
+      "--features",
+      "ebpf",
+      "--test",
+      "stress",
+      "--test",
+      "runtime",
+      "--test",
+      "runtime_bridge",
+      "--test",
+      "device_adapter_reader",
+      "--test",
+      "pressure_lifecycle"
+    ],
+    "successful_runs": 25,
+    "elapsed_seconds": 60.74687361799988,
+    "scope": "owned fixture/stress tests; not real CRAM or long-duration production soak"
+  },
+  "artifacts": {
+    "libcram-0.1.0-aarch64-apple-darwin-3edfa98d95e0.tar.gz": {
+      "sha256": "659f70785eeb356c9ee620ea84b993035f4c217c0a453f8d1e67b5282d5f2354",
+      "bytes": 7303081
+    },
+    "libcram-0.1.0-x86_64-unknown-linux-gnu-3edfa98d95e0.tar.gz": {
+      "sha256": "79f20c6b02b0bfcd0ba5b37d7aa5eb52ec8af044622cdafaec130a5f4e0fc896",
+      "bytes": 7345573
+    }
+  },
+  "worktree_archive": "$WORKSPACE/libcram-worktree-archive/20261009T091859Z",
+  "scope": "Engineering software gates; no strict entropy, universal PEBS/<1% CPU, real CRAM or long-duration production acceptance"
+}

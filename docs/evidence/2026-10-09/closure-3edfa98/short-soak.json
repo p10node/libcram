@@ -1,0 +1,26 @@
+{
+  "source_commit": "3edfa98d95e039cdaca20e9906de3d10db301f2a",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "libcram-core",
+    "--locked",
+    "--offline",
+    "--features",
+    "ebpf",
+    "--test",
+    "stress",
+    "--test",
+    "runtime",
+    "--test",
+    "runtime_bridge",
+    "--test",
+    "device_adapter_reader",
+    "--test",
+    "pressure_lifecycle"
+  ],
+  "successful_runs": 25,
+  "elapsed_seconds": 60.74687361799988,
+  "scope": "owned fixture/stress tests; not real CRAM or long-duration production soak"
+}

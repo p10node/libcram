@@ -1,0 +1,1676 @@
+   Compiling libcram-core v0.1.0 (/root/libcram/crates/libcram-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.78s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.22s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.02s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test event_before_token_creation_is_rejected ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.97s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test rejects_untrusted_write_permissions ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_symlink_report_without_following_it ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test rejects_untrusted_write_permissions ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test event_before_token_creation_is_rejected ... ok
+test failing_batch_cannot_partially_promote ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test observation_moves_only_its_payload_page ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.99s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test event_before_token_creation_is_rejected ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_untrusted_write_permissions ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test observation_moves_only_its_payload_page ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.03s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_untrusted_write_permissions ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.63s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.94s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test rejects_untrusted_write_permissions ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.05s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_untrusted_write_permissions ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test event_before_token_creation_is_rejected ... ok
+test failing_batch_cannot_partially_promote ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.84s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.50s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.99s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.82s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test queue_and_registration_overflow_are_sticky ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.97s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test event_before_token_creation_is_rejected ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.11s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.27s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test event_before_token_creation_is_rejected ... ok
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test failing_batch_cannot_partially_promote ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.07s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.00s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test event_before_token_creation_is_rejected ... ok
+test failing_batch_cannot_partially_promote ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.99s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.41s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.04s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test rejects_symlink_report_without_following_it ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_untrusted_write_permissions ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.72s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test event_before_token_creation_is_rejected ... ok
+test failing_batch_cannot_partially_promote ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.02s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.98s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.17s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.96s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test event_before_token_creation_is_rejected ... ok
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test failing_batch_cannot_partially_promote ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.94s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.11s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test queue_and_registration_overflow_are_sticky ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.03s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.46s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test observation_moves_only_its_payload_page ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test source_failure_revokes_cached_device_health ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.11s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/device_adapter_reader.rs (target/debug/deps/device_adapter_reader-16f490593465f8dd)
+
+running 7 tests
+test rejects_nonregular_files_and_oversized_poison_batch ... ok
+test pins_configured_directory_and_bounds_actual_reads ... ok
+test rejects_symlink_report_without_following_it ... ok
+test rejects_untrusted_write_permissions ... ok
+test actual_file_reads_preserve_snapshots_and_reject_replays ... ok
+test requires_positive_provenance_on_every_read ... ok
+test concurrent_atomic_publications_never_mix_physical_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.12s
+
+     Running tests/pressure_lifecycle.rs (target/debug/deps/pressure_lifecycle-c5b6a58754482c72)
+
+running 2 tests
+test callback_cannot_wait_for_itself_and_new_generation_still_works ... ok
+test quiescent_unregister_waits_for_selected_callback_and_discards_future_delivery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-c110def7e608b513)
+
+running 18 tests
+test collector_promotes_then_write_heavy_reverses_real_policy ... ok
+test continuous_source_failure_still_evacuates_with_one_page_quota ... ok
+test failing_batch_cannot_partially_promote ... ok
+test event_before_token_creation_is_rejected ... ok
+test dynamic_owned_allocation_live_status_and_joined_source_drop ... ok
+test invalid_budgets_are_rejected_before_start ... ok
+test managed_ownership_rejects_legacy_metadata_even_after_stop ... ok
+test observation_moves_only_its_payload_page ... ok
+test oversized_poison_batch_is_rejected_before_health_or_poll ... ok
+test page_quota_counts_discarded_observations_and_observation_quota_keeps_queue ... ok
+test hot_page_observations_cannot_starve_pressure_evacuation ... ok
+test source_failure_revokes_cached_device_health ... ok
+test pressure_without_observations_evacuates_with_page_quota ... ok
+test status_counts_stale_identity_and_source_failures ... ok
+test stopped_runtime_revokes_health_for_future_allocations ... ok
+test worker_runs_pipeline_and_stop_wakes_long_interval ... ok
+test expired_token_fresh_event_future_event_and_foreign_identity_are_dropped ... ok
+test managed_constructor_joins_legacy_monitor ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/runtime_bridge.rs (target/debug/deps/runtime_bridge-ecc13063c2c5fa66)
+
+running 8 tests
+test production_clock_empty_batch_and_clock_failure_are_distinct ... ok
+test event_history_and_output_overflow_clear_entire_batch ... ok
+test bridge_reverses_policy_and_source_error_revokes_health ... ok
+test trusted_device_mapping_dedup_and_error_clear_pending ... ok
+test queue_and_registration_overflow_are_sticky ... ok
+test refreshed_generation_drops_old_history_and_pre_token_events ... ok
+test weak_lifetime_timestamp_and_payload_boundaries ... ok
+test rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.02s
+

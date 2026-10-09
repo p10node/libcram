@@ -1,0 +1,34 @@
+Cloning into '/root/libcram-sdk-3edfa98d95e0'...
+Note: switching to '3edfa98d95e039cdaca20e9906de3d10db301f2a'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.26
+   Compiling quote v1.0.47
+   Compiling libc v0.2.190
+   Compiling thiserror v2.0.21
+   Compiling syn v3.0.6
+   Compiling thiserror-impl v2.0.21
+   Compiling libcram-core v0.1.0 (/root/libcram-sdk-3edfa98d95e0/crates/libcram-core)
+   Compiling libcram-ffi v0.1.0 (/root/libcram-sdk-3edfa98d95e0/crates/libcram-ffi)
+    Finished `release` profile [optimized] target(s) in 8.66s
+/root/libcram-sdk-3edfa98d95e0/target/dist/libcram-0.1.0-x86_64-unknown-linux-gnu-3edfa98d95e0.tar.gz
+SHA256 79f20c6b02b0bfcd0ba5b37d7aa5eb52ec8af044622cdafaec130a5f4e0fc896
+SDK_C_SMOKE_PASS
+SDK_CPP_SMOKE_PASS
+SDK_MANIFEST_AND_NATIVE_CONSUMERS_PASS 3edfa98d95e039cdaca20e9906de3d10db301f2a
+LINUX_SDK_VERIFIED /root/libcram-sdk-3edfa98d95e0/target/dist/libcram-0.1.0-x86_64-unknown-linux-gnu-3edfa98d95e0.tar.gz
