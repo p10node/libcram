@@ -75,6 +75,11 @@ def main():
         shutil.copyfile(root / 'bindings/cpp/cram_resource.hpp', stage / 'include/cram_resource.hpp')
         extension = 'dylib' if sys.platform == 'darwin' else 'so'
         shutil.copyfile(target / f'libcram.{extension}', stage / 'lib' / f'libcram.{extension}')
+        if sys.platform == 'darwin':
+            library = stage / 'lib/libcram.dylib'
+            # Cargo's absolute build-tree install name would bypass the SDK.
+            subprocess.run(['install_name_tool', '-id', '@rpath/libcram.dylib', str(library)], check=True)
+            subprocess.run(['codesign', '--force', '--sign', '-', str(library)], check=True)
         shutil.copyfile(target / 'libcram.a', stage / 'lib/libcram.a')
         for filename in ('README.md', 'LICENSE-MIT', 'LICENSE-APACHE'):
             shutil.copyfile(root / filename, stage / filename)
