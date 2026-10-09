@@ -1,4 +1,4 @@
-//! Byte Shannon entropy. SIMD run histograms preserve exact scalar counts.
+//! Byte Shannon entropy. SIMD-assisted histograms preserve exact scalar counts.
 #![deny(clippy::unwrap_used)]
 use std::sync::OnceLock;
 fn finish(hist: &[usize; 256], n: usize) -> f64 {
@@ -78,17 +78,71 @@ pub fn shannon_entropy(data: &[u8]) -> f64 {
 #[target_feature(enable = "neon")]
 unsafe fn neon(data: &[u8], hist: &mut [usize; 256]) {
     use std::arch::aarch64::*;
-    let (chunks, remainder) = data.as_chunks::<16>();
-    for chunk in chunks {
-        // SAFETY: chunks_exact guarantees 16 readable bytes; unaligned loads are valid.
-        let equal = unsafe { vceqq_u8(vld1q_u8(chunk.as_ptr()), vdupq_n_u8(chunk[0])) };
-        if vminvq_u8(equal) == 255 {
-            hist[chunk[0] as usize] += 16;
-        } else {
-            scalar_hist(chunk, hist);
+    // Consume a uniform prefix a cache line at a time. Stop checking after the
+    // first mixed line: ordinary input should not pay a SIMD reduction per 16 bytes.
+    let mut offset = 0;
+    if let Some(&first) = data.first() {
+        let expected = vdupq_n_u8(first);
+        while data.len() - offset >= 64 {
+            // SAFETY: the loop bounds all four loads; NEON accepts unaligned input.
+            let equal = unsafe {
+                let p = data.as_ptr().add(offset);
+                vandq_u8(
+                    vandq_u8(
+                        vceqq_u8(vld1q_u8(p), expected),
+                        vceqq_u8(vld1q_u8(p.add(16)), expected),
+                    ),
+                    vandq_u8(
+                        vceqq_u8(vld1q_u8(p.add(32)), expected),
+                        vceqq_u8(vld1q_u8(p.add(48)), expected),
+                    ),
+                )
+            };
+            if vminvq_u8(equal) != 255 {
+                break;
+            }
+            offset += 64;
         }
+        hist[first as usize] += offset;
     }
-    scalar_hist(remainder, hist);
+    let data = &data[offset..];
+    if data.len() < 64 {
+        scalar_hist(data, hist);
+        return;
+    }
+    // Eight independent counters break dependency chains for repeated symbols.
+    // Each lane receives at most 8192 bytes per batch, so both u16 increments
+    // and the four-lane partial sums (at most 32768) are exact without overflow.
+    // Merge into usize before processing another batch to support arbitrary sizes.
+    for batch in data.chunks(65536) {
+        let mut counters = [[0u16; 256]; 8];
+        let [h0, h1, h2, h3, h4, h5, h6, h7] = &mut counters;
+        let (chunks, remainder) = batch.as_chunks::<64>();
+        for chunk in chunks {
+            for j in 0..8 {
+                // SAFETY: each eight-byte unaligned load is inside this chunk.
+                let mut word = unsafe { chunk.as_ptr().add(j * 8).cast::<u64>().read_unaligned() };
+                // Keep the word intact without imposing a memory-ordering barrier.
+                // SAFETY: this empty register-only assembly preserves its input.
+                unsafe {
+                    std::arch::asm!("/* {word} */", word = inout(reg) word, options(pure, nomem, nostack, preserves_flags));
+                }
+                h0[(word & 255) as usize] += 1;
+                h1[((word >> 8) & 255) as usize] += 1;
+                h2[((word >> 16) & 255) as usize] += 1;
+                h3[((word >> 24) & 255) as usize] += 1;
+                h4[((word >> 32) & 255) as usize] += 1;
+                h5[((word >> 40) & 255) as usize] += 1;
+                h6[((word >> 48) & 255) as usize] += 1;
+                h7[(word >> 56) as usize] += 1;
+            }
+        }
+        for i in 0..256 {
+            hist[i] +=
+                (h0[i] + h1[i] + h2[i] + h3[i]) as usize + (h4[i] + h5[i] + h6[i] + h7[i]) as usize;
+        }
+        scalar_hist(remainder, hist);
+    }
 }
 #[cfg(target_arch = "x86_64")]
 #[target_feature(enable = "avx2")]
@@ -137,6 +191,70 @@ mod differential;
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn exhaustive_lengths_alignments_and_uniform_transitions() {
+        let kernel = select();
+        let mut seed = 0x87162dff_u64;
+        for pattern in 0..4 {
+            let data: Vec<u8> = (0..131200)
+                .map(|i| match pattern {
+                    0 => {
+                        seed ^= seed << 13;
+                        seed ^= seed >> 7;
+                        seed ^= seed << 17;
+                        seed as u8
+                    }
+                    1 => 173,
+                    2 => (i / 97) as u8,
+                    _ => (i % 7) as u8,
+                })
+                .collect();
+            for offset in 0..64 {
+                let mut expected = [0usize; 256];
+                for len in 0..=4097 {
+                    if len != 0 {
+                        expected[data[offset + len - 1] as usize] += 1;
+                    }
+                    let mut actual = [0usize; 256];
+                    // SAFETY: select checks the runtime ISA.
+                    unsafe {
+                        kernel(&data[offset..offset + len], &mut actual);
+                    }
+                    assert_eq!(
+                        actual, expected,
+                        "pattern={pattern}, offset={offset}, len={len}"
+                    );
+                }
+                for len in [8191, 8192, 16384, 65535, 65536, 65537, 131073] {
+                    let bytes = &data[offset..offset + len];
+                    let mut expected = [0usize; 256];
+                    scalar_hist(bytes, &mut expected);
+                    let mut actual = [0usize; 256];
+                    // Verify additive kernel semantics as well as large batches.
+                    actual[19] = 11;
+                    expected[19] += 11;
+                    // SAFETY: select checks the runtime ISA.
+                    unsafe {
+                        kernel(bytes, &mut actual);
+                    }
+                    assert_eq!(actual, expected);
+                    assert_eq!(shannon_entropy(bytes), scalar_entropy(bytes));
+                }
+            }
+        }
+        // A single different byte at every position must end uniform-prefix
+        // handling without losing bytes from the mixed block or the tail.
+        let mut data = [173u8; 4160];
+        for position in 0..4097 {
+            data[position] = 91;
+            for offset in [0, 1, 15, 31, 63] {
+                let bytes = &data[offset..offset + 4097];
+                assert_eq!(shannon_entropy(bytes), scalar_entropy(bytes));
+            }
+            data[position] = 173;
+        }
+    }
+
     #[test]
     fn reference_and_dispatch() {
         assert_eq!(scalar_entropy(&[]), 0.0);
