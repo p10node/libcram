@@ -1,5 +1,6 @@
 #![deny(clippy::unwrap_used)]
 pub mod allocator;
+pub mod device_adapter;
 pub mod entropy;
 pub mod guard;
 pub mod hal;
