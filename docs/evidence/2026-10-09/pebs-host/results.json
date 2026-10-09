@@ -1,0 +1,147 @@
+{
+  "scope": "owned Broadwell-X L1-hit loads / all-stores; paired ABBA throughput diagnostic, not total CPU acceptance",
+  "cpu": 12,
+  "period": 2000003,
+  "rows": [
+    {
+      "index": 0,
+      "mode": "all-loads",
+      "exit": 1,
+      "sha256": "dfa2a816be7a9bb50a5d049adc44b78de83927403e7ff6d8d5661ee3cd593b47",
+      "wall_ns": 3000522556,
+      "rounds": 3671,
+      "baseline": false,
+      "ns_per_round": 817358.3644783437
+    },
+    {
+      "index": 1,
+      "mode": "l1-hit baseline",
+      "exit": 0,
+      "sha256": "6d6d0be471297c493ea028fd80d684115494625bcc5b04aa01521ce9f6812c7a",
+      "wall_ns": 3000757240,
+      "rounds": 3559,
+      "baseline": true,
+      "ns_per_round": 843146.1758921045
+    },
+    {
+      "index": 2,
+      "mode": "l1-hit",
+      "exit": 0,
+      "sha256": "133fac86569504210d34f2745a50fef436334bbff5ad32024d9f8f10dec39db0",
+      "wall_ns": 3000458776,
+      "rounds": 3640,
+      "baseline": false,
+      "ns_per_round": 824301.8615384615
+    },
+    {
+      "index": 3,
+      "mode": "l1-hit",
+      "exit": 0,
+      "sha256": "4a772b7a84c24f4e6567c09c48ea87958676c194cd6f242d49dd01c8338d9676",
+      "wall_ns": 3000068197,
+      "rounds": 3556,
+      "baseline": false,
+      "ns_per_round": 843663.7224409449
+    },
+    {
+      "index": 4,
+      "mode": "l1-hit baseline",
+      "exit": 0,
+      "sha256": "e93d2679c1315b383bae88b4ee8fa97ce7ef1ea8e468faf3aa0c410a48e1ecba",
+      "wall_ns": 3000663432,
+      "rounds": 3587,
+      "baseline": true,
+      "ns_per_round": 836538.4533035964
+    },
+    {
+      "index": 5,
+      "mode": "l1-hit baseline",
+      "exit": 0,
+      "sha256": "fdeb331b3222bba4807474e18976087f15a34f06c91a2cdfe175bdc578915b66",
+      "wall_ns": 3000804471,
+      "rounds": 3571,
+      "baseline": true,
+      "ns_per_round": 840326.0910109213
+    },
+    {
+      "index": 6,
+      "mode": "l1-hit",
+      "exit": 0,
+      "sha256": "b60f119e5b5dbb00ded2f8efcb199939b935386b843fee6fed6fd9eeff5bbe07",
+      "wall_ns": 3000438812,
+      "rounds": 3577,
+      "baseline": false,
+      "ns_per_round": 838814.3170254403
+    },
+    {
+      "index": 7,
+      "mode": "l1-hit",
+      "exit": 0,
+      "sha256": "9b8577d12c80507d71a19e7d16dd1f0ef957e863f7c5873230cb69b281392d34",
+      "wall_ns": 3000299907,
+      "rounds": 3625,
+      "baseline": false,
+      "ns_per_round": 827668.939862069
+    },
+    {
+      "index": 8,
+      "mode": "l1-hit baseline",
+      "exit": 0,
+      "sha256": "3293aa4d954479fbb6cbf919e3027e145d920dcbe08b9f76d40f1b7c525abceb",
+      "wall_ns": 3000576084,
+      "rounds": 3601,
+      "baseline": true,
+      "ns_per_round": 833261.8950291586
+    },
+    {
+      "index": 9,
+      "mode": "l1-hit baseline",
+      "exit": 0,
+      "sha256": "7376a09f1ad3d8366b0becde4a0e2d1b4cbf8fc2520f2e7c6e5e807347086b97",
+      "wall_ns": 3000573023,
+      "rounds": 3485,
+      "baseline": true,
+      "ns_per_round": 860996.5632711621
+    },
+    {
+      "index": 10,
+      "mode": "l1-hit",
+      "exit": 0,
+      "sha256": "25f5b88312d778286e4730418de25ad45b440a0e31afd18aa5cb7d72b01d7451",
+      "wall_ns": 3000522646,
+      "rounds": 3612,
+      "baseline": false,
+      "ns_per_round": 830709.4811738649
+    },
+    {
+      "index": 11,
+      "mode": "l1-hit",
+      "exit": 0,
+      "sha256": "67cd2dccc92c79cd8813350d41b2aad4b4c1ca37d960816a04ec6f15ab5fa8fd",
+      "wall_ns": 3000654259,
+      "rounds": 3614,
+      "baseline": false,
+      "ns_per_round": 830286.1812396237
+    },
+    {
+      "index": 12,
+      "mode": "l1-hit baseline",
+      "exit": 0,
+      "sha256": "ec58ffcf7a0ee0783f64d597ebe757ff3cc19303405546f072d9ece705751e57",
+      "wall_ns": 3000346952,
+      "rounds": 3561,
+      "baseline": true,
+      "ns_per_round": 842557.4142094917
+    }
+  ],
+  "baseline_median_ns_per_round": 841441.7526102065,
+  "active_median_ns_per_round": 830497.8312067443,
+  "median_throughput_cost_percent": -1.3006154459905828,
+  "cpu_under_one_percent_acceptance": "NOT ESTABLISHED: shared-host throughput is not an isolated kernel+collector CPU measurement",
+  "source_sha256": {
+    "crates/libcram-core/examples/pebs_acceptance.rs": "a06367a5e79604d9454eb7765bc75589b8db563c993e4466969ba7e3efbc55f9",
+    "crates/libcram-core/src/telemetry/pebs.rs": "d5f41a1e4710164dfed2db800bee4ca4f08df625c5c9202b25214668ee25a9ad",
+    "crates/libcram-core/src/telemetry/access.rs": "891a256190f86e3cae3c9821f94debac8b6ffb38eeb815c33cb3b550dd53a23d",
+    "crates/libcram-ebpf/target/bpfel-unknown-none/release/libcram-pebs": "d0ac40911a4a3ba690ca830496a88ded7d95ac5af353ef237226a65c184ac73c"
+  }
+}

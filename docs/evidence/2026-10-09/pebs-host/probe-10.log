@@ -1,0 +1,6 @@
+load_event=l1-hit; cache-specific modes do NOT represent all loads
+measurement_wall_ns=3000522646 measurement_rounds=3612 baseline=false
+regions read=0x7903d6812000 write=0x7903d680e000; retained_pages=[(292924, 96357730304000, AccessCounts { reads: 1, writes: 0 }), (292924, 133057390632960, AccessCounts { reads: 0, writes: 12 }), (292924, 133057390637056, AccessCounts { reads: 0, writes: 14 }), (292924, 133057390641152, AccessCounts { reads: 0, writes: 14 }), (292924, 133057390645248, AccessCounts { reads: 0, writes: 19 }), (292924, 133057390649344, AccessCounts { reads: 114, writes: 0 }), (292924, 133057390653440, AccessCounts { reads: 106, writes: 0 }), (292924, 133057390657536, AccessCounts { reads: 109, writes: 0 }), (292924, 133057390661632, AccessCounts { reads: 105, writes: 0 }), (292924, 140728394338304, AccessCounts { reads: 508, writes: 888 })]
+raw_pmu_counts=[1887134686, 1894644629]
+cpu=12 period=2000003 events=2 rounds=3612 checksum=5425512962521563136 accepted=1890 rejected=0 dropped=0 read_region_reads=434 read_region_writes=0 write_region_reads=0 write_region_writes=59
+PEBS_ATTRIBUTION_PASS; overhead is NOT measured by this probe

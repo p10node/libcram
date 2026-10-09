@@ -123,6 +123,18 @@ impl AccessWindow {
             .copied()
             .unwrap_or_default())
     }
+    /// Snapshot retained per-process page counts after advancing the expiry clock.
+    /// Sorted by process/page identity; at most capacity entries are returned.
+    pub fn snapshot(&mut self, now: u64) -> io::Result<Vec<(u32, u64, AccessCounts)>> {
+        self.advance(now)?;
+        let mut result: Vec<_> = self
+            .pages
+            .iter()
+            .map(|(&(pid, page), &counts)| (pid, page, counts))
+            .collect();
+        result.sort_unstable_by_key(|&(pid, page, _)| (pid, page));
+        Ok(result)
+    }
     pub fn retained_samples(&self) -> usize {
         self.events.len()
     }
@@ -161,6 +173,46 @@ mod tests {
         );
         assert!(w.record(110, 4096, 1, AccessKind::Write).is_err());
         assert!(w.counts(139, 4096, 1).is_err());
+    }
+    #[test]
+    fn snapshots_preserve_identity_counts_and_expiry() {
+        let mut w = AccessWindow::new(10, 8, 4096).expect("window");
+        w.record(1, 0x1001, 9, AccessKind::Read).expect("read");
+        w.record(2, 0x3001, 7, AccessKind::Write).expect("write");
+        assert_eq!(
+            w.snapshot(2).expect("snapshot"),
+            vec![
+                (
+                    7,
+                    0x3000,
+                    AccessCounts {
+                        reads: 0,
+                        writes: 1
+                    }
+                ),
+                (
+                    9,
+                    0x1000,
+                    AccessCounts {
+                        reads: 1,
+                        writes: 0
+                    }
+                )
+            ]
+        );
+        assert_eq!(
+            w.snapshot(11).expect("expired"),
+            vec![(
+                7,
+                0x3000,
+                AccessCounts {
+                    reads: 0,
+                    writes: 1
+                }
+            )]
+        );
+        assert!(w.snapshot(10).is_err());
+        assert!(w.snapshot(12).expect("empty").is_empty());
     }
     #[test]
     fn aligned_window_eviction() {

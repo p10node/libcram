@@ -1,0 +1,18 @@
+{
+  "kernel": "6.8.0-146-generic",
+  "cpu": {
+    "vendor_id": "GenuineIntel",
+    "family": 6,
+    "model": 79,
+    "name": "Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz",
+    "stepping": 1
+  },
+  "max_precise": 3,
+  "perf_event_paranoid": 4,
+  "cram_driver_paths": [],
+  "cxl_paths": [],
+  "artifacts_sha256": {
+    "probe": "5ca337e47a49d10f70d8f9c08b8e31c3a465fd00f3605190277e3b768207e59b",
+    "program.bpf": "d0ac40911a4a3ba690ca830496a88ded7d95ac5af353ef237226a65c184ac73c"
+  }
+}

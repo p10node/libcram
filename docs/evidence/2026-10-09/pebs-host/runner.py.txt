@@ -1,0 +1,26 @@
+import hashlib, json, pathlib, re, statistics, subprocess
+root=pathlib.Path('$WORKSPACE/libcram')
+out=root/'docs/evidence/2026-10-09/pebs-host'
+out.mkdir(parents=True,exist_ok=True)
+command=['ssh','s5','timeout','15','/tmp/libcram-owned-pebs.hkloGk/probe','/tmp/libcram-owned-pebs.hkloGk/program.bpf','12','2000003']
+rows=[]
+for index,mode in enumerate(['all-loads']+['l1-hit baseline','l1-hit','l1-hit','l1-hit baseline']*3):
+    p=subprocess.run(command+mode.split(),capture_output=True,text=True,timeout=30)
+    text=p.stdout+p.stderr
+    path=out/f'probe-{index:02d}.log';path.write_text(text.rstrip()+'\n')
+    m=re.search(r'measurement_wall_ns=(\d+) measurement_rounds=(\d+) baseline=(\w+)',text)
+    row={'index':index,'mode':mode,'exit':p.returncode,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+    if m: row.update(wall_ns=int(m[1]),rounds=int(m[2]),baseline=m[3]=='true',ns_per_round=int(m[1])/int(m[2]))
+    if index and p.returncode: raise RuntimeError(f'probe failed {row}: {text}')
+    if index and 'baseline' not in mode and 'PEBS_ATTRIBUTION_PASS' not in text: raise RuntimeError('missing positive attribution')
+    rows.append(row)
+base=[r['ns_per_round'] for r in rows[1:] if r['baseline']]
+active=[r['ns_per_round'] for r in rows[1:] if not r['baseline']]
+report={'scope':'owned Broadwell-X L1-hit loads / all-stores; paired ABBA throughput diagnostic, not total CPU acceptance',
+        'cpu':12,'period':2000003,'rows':rows,'baseline_median_ns_per_round':statistics.median(base),
+        'active_median_ns_per_round':statistics.median(active),
+        'median_throughput_cost_percent':(statistics.median(active)/statistics.median(base)-1)*100,
+        'cpu_under_one_percent_acceptance':'NOT ESTABLISHED: shared-host throughput is not an isolated kernel+collector CPU measurement',
+        'source_sha256':{str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [root/'crates/libcram-core/examples/pebs_acceptance.rs',root/'crates/libcram-core/src/telemetry/pebs.rs',root/'crates/libcram-core/src/telemetry/access.rs',root/'crates/libcram-ebpf/target/bpfel-unknown-none/release/libcram-pebs']}}
+(out/'results.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps(report,indent=2))

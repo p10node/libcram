@@ -1,0 +1,3 @@
+load_event=l1-hit; cache-specific modes do NOT represent all loads
+measurement_wall_ns=3000346952 measurement_rounds=3561 baseline=true
+BASELINE_ONLY; no sampling and no attribution acceptance

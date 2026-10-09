@@ -26,6 +26,10 @@ fn attributes(c: ExplicitPebsConfig) -> io::Result<PerfAttr> {
         period: c.period,
         sample_type: 1 << 3,
         flags: 1 | (1 << 5) | (1 << 6) | (2 << 15),
+        // Disable large-PEBS auto-reload batching. Its context-switch drain
+        // uses perf_event_output directly, bypassing our BPF overflow handler.
+        // Linux intel_pmu_hw_config checks wakeup_events && !watermark here.
+        wakeup: 1,
         ..PerfAttr::default()
     })
 }
@@ -185,6 +189,28 @@ impl PebsSampler {
         }
         report
     }
+    /// Raw PMU counts per configured event, useful to distinguish an idle or
+    /// unscheduled counter from a userspace ring-consumption failure.
+    pub fn event_counts(&self) -> io::Result<Vec<u64>> {
+        self.events
+            .iter()
+            .map(|fd| {
+                let mut count = 0u64;
+                // SAFETY: fd is owned; PERF_FORMAT=0 returns one writable u64.
+                let n = unsafe { libc::read(fd.as_raw_fd(), (&mut count as *mut u64).cast(), 8) };
+                if n == 8 {
+                    Ok(count)
+                } else if n < 0 {
+                    Err(io::Error::last_os_error())
+                } else {
+                    Err(io::Error::new(
+                        io::ErrorKind::UnexpectedEof,
+                        "PMU count unavailable",
+                    ))
+                }
+            })
+            .collect()
+    }
     pub fn attached_events(&self) -> usize {
         self.events.len()
     }
@@ -221,6 +247,9 @@ mod tests {
         assert_eq!(a.type_, 4);
         assert_eq!(a.size, 72);
         assert_eq!(a.sample_type, 1 << 3);
+        // Large-PEBS context-switch drains bypass the BPF overflow handler.
+        assert_eq!(a.wakeup, 1);
+        assert_eq!((a.flags >> 14) & 1, 0); // event-count wakeups, not watermark
         assert_eq!((a.flags >> 15) & 3, 2);
         assert_ne!(a.flags & (1 << 5), 0);
         assert_ne!(a.flags & 1, 0);
