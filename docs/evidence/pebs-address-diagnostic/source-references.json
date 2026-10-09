@@ -1,0 +1,5 @@
+{
+  "kernel_reference_url": "https://raw.githubusercontent.com/torvalds/linux/v6.8/arch/x86/events/intel/ds.c",
+  "kernel_reference_sha256": "b558a7d98e2b322635f32524225c7771d7f4638902335fa83b32a0840b0d0cc1",
+  "note": "Upstream reference, not a dump of the running Ubuntu kernel binary"
+}

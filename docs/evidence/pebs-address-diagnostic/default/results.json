@@ -1,0 +1,50 @@
+{
+  "scope": "owned C load-only perf diagnostic, not production BPF or CPU acceptance",
+  "remote_directory_removed": "/tmp/libcram-address-diagnostic.0yZEaJ",
+  "rows": [
+    {
+      "name": "all-loads-p",
+      "command": "timeout 12 taskset -c 12 perf record -o /tmp/libcram-address-diagnostic.0yZEaJ/all-loads-p.data -c 2000003 -d -e cpu/event=0xd0,umask=0x81/p -- /tmp/libcram-address-diagnostic.0yZEaJ/probe",
+      "exit": 0,
+      "samples": 1722,
+      "in_owned_read": 0,
+      "zero": 0,
+      "below_4096": 0,
+      "read_start": "0x73ed99021000",
+      "read_end": "0x73ed99025000"
+    },
+    {
+      "name": "all-loads-pp",
+      "command": "timeout 12 taskset -c 12 perf record -o /tmp/libcram-address-diagnostic.0yZEaJ/all-loads-pp.data -c 2000003 -d -e cpu/event=0xd0,umask=0x81/pp -- /tmp/libcram-address-diagnostic.0yZEaJ/probe",
+      "exit": 0,
+      "samples": 1761,
+      "in_owned_read": 0,
+      "zero": 0,
+      "below_4096": 0,
+      "read_start": "0x7e9ab083c000",
+      "read_end": "0x7e9ab0840000"
+    },
+    {
+      "name": "all-loads-ppp",
+      "command": "timeout 12 taskset -c 12 perf record -o /tmp/libcram-address-diagnostic.0yZEaJ/all-loads-ppp.data -c 2000003 -d -e cpu/event=0xd0,umask=0x81/ppp -- /tmp/libcram-address-diagnostic.0yZEaJ/probe",
+      "exit": 0,
+      "samples": 1767,
+      "in_owned_read": 0,
+      "zero": 0,
+      "below_4096": 0,
+      "read_start": "0x72ea55980000",
+      "read_end": "0x72ea55984000"
+    },
+    {
+      "name": "l1-hit-pp",
+      "command": "timeout 12 taskset -c 12 perf record -o /tmp/libcram-address-diagnostic.0yZEaJ/l1-hit-pp.data -c 2000003 -d -e cpu/event=0xd1,umask=0x01/pp -- /tmp/libcram-address-diagnostic.0yZEaJ/probe",
+      "exit": 0,
+      "samples": 1764,
+      "in_owned_read": 0,
+      "zero": 0,
+      "below_4096": 0,
+      "read_start": "0x7ea1dab44000",
+      "read_end": "0x7ea1dab48000"
+    }
+  ]
+}

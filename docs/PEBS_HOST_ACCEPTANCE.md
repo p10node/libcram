@@ -37,6 +37,16 @@ includes elapsed workload slowdown but is not an isolated, attributed accounting
 of all kernel sampling and userspace CPU work. The strict acceptance gate remains
 open; it was not replaced by this proxy or by a replay-only collector benchmark.
 
+## Independent all-load diagnostic follow-up
+
+A [standalone C/perf diagnostic](evidence/pebs-address-diagnostic/README.md)
+reproduced zero owned ALL_LOADS addresses at precise levels 1, 2 and 3 with
+userspace-only sampling, while its L1-hit control attributed all 1733 samples.
+This removes libcram/BPF as a necessary cause of that reproduction, not the
+remaining CPU/firmware/kernel uncertainty. The initial non-user-filtered run
+also failed L1-hit and is retained separately. No event substitution or overhead
+acceptance is inferred from this investigation.
+
 ## Production fix discovered by the probe
 
 Initially the raw counters advanced but no BPF events arrived. Linux's Intel PMU

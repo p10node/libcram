@@ -1,0 +1,4 @@
+OWNED_READ_RANGE 0x7e9ab083c000 0x7e9ab0840000 PID 303343
+OWNED_DONE sum=3604162805760 rounds=13420
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.097 MB /tmp/libcram-address-diagnostic.0yZEaJ/all-loads-pp.data (1761 samples) ]
