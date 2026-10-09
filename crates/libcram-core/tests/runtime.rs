@@ -593,6 +593,75 @@ fn pressure_without_observations_evacuates_with_page_quota() {
 }
 
 #[test]
+fn hot_page_observations_cannot_starve_pressure_evacuation() {
+    struct HotSource {
+        next: Arc<Mutex<Option<Observation>>>,
+        used: u64,
+    }
+    impl Collector for HotSource {
+        fn poll(&mut self) -> Result<Option<Observation>, Error> {
+            Ok(self.next.lock().unwrap().take())
+        }
+        fn device_update(&mut self) -> Result<Option<DeviceUpdate>, Error> {
+            Ok(Some(DeviceUpdate {
+                used_bytes: self.used,
+                capacity_bytes: 100,
+                poison_pages: vec![],
+            }))
+        }
+    }
+    for used in [90, 99] {
+        for pages in [3, 5] {
+            for quota in [1, 2] {
+                for hot in [0, pages - 1] {
+                    let (a, backend) = allocator();
+                    a.submit_device_usage(0, 100).unwrap();
+                    let owned = a
+                        .allocate_owned(page_size() * pages, page_size(), AccessHint::ReadHeavy)
+                        .unwrap();
+                    let next = Arc::new(Mutex::new(None));
+                    let mut runtime = Runtime::new(
+                        a,
+                        HotSource {
+                            next: next.clone(),
+                            used,
+                        },
+                        RuntimeConfig {
+                            max_pages: quota,
+                            max_observations: 1,
+                            ..Default::default()
+                        },
+                    )
+                    .unwrap();
+                    assert_eq!(runtime.telemetry().cram_bytes, (pages * page_size()) as u64);
+                    for _ in 0..pages {
+                        *next.lock().unwrap() = Some(Observation {
+                            token: owned.observation_token(0.0).unwrap(),
+                            address: owned.as_slice().as_ptr() as usize + hot * page_size(),
+                            reads: 100,
+                            writes: 0,
+                            observed_at: Instant::now(),
+                        });
+                        let before = runtime.status().pages_attempted;
+                        runtime.tick().unwrap();
+                        assert!(runtime.status().pages_attempted - before <= quota as u64);
+                    }
+                    assert_eq!(
+                        runtime.telemetry().cram_bytes,
+                        0,
+                        "used={used} pages={pages} quota={quota} hot={hot}"
+                    );
+                    // A mixed-residency batch may rebind an already-DRAM page;
+                    // pages_moved counts successful results, not unique pages.
+                    assert!(runtime.status().pages_moved >= pages as u64);
+                    assert!(backend.0.lock().unwrap().iter().all(|node| *node == 0));
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn continuous_source_failure_still_evacuates_with_one_page_quota() {
     struct Offline;
     impl Collector for Offline {

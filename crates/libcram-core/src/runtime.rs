@@ -306,6 +306,13 @@ impl<C: Collector> Runtime<C> {
                 self.status.dropped = self.status.dropped.saturating_add(1);
                 continue;
             }
+            // Pressure evacuation owns the persistent per-allocation cursor.
+            // A repeatedly observed hot page must not rewind that cursor and
+            // indefinitely strand cold CRAM pages. Leave the quota to the scan.
+            if self.allocator.inner.pressure_level() >= 2 {
+                self.status.dropped = self.status.dropped.saturating_add(1);
+                continue;
+            }
             {
                 let mut state = record.state.lock().map_err(|_| Error::Poisoned)?;
                 state.sample = Some(AccessSample {
