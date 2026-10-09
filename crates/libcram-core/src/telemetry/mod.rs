@@ -4,6 +4,8 @@ use std::io;
 pub mod access;
 #[cfg(all(target_os = "linux", feature = "ebpf"))]
 pub mod pebs;
+#[cfg(any(test, all(target_os = "linux", feature = "ebpf")))]
+pub mod process_pebs;
 pub mod sampling;
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct PsiLine {

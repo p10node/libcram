@@ -33,10 +33,7 @@ fn attributes(c: ExplicitPebsConfig) -> io::Result<PerfAttr> {
         ..PerfAttr::default()
     })
 }
-use super::{
-    access::{AccessKind, AccessWindow},
-    sampling::ingest_event,
-};
+use super::access::{AccessKind, AccessWindow};
 use aya::{
     maps::{MapData, RingBuf},
     programs::PerfEvent,
@@ -178,16 +175,37 @@ impl PebsSampler {
     /// Consume at most budget records. Invalid/expired records are counted,
     /// never inferred. Ring overflow is observable via dropped_samples().
     pub fn poll(&mut self, window: &mut AccessWindow, budget: usize) -> PollReport {
-        let mut report = PollReport::default();
-        for _ in 0..budget {
-            let Some(item) = self.ring.next() else { break };
-            if ingest_event(&item, window).is_ok() {
-                report.accepted += 1;
-            } else {
-                report.rejected += 1;
-            }
-        }
-        report
+        let (accepted, rejected) = super::sampling::drain_events(
+            budget,
+            || {
+                self.ring
+                    .next()
+                    .map(|item| super::sampling::decode_event(&item))
+            },
+            |e| window.record(e.time_ns, e.address, e.tgid, e.kind),
+        );
+        PollReport { accepted, rejected }
+    }
+    /// Decode at most `budget` records without choosing an allocation/window.
+    /// Malformed records consume budget and are rejected, never delivered.
+    pub fn poll_events(
+        &mut self,
+        budget: usize,
+        mut callback: impl FnMut(super::sampling::AccessEvent),
+    ) -> PollReport {
+        let (accepted, rejected) = super::sampling::drain_events(
+            budget,
+            || {
+                self.ring
+                    .next()
+                    .map(|item| super::sampling::decode_event(&item))
+            },
+            |e| {
+                callback(e);
+                Ok(())
+            },
+        );
+        PollReport { accepted, rejected }
     }
     /// Raw PMU counts per configured event, useful to distinguish an idle or
     /// unscheduled counter from a userspace ring-consumption failure.

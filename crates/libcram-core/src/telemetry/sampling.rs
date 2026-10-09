@@ -26,7 +26,14 @@ impl ExplicitPebsConfig {
 }
 /// Decode the local native-endian eBPF ABI: time_ns, address, tgid, operation.
 /// Zero/unknown address or operation is never attributed to a memory page.
-pub fn ingest_event(bytes: &[u8], window: &mut AccessWindow) -> io::Result<()> {
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct AccessEvent {
+    pub time_ns: u64,
+    pub address: u64,
+    pub tgid: u32,
+    pub kind: AccessKind,
+}
+pub fn decode_event(bytes: &[u8]) -> io::Result<AccessEvent> {
     let invalid = || io::Error::new(io::ErrorKind::InvalidData, "invalid PEBS ring event");
     if bytes.len() != 32 {
         return Err(invalid());
@@ -43,7 +50,34 @@ pub fn ingest_event(bytes: &[u8], window: &mut AccessWindow) -> io::Result<()> {
         2 => AccessKind::Write,
         _ => return Err(invalid()),
     };
-    window.record(fields[0], fields[1], fields[2] as u32, kind)
+    Ok(AccessEvent {
+        time_ns: fields[0],
+        address: fields[1],
+        tgid: fields[2] as u32,
+        kind,
+    })
+}
+/// Compatibility ingestion path, including AccessWindow admission checks.
+pub fn ingest_event(bytes: &[u8], window: &mut AccessWindow) -> io::Result<()> {
+    let e = decode_event(bytes)?;
+    window.record(e.time_ns, e.address, e.tgid, e.kind)
+}
+#[cfg(any(test, all(target_os = "linux", feature = "ebpf")))]
+pub(crate) fn drain_events(
+    budget: usize,
+    mut next: impl FnMut() -> Option<io::Result<AccessEvent>>,
+    mut accept: impl FnMut(AccessEvent) -> io::Result<()>,
+) -> (usize, usize) {
+    let (mut accepted, mut rejected) = (0, 0);
+    for _ in 0..budget {
+        let Some(event) = next() else { break };
+        if event.and_then(&mut accept).is_ok() {
+            accepted += 1;
+        } else {
+            rejected += 1;
+        }
+    }
+    (accepted, rejected)
 }
 #[cfg(test)]
 mod tests {
@@ -77,6 +111,90 @@ mod tests {
             assert_eq!(w.counts(140, 4096, 7).expect("expired read").reads, 0);
             assert_eq!(w.counts(140, 8192, 8).expect("live write").writes, 1);
         }
+    }
+    #[test]
+    fn typed_decoder_matches_ingestion_and_rejects_malformed() {
+        for fields in [
+            [10u64, 0x1234, 7, 1],
+            [u64::MAX, u64::MAX, u32::MAX as u64, 2],
+        ] {
+            let bytes: Vec<_> = fields.into_iter().flat_map(u64::to_ne_bytes).collect();
+            let event = decode_event(&bytes).expect("typed event");
+            assert_eq!(
+                (event.time_ns, event.address, event.tgid),
+                (fields[0], fields[1], fields[2] as u32)
+            );
+            let mut direct = AccessWindow::new(100, 8, 4096).expect("window");
+            let mut legacy = AccessWindow::new(100, 8, 4096).expect("window");
+            direct
+                .record(event.time_ns, event.address, event.tgid, event.kind)
+                .expect("record");
+            ingest_event(&bytes, &mut legacy).expect("ingest");
+            assert_eq!(
+                direct
+                    .counts(event.time_ns, event.address, event.tgid)
+                    .expect("counts"),
+                legacy
+                    .counts(event.time_ns, event.address, event.tgid)
+                    .expect("counts")
+            );
+            for len in 0..32 {
+                assert!(decode_event(&bytes[..len]).is_err());
+            }
+            let mut extended = bytes.clone();
+            extended.push(0);
+            assert!(decode_event(&extended).is_err());
+        }
+        for fields in [
+            [1u64, 0, 7, 1],
+            [1, 1, u32::MAX as u64 + 1, 1],
+            [1, 1, 7, 0],
+            [1, 1, 7, 3],
+        ] {
+            let bytes: Vec<_> = fields.into_iter().flat_map(u64::to_ne_bytes).collect();
+            assert!(decode_event(&bytes).is_err());
+        }
+    }
+    #[test]
+    fn bounded_drain_counts_decode_and_window_rejections() {
+        let good = AccessEvent {
+            time_ns: 1000,
+            address: 4096,
+            tgid: 7,
+            kind: AccessKind::Read,
+        };
+        let old = AccessEvent { time_ns: 1, ..good };
+        let mut input = [
+            Ok(good),
+            Ok(old),
+            Err(io::Error::other("malformed")),
+            Ok(good),
+        ]
+        .into_iter();
+        let mut w = AccessWindow::new(10, 4, 4096).expect("window");
+        let counts = drain_events(
+            3,
+            || input.next(),
+            |e| w.record(e.time_ns, e.address, e.tgid, e.kind),
+        );
+        assert_eq!(counts, (1, 2));
+        assert!(
+            input.next().is_some(),
+            "budget must not consume fourth record"
+        );
+        let mut calls = 0;
+        assert_eq!(
+            drain_events(
+                0,
+                || {
+                    calls += 1;
+                    Some(Ok(good))
+                },
+                |_| Ok(())
+            ),
+            (0, 0)
+        );
+        assert_eq!(calls, 0);
     }
     #[test]
     fn sample_decode_and_config_rejection() {
