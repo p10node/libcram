@@ -20,6 +20,16 @@ for the open performance and physical-device requirements below.
 | E: engineering SDK | Clean-source native macOS/Linux archives; full payload hashes including nested manifests; extracted C/C++ consumers assert actual loaded-library provenance | Not a signed/notarized production certification or real-device qualification |
 | E: integration | Frozen-source macOS/Linux gates, independent bounded static re-review, short fixture soak; archived side worktrees | Long-duration production soak remains open |
 
+## PEBS host follow-up
+
+[Owned core/event-interaction diagnostic](evidence/pebs-event-interaction/README.md):
+ALL_LOADS still returns zero owned-mapping addresses on CPUs 12 and 28, including
+co-recording with L1_HIT/ALL_STORES and reversing the load/hit group order.
+L1_HIT controls remain valid. Every stream identifies the actual load instruction,
+but ALL_LOADS data addresses are wrong. Address-only replay independently confirms
+the corrected multi-column parser. This narrows the failure; it does not establish
+a CPU/microcode/kernel cause, a repair, or <1% overhead. Production code is unchanged.
+
 ## Exact entropy follow-up
 
 [Short-period implementation, source hashes and raw evidence](performance/entropy-periodic/README.md):

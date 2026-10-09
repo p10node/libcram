@@ -1,0 +1,44 @@
+[
+  {
+    "case": "alone12",
+    "samples": 1653,
+    "owned_hits": 0,
+    "matches_corrected_multifield": true
+  },
+  {
+    "case": "hit12",
+    "samples": 1659,
+    "owned_hits": 1659,
+    "matches_corrected_multifield": true
+  },
+  {
+    "case": "with-store12",
+    "samples": 1677,
+    "owned_hits": 0,
+    "matches_corrected_multifield": true
+  },
+  {
+    "case": "with-hit12",
+    "samples": 3236,
+    "owned_hits": 1618,
+    "matches_corrected_multifield": true
+  },
+  {
+    "case": "hit-first12",
+    "samples": 3312,
+    "owned_hits": 1656,
+    "matches_corrected_multifield": true
+  },
+  {
+    "case": "alone28",
+    "samples": 1681,
+    "owned_hits": 0,
+    "matches_corrected_multifield": true
+  },
+  {
+    "case": "hit28",
+    "samples": 1650,
+    "owned_hits": 1650,
+    "matches_corrected_multifield": true
+  }
+]

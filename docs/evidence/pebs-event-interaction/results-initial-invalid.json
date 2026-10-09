@@ -1,0 +1,489 @@
+[
+  {
+    "case": "alone12",
+    "command": [
+      "perf",
+      "record",
+      "-q",
+      "-d",
+      "-c",
+      "2000003",
+      "-e",
+      "cpu/event=0xd0,umask=0x81/upp",
+      "-o",
+      "alone12.data",
+      "--",
+      "taskset",
+      "-c",
+      "12",
+      "./probe"
+    ],
+    "record_exit": 0,
+    "pid": 307996,
+    "lo": 140509742796800,
+    "hi": 140509742813184,
+    "events": {
+      "cpu/event=0xd0,umask=0x81/upp": {
+        "samples": 1653,
+        "in_owned_range": 0,
+        "zero": 0,
+        "ips": [
+          [
+            "0xfeb80008",
+            651
+          ],
+          [
+            "0xfeb80048",
+            624
+          ],
+          [
+            "0xfeb80040",
+            378
+          ]
+        ],
+        "outside_addresses": [
+          [
+            "0x401208",
+            1653
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "case": "hit12",
+    "command": [
+      "perf",
+      "record",
+      "-q",
+      "-d",
+      "-c",
+      "2000003",
+      "-e",
+      "cpu/event=0xd1,umask=0x01/upp",
+      "-o",
+      "hit12.data",
+      "--",
+      "taskset",
+      "-c",
+      "12",
+      "./probe"
+    ],
+    "record_exit": 0,
+    "pid": 308202,
+    "lo": 128592113479680,
+    "hi": 128592113496064,
+    "events": {
+      "cpu/event=0xd1,umask=0x01/upp": {
+        "samples": 1659,
+        "in_owned_range": 0,
+        "zero": 0,
+        "ips": [
+          [
+            "0x74f42f3ec0a8",
+            7
+          ],
+          [
+            "0x74f42f3ec170",
+            7
+          ],
+          [
+            "0x74f42f3ebac0",
+            7
+          ],
+          [
+            "0x74f42f3ec350",
+            7
+          ],
+          [
+            "0x74f42f3ebb58",
+            7
+          ],
+          [
+            "0x74f42f3ed518",
+            7
+          ],
+          [
+            "0x74f42f3ebdd0",
+            6
+          ],
+          [
+            "0x74f42f3eb3c8",
+            6
+          ]
+        ],
+        "outside_addresses": [
+          [
+            "0x401208",
+            1659
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "case": "with-store12",
+    "command": [
+      "perf",
+      "record",
+      "-q",
+      "-d",
+      "-c",
+      "2000003",
+      "-e",
+      "{cpu/event=0xd0,umask=0x81/upp,cpu/event=0xd0,umask=0x82/upp}",
+      "-o",
+      "with-store12.data",
+      "--",
+      "taskset",
+      "-c",
+      "12",
+      "./probe"
+    ],
+    "record_exit": 0,
+    "pid": 308414,
+    "lo": 123455328321536,
+    "hi": 123455328337920,
+    "events": {
+      "cpu/event=0xd0,umask=0x81/upp": {
+        "samples": 1677,
+        "in_owned_range": 0,
+        "zero": 0,
+        "ips": [
+          [
+            "0xfeb80048",
+            675
+          ],
+          [
+            "0xfeb80008",
+            647
+          ],
+          [
+            "0xfeb80040",
+            355
+          ]
+        ],
+        "outside_addresses": [
+          [
+            "0x401208",
+            1677
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "case": "with-hit12",
+    "command": [
+      "perf",
+      "record",
+      "-q",
+      "-d",
+      "-c",
+      "2000003",
+      "-e",
+      "{cpu/event=0xd0,umask=0x81/upp,cpu/event=0xd1,umask=0x01/upp}",
+      "-o",
+      "with-hit12.data",
+      "--",
+      "taskset",
+      "-c",
+      "12",
+      "./probe"
+    ],
+    "record_exit": 0,
+    "pid": 308623,
+    "lo": 125490503544832,
+    "hi": 125490503561216,
+    "events": {
+      "cpu/event=0xd0,umask=0x81/upp": {
+        "samples": 1618,
+        "in_owned_range": 0,
+        "zero": 0,
+        "ips": [
+          [
+            "0xfeb80048",
+            651
+          ],
+          [
+            "0xfeb80008",
+            629
+          ],
+          [
+            "0xfeb80040",
+            338
+          ]
+        ],
+        "outside_addresses": [
+          [
+            "0x401208",
+            1618
+          ]
+        ]
+      },
+      "cpu/event=0xd1,umask=0x01/upp": {
+        "samples": 1618,
+        "in_owned_range": 0,
+        "zero": 0,
+        "ips": [
+          [
+            "0x722208e2f000",
+            11
+          ],
+          [
+            "0x722208e307e8",
+            8
+          ],
+          [
+            "0x722208e30240",
+            8
+          ],
+          [
+            "0x722208e2f4a8",
+            7
+          ],
+          [
+            "0x722208e2f908",
+            7
+          ],
+          [
+            "0x722208e31518",
+            7
+          ],
+          [
+            "0x722208e32610",
+            7
+          ],
+          [
+            "0x722208e30388",
+            7
+          ]
+        ],
+        "outside_addresses": [
+          [
+            "0x401208",
+            1618
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "case": "hit-first12",
+    "command": [
+      "perf",
+      "record",
+      "-q",
+      "-d",
+      "-c",
+      "2000003",
+      "-e",
+      "{cpu/event=0xd1,umask=0x01/upp,cpu/event=0xd0,umask=0x81/upp}",
+      "-o",
+      "hit-first12.data",
+      "--",
+      "taskset",
+      "-c",
+      "12",
+      "./probe"
+    ],
+    "record_exit": 0,
+    "pid": 308833,
+    "lo": 134675737415680,
+    "hi": 134675737432064,
+    "events": {
+      "cpu/event=0xd0,umask=0x81/upp": {
+        "samples": 1656,
+        "in_owned_range": 0,
+        "zero": 0,
+        "ips": [
+          [
+            "0xfeb80008",
+            655
+          ],
+          [
+            "0xfeb80048",
+            628
+          ],
+          [
+            "0xfeb80040",
+            373
+          ]
+        ],
+        "outside_addresses": [
+          [
+            "0x401208",
+            1656
+          ]
+        ]
+      },
+      "cpu/event=0xd1,umask=0x01/upp": {
+        "samples": 1656,
+        "in_owned_range": 0,
+        "zero": 0,
+        "ips": [
+          [
+            "0x7a7ca37d2f38",
+            8
+          ],
+          [
+            "0x7a7ca37d1a28",
+            7
+          ],
+          [
+            "0x7a7ca37d1000",
+            7
+          ],
+          [
+            "0x7a7ca37d2440",
+            7
+          ],
+          [
+            "0x7a7ca37d33f0",
+            7
+          ],
+          [
+            "0x7a7ca37d3dd8",
+            7
+          ],
+          [
+            "0x7a7ca37d2240",
+            6
+          ],
+          [
+            "0x7a7ca37d4548",
+            6
+          ]
+        ],
+        "outside_addresses": [
+          [
+            "0x401208",
+            1656
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "case": "alone28",
+    "command": [
+      "perf",
+      "record",
+      "-q",
+      "-d",
+      "-c",
+      "2000003",
+      "-e",
+      "cpu/event=0xd0,umask=0x81/upp",
+      "-o",
+      "alone28.data",
+      "--",
+      "taskset",
+      "-c",
+      "28",
+      "./probe"
+    ],
+    "record_exit": 0,
+    "pid": 309042,
+    "lo": 132642323075072,
+    "hi": 132642323091456,
+    "events": {
+      "cpu/event=0xd0,umask=0x81/upp": {
+        "samples": 1681,
+        "in_owned_range": 0,
+        "zero": 0,
+        "ips": [
+          [
+            "0xfeb80048",
+            666
+          ],
+          [
+            "0xfeb80008",
+            655
+          ],
+          [
+            "0xfeb80040",
+            360
+          ]
+        ],
+        "outside_addresses": [
+          [
+            "0x401208",
+            1681
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "case": "hit28",
+    "command": [
+      "perf",
+      "record",
+      "-q",
+      "-d",
+      "-c",
+      "2000003",
+      "-e",
+      "cpu/event=0xd1,umask=0x01/upp",
+      "-o",
+      "hit28.data",
+      "--",
+      "taskset",
+      "-c",
+      "28",
+      "./probe"
+    ],
+    "record_exit": 0,
+    "pid": 309257,
+    "lo": 139173896687616,
+    "hi": 139173896704000,
+    "events": {
+      "cpu/event=0xd1,umask=0x01/upp": {
+        "samples": 1650,
+        "in_owned_range": 0,
+        "zero": 0,
+        "ips": [
+          [
+            "0x7e93f2ac9dd0",
+            9
+          ],
+          [
+            "0x7e93f2acab28",
+            9
+          ],
+          [
+            "0x7e93f2acb3a8",
+            8
+          ],
+          [
+            "0x7e93f2acb518",
+            8
+          ],
+          [
+            "0x7e93f2acaa60",
+            8
+          ],
+          [
+            "0x7e93f2ac97c0",
+            7
+          ],
+          [
+            "0x7e93f2acb728",
+            7
+          ],
+          [
+            "0x7e93f2aca530",
+            7
+          ]
+        ],
+        "outside_addresses": [
+          [
+            "0x401208",
+            1650
+          ]
+        ]
+      }
+    }
+  }
+]

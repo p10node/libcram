@@ -1,0 +1,15 @@
+[
+  {
+    "case": "baseline",
+    "exit": 0
+  },
+  {
+    "case": "swapped-fields",
+    "exit": 1,
+    "stderr": "Traceback (most recent call last):\n  File \"/var/folders/ws/hhlmghps1mjf1_lchf2qfh5h0000gn/T/libcram-pebs-parser-rtn5tam2/evidence/verify.py\", line 14, in <module>\n    module['tests']()\n  File \"/private/var/folders/ws/hhlmghps1mjf1_lchf2qfh5h0000gn/T/libcram-pebs-parser-rtn5tam2/evidence/recorded-runner.py\", line 41, in tests\n    assert rows[ALL]['samples']==3 and rows[ALL]['in_owned_range']==2\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+  },
+  {
+    "case": "optimized-mode-rejected",
+    "exit": 1
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "intel_spec_url": "https://www.intel.com/content/dam/www/public/us/en/documents/specification-updates/xeon-e5-v4-spec-update.pdf",
+  "document": "333811-005US, September 2019",
+  "download_sha256": "9294236a635fa946e7696cd1ce891818269c89f773427a92d42cff935342d653",
+  "examined_errata": [
+    "BDF17",
+    "BDF19",
+    "BDF40",
+    "BDF43",
+    "BDF68"
+  ],
+  "conclusion": "No direct attribution of the observed DLA failure established; BDF68 describes post-VMX-transition PEBS writes, not proof it caused this run.",
+  "base_revision": "239d8b0ad5a082ddcbacd2fbd26976864e41d870"
+}
