@@ -71,6 +71,10 @@ measurements; lazy dispatch/table initialization is not a cold-call guarantee.
 | ASCII | 1159.222 | FAIL |
 | Pseudorandom | 1110.068 | FAIL |
 
+The follow-up [component profiler investigation](performance/entropy-m1-investigation.md)
+identifies histogram construction, rather than final entropy calculation, as the
+remaining bottleneck on this host. No production change was accepted from that spike.
+
 Several histogram lane layouts and native CPU tuning were explored; they did not
 make all distributions meet the target. The SIMD improvement is integrated, but
 **further performance work is still required**. Do not re-label this as complete

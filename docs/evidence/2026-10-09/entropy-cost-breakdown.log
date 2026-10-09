@@ -1,0 +1,13 @@
+source_sha256: ed4f71eaf24a3eeda955d88c96e69a74f0071a4efb38ef05429798f21649aa86
+rustc 1.99.0 (b940084d7 2026-09-28)
+Diagnostic medians; not Criterion upper confidence bounds.
+zero/histogram: median 88.58 ns
+zero/finish: median 64.90 ns
+zero/total: median 151.34 ns
+ascii/histogram: median 1107.10 ns
+ascii/finish: median 64.23 ns
+ascii/total: median 1198.36 ns
+random/histogram: median 1079.78 ns
+random/finish: median 64.44 ns
+random/total: median 1126.38 ns
+Temporary sources and executable removed.

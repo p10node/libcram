@@ -44,7 +44,8 @@
     "criterion/entropy/dispatch_ascii/4096/new/estimates.json": "17b323b06ce9b27ac4546de3b5f34f51c102500bc267b74139f462e8a5e3d066",
     "criterion/entropy/dispatch_random/4096/new/benchmark.json": "9c67d715ad5b24bfd88f24a9ea2fedef30cdb471a3378ef7722524c3b125d75c",
     "criterion/entropy/dispatch_random/4096/new/estimates.json": "f19ae78f1ac280811f10924d29ca9e76e4069eb1aec1a68eab38fb971ea5fac8",
-    "final-linux-torch.log": "ca8c92cf003514ca66f522f3d2c6b16ea5aa7f540dc4512a8d3e1d35d4d44b1e"
+    "final-linux-torch.log": "ca8c92cf003514ca66f522f3d2c6b16ea5aa7f540dc4512a8d3e1d35d4d44b1e",
+    "entropy-cost-breakdown.log": "ad47a8583254ce321d1ffc862bd40a5cb0b8edd0cd9a6d5d5e24c061d8d9de6a"
   },
   "archive_report_from_repository_root": "../libcram-worktree-archive/20261009T033928Z/report.json",
   "performance_library_commit": "002458d50bdf19eb748f8ad60172c042d1fc2690",
