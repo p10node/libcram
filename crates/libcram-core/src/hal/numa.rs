@@ -62,14 +62,22 @@ fn validate(address: usize, len: usize, node: u32) -> Result<(), Error> {
         Ok(())
     }
 }
+#[cfg(any(target_os = "linux", test))]
+fn bind_mask(node: u32) -> (Vec<libc::c_ulong>, libc::c_ulong) {
+    let bits = std::mem::size_of::<libc::c_ulong>() * 8;
+    let mut mask = vec![0 as libc::c_ulong; node as usize / bits + 1];
+    mask[node as usize / bits] |= (1 as libc::c_ulong) << (node as usize % bits);
+    // Linux get_nodes() subtracts one before copying the bitmap. Include the
+    // requested bit after that subtraction, including at machine-word edges.
+    (mask, node as libc::c_ulong + 2)
+}
+
 impl Numa for SystemNuma {
     unsafe fn bind(&self, address: usize, len: usize, node: u32) -> Result<(), Error> {
         validate(address, len, node)?;
         #[cfg(target_os = "linux")]
         {
-            let bits = std::mem::size_of::<libc::c_ulong>() * 8;
-            let mut mask = vec![0 as libc::c_ulong; node as usize / bits + 1];
-            mask[node as usize / bits] |= (1 as libc::c_ulong) << (node as usize % bits);
+            let (mask, maxnode) = bind_mask(node);
             // MPOL_BIND=2, flags=0: policy only, before first touch.
             let rc = unsafe {
                 libc::syscall(
@@ -78,7 +86,7 @@ impl Numa for SystemNuma {
                     len,
                     2,
                     mask.as_ptr(),
-                    node as libc::c_ulong + 1,
+                    maxnode,
                     0,
                 )
             };
@@ -132,6 +140,30 @@ impl Numa for SystemNuma {
         #[cfg(not(target_os = "linux"))]
         {
             Err(Error::Unsupported)
+        }
+    }
+}
+
+#[cfg(test)]
+mod mask_tests {
+    use super::bind_mask;
+    #[test]
+    fn kernel_maxnode_minus_one_still_includes_requested_bit() {
+        let bits = std::mem::size_of::<libc::c_ulong>() * 8;
+        for node in [0, 1, 63, 64, 65, 127, 128, 65535] {
+            let (mask, maxnode) = bind_mask(node);
+            // Linux get_nodes() decrements maxnode before copying the bitmap.
+            let copied_bits = maxnode - 1;
+            assert!(
+                (node as libc::c_ulong) < copied_bits,
+                "node {node} excluded"
+            );
+            assert!((copied_bits as usize) <= mask.len() * bits);
+            assert_eq!(mask.iter().map(|v| v.count_ones()).sum::<u32>(), 1);
+            assert_ne!(
+                mask[node as usize / bits] & (1 << (node as usize % bits)),
+                0
+            );
         }
     }
 }
