@@ -64,6 +64,11 @@ age, **not receipt time**. Calibration latency conservatively shifts the result
 earlier and may reject near-token-boundary samples; it cannot make an old event
 younger. The raw and Instant clocks must advance together (the supported Linux
 path uses monotonic clocks). These are not wall-clock device report timestamps.
+`Bridge::with_clock` admits an explicit trusted source-domain calibration function;
+its coordinates must describe the same instant (or a conservatively earlier
+Instant). Queue/history fixtures use exactly paired coordinates so calibration
+uncertainty does not masquerade as a policy regression. The default constructor
+still uses the real clocks and retains conservative boundary rejection.
 
 Newest metadata replaces an allocation's old registration and rolling history;
 out-of-order older tokens cannot roll it back. Internal checked generation IDs
@@ -121,7 +126,9 @@ the existing migration engine using at most the remaining page quota and
 `max_observations` registry records (engine capped at 128). Cursor-based passes
 progress over later ticks. Managed mode prohibits legacy metadata; temporary
 observation samples are cleared, so this path never revives undated promotion
-metadata. Failed intake ticks revoke health and independently evacuate using
+metadata. While pressure is elevated, event observations are dropped without
+rewinding allocation cursors; the bounded scan owns evacuation progress even
+when the same hot page is continuously observed. Failed intake ticks revoke health and independently evacuate using
 that tick's page/record quotas, so a continuously failing producer cannot strand
 CRAM mappings indefinitely. The failed observation batch is never promoted.
 Errors after event migration has started do not trigger another scan: accounting

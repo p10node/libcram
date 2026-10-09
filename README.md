@@ -19,10 +19,17 @@ mock-topology/container fallback tests:
   of 16 owned pages from node 0 -> 1 -> 0 pass, with independent placement queries
   and byte-for-byte payload verification. This testing found and fixed an
   `mbind` nodemask boundary bug.
-- **Kernel BPF and PMU:** both `sample_load` and `sample_store` pass the Linux
-  kernel verifier; basic PMU cycle counting works. Precise sampling is refused
-  by the guest PMU (`max_precise=0`), so PEBS attribution and active sampling
-  overhead below 1% CPU remain unverified.
+- **Kernel BPF and PMU:** guest verifier/basic counters pass; the guest still
+  rejects precise sampling (`max_precise=0`). On the physical host, an explicitly
+  audited L1-hot load/store profile passes address attribution, owned-thread
+  arrival/exit and descriptor cleanup checks. All-load attribution and total
+  sampling+collector overhead below 1% of one CPU core remain open.
+- **Managed Rust runtime:** bounded event/device intake, weak allocation-generation
+  tokens, rolling access counts, worker shutdown and pressure/source-failure
+  evacuation are implemented with deterministic integration tests. The optional
+  PEBS source manages own-process thread lifetimes on explicitly selected CPUs.
+- **Trusted device adapter:** bounded atomic-report parsing, provenance, replay,
+  symlink and freshness checks are tested using owned fixtures, not CRAM hardware.
 - **Bindings and portability:** software correctness and binding gates pass on
   macOS and Linux, including real CPU PyTorch alias/lifetime tests.
 
@@ -33,9 +40,29 @@ pseudorandom input on both the Apple M1 Pro and the Linux x86_64 VM. VM timings
 are not isolated bare-metal performance results. This is not a production-ready
 or all-requirements-complete claim.
 
-See [Linux NUMA VM acceptance](docs/S5_VM_ACCEPTANCE.md) for the latest real
-Linux results and archived evidence, and [verification history](docs/VERIFICATION.md)
-for earlier cross-platform gates and their scope.
+See [Linux NUMA VM acceptance](docs/S5_VM_ACCEPTANCE.md),
+[native PEBS scope/evidence](docs/PEBS_HOST_ACCEPTANCE.md),
+[updated strict entropy measurements](docs/performance/entropy-update.md), and
+[verification history](docs/VERIFICATION.md). These separate software correctness,
+ordinary DRAM NUMA movement and actual hardware/performance acceptance.
+
+## Managed integration and SDK archives
+
+The new opt-in **Rust** path connects `ProcessPebsCollector`,
+`DirectoryDeviceAdapter`, `runtime_bridge::Bridge` and `Runtime`.
+[Wiring, bounds and lifecycle](docs/runtime-bridge.md) documents synchronized
+entropy metadata, original event timestamps and fail-closed operation.
+[Device report contract](docs/DEVICE_ADAPTER.md) is an explicit driver/adapter
+convention, not a universal kernel ABI. Existing C/C++/Python/Go allocation APIs
+do not implicitly enable this new managed pipeline.
+
+`cram_unregister_pressure_callback_and_wait()` adds a quiescent C callback
+barrier; release userdata only after `CRAM_OK`. See [binding contracts](docs/BINDINGS.md).
+
+`just sdk-package` creates a clean-source native C/C++ engineering archive;
+`just sdk-verify path/to/archive.tar.gz` verifies its manifest and runs consumers
+against the actual extracted library. See [packaging](docs/RELEASING.md).
+Packaging success is not production acceptance.
 
 ## Build
 
