@@ -3,7 +3,7 @@ use libcram_core::{
     device_adapter::DeviceReading,
     hal::{page_size, CompressionProvenance, MoveReport, Node, Numa, PageStatus, Topology},
     runtime::{Collector, Runtime, RuntimeConfig},
-    runtime_bridge::{monotonic_ns, Bridge, BridgeConfig, DeviceSource, RawSource},
+    runtime_bridge::{Bridge, BridgeConfig, DeviceSource, Publisher, RawSource},
     telemetry::{access::AccessKind, sampling::AccessEvent},
     Error,
 };
@@ -12,6 +12,25 @@ use std::{
     io,
     sync::{Arc, Mutex},
 };
+// Both coordinates derive from one Instant, eliminating clock-calibration
+// uncertainty from queue/history/lifetime fixtures. Production uses real clocks.
+fn fixture_clock() -> io::Result<(std::time::Instant, u64)> {
+    use std::{sync::OnceLock, time::Instant};
+    static ORIGIN: OnceLock<Instant> = OnceLock::new();
+    let origin = *ORIGIN.get_or_init(Instant::now);
+    let now = Instant::now();
+    Ok((
+        now,
+        1_000_000_000_000 + u64::try_from(now.duration_since(origin).as_nanos()).unwrap(),
+    ))
+}
+fn test_bridge<R: RawSource, D: DeviceSource>(
+    raw: R,
+    device: D,
+    config: BridgeConfig,
+) -> Result<(Bridge<R, D>, Publisher), Error> {
+    Bridge::with_clock(raw, device, config, fixture_clock)
+}
 #[derive(Default)]
 struct Backend(Mutex<Vec<u32>>);
 impl Numa for Backend {
@@ -50,6 +69,21 @@ fn allocator() -> (CramAllocator, Arc<Backend>) {
     )
 }
 #[test]
+fn production_clock_empty_batch_and_clock_failure_are_distinct() {
+    let (mut production, _) = Bridge::new(Raw::default(), Device, BridgeConfig::default()).unwrap();
+    let update = production.device_update().unwrap().unwrap();
+    assert_eq!((update.used_bytes, update.capacity_bytes), (0, 100));
+    assert!(production.poll().unwrap().is_none());
+    let (mut failed, _) =
+        Bridge::with_clock(Raw::default(), Device, BridgeConfig::default(), || {
+            Err(io::Error::other("owned clock failure"))
+        })
+        .unwrap();
+    assert!(failed.device_update().is_err());
+    assert!(failed.poll().unwrap().is_none());
+}
+
+#[test]
 fn rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt() {
     use std::time::Duration;
     let (a, _) = allocator();
@@ -58,7 +92,7 @@ fn rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt() {
         .unwrap();
     let address = owned.as_slice().as_ptr() as usize;
     let raw = Raw::default();
-    let (mut bridge, p) = Bridge::new(raw.clone(), Device, BridgeConfig::default()).unwrap();
+    let (mut bridge, p) = test_bridge(raw.clone(), Device, BridgeConfig::default()).unwrap();
     p.register(owned.observation_token(0.0).unwrap()).unwrap();
     raw.0
         .lock()
@@ -76,7 +110,7 @@ fn rolling_window_expires_and_token_ttl_does_not_refresh_on_receipt() {
     std::thread::sleep(Duration::from_millis(110));
     bridge.device_update().unwrap();
     assert!(bridge.poll().unwrap().is_none());
-    let (mut bridge, p) = Bridge::new(
+    let (mut bridge, p) = test_bridge(
         raw.clone(),
         Device,
         BridgeConfig {
@@ -116,7 +150,7 @@ impl DeviceSource for Device {
 fn event(address: usize, kind: AccessKind) -> AccessEvent {
     AccessEvent {
         address: address as u64,
-        time_ns: monotonic_ns().unwrap(),
+        time_ns: fixture_clock().unwrap().1,
         tgid: std::process::id(),
         kind,
     }
@@ -130,7 +164,7 @@ fn bridge_reverses_policy_and_source_error_revokes_health() {
     let token = owned.observation_token(0.0).unwrap();
     let address = owned.as_slice().as_ptr() as usize;
     let raw = Raw::default();
-    let (bridge, publisher) = Bridge::new(raw.clone(), Device, BridgeConfig::default()).unwrap();
+    let (bridge, publisher) = test_bridge(raw.clone(), Device, BridgeConfig::default()).unwrap();
     publisher.register(token).unwrap();
     raw.0.lock().unwrap().push_back(Ok((0..100)
         .map(|_| event(address, AccessKind::Read))
@@ -164,7 +198,7 @@ fn weak_lifetime_timestamp_and_payload_boundaries() {
     let token = owned.observation_token(0.0).unwrap();
     assert_eq!(token.range().unwrap(), start..start + page_size() + 7);
     let raw = Raw::default();
-    let (mut bridge, p) = Bridge::new(raw.clone(), Device, BridgeConfig::default()).unwrap();
+    let (mut bridge, p) = test_bridge(raw.clone(), Device, BridgeConfig::default()).unwrap();
     p.register(token.clone()).unwrap();
     let good = event(start, AccessKind::Read);
     let stamp = std::time::Instant::now();
@@ -217,7 +251,7 @@ fn queue_and_registration_overflow_are_sticky() {
     let two = a
         .allocate_owned(page_size(), page_size(), AccessHint::WriteHeavy)
         .unwrap();
-    let (mut bridge, p) = Bridge::new(
+    let (mut bridge, p) = test_bridge(
         Raw::default(),
         Device,
         BridgeConfig {
@@ -231,7 +265,7 @@ fn queue_and_registration_overflow_are_sticky() {
     assert!(bridge.device_update().is_err());
     assert!(bridge.poll().is_err());
     assert!(bridge.device_update().is_err());
-    let (mut bridge, p) = Bridge::new(
+    let (mut bridge, p) = test_bridge(
         Raw::default(),
         Device,
         BridgeConfig {
@@ -268,7 +302,7 @@ fn event_history_and_output_overflow_clear_entire_batch() {
         },
     ] {
         let raw = Raw::default();
-        let (mut bridge, p) = Bridge::new(raw.clone(), Device, config).unwrap();
+        let (mut bridge, p) = test_bridge(raw.clone(), Device, config).unwrap();
         p.register(owned.observation_token(0.0).unwrap()).unwrap();
         raw.0
             .lock()
@@ -294,7 +328,7 @@ fn refreshed_generation_drops_old_history_and_pre_token_events() {
         .unwrap();
     let address = owned.as_slice().as_ptr() as usize;
     let raw = Raw::default();
-    let (mut bridge, p) = Bridge::new(raw.clone(), Device, BridgeConfig::default()).unwrap();
+    let (mut bridge, p) = test_bridge(raw.clone(), Device, BridgeConfig::default()).unwrap();
     p.register(owned.observation_token(0.0).unwrap()).unwrap();
     raw.0
         .lock()
@@ -342,7 +376,7 @@ fn trusted_device_mapping_dedup_and_error_clear_pending() {
         }),
         Err(io::Error::other("offline")),
     ]));
-    let (mut bridge, _p) = Bridge::new(Raw::default(), reports, BridgeConfig::default()).unwrap();
+    let (mut bridge, _p) = test_bridge(Raw::default(), reports, BridgeConfig::default()).unwrap();
     let first = bridge.device_update().unwrap().unwrap();
     assert_eq!((first.used_bytes, first.capacity_bytes), (17, 123));
     assert_eq!(first.poison_pages, vec![11, 22]);

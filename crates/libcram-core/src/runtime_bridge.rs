@@ -124,9 +124,27 @@ pub struct Bridge<R: RawSource, D: DeviceSource> {
     pending: VecDeque<Observation>,
     poison: BTreeSet<u64>,
     tgid: u32,
+    clock: fn() -> io::Result<(Instant, u64)>,
 }
 impl<R: RawSource, D: DeviceSource> Bridge<R, D> {
     pub fn new(raw: R, device: D, config: BridgeConfig) -> Result<(Self, Publisher), Error> {
+        Self::with_clock(raw, device, config, || {
+            // Earlier Instant conservatively accounts for calibration latency.
+            let now = Instant::now();
+            Ok((now, monotonic_ns()?))
+        })
+    }
+    /// Construct with a trusted calibration function for a custom raw source.
+    /// The pair is (Instant, source-domain nanoseconds) for the same instant,
+    /// or an earlier Instant for conservative conversion. The source clock must
+    /// progress at the same rate; incorrect calibration can invalidate freshness.
+    /// This seam also allows fixture clocks without relaxing production TTLs.
+    pub fn with_clock(
+        raw: R,
+        device: D,
+        config: BridgeConfig,
+        clock: fn() -> io::Result<(Instant, u64)>,
+    ) -> Result<(Self, Publisher), Error> {
         if !(1..=4096).contains(&config.max_registrations)
             || !(1..=4096).contains(&config.input_capacity)
             || !(1..=8192).contains(&config.max_events)
@@ -155,6 +173,7 @@ impl<R: RawSource, D: DeviceSource> Bridge<R, D> {
                 pending: VecDeque::new(),
                 poison: BTreeSet::new(),
                 tgid: std::process::id(),
+                clock,
             },
             publisher,
         ))
@@ -216,10 +235,8 @@ impl<R: RawSource, D: DeviceSource> Bridge<R, D> {
         if events.len() > self.config.max_events {
             return Err(Error::InvalidSample);
         }
-        // Capture Instant BEFORE CLOCK_MONOTONIC: conversion is conservatively earlier,
-        // never receipt-stamps an old event. Calibration latency may reject edge samples.
-        let now = Instant::now();
-        let raw_now = monotonic_ns()?;
+        // Preserve original event age; never receipt-stamp an old event.
+        let (now, raw_now) = (self.clock)()?;
         self.history.retain(|e| {
             now.duration_since(e.time) < WINDOW && self.registrations.iter().any(|r| r.id == e.id)
         });
