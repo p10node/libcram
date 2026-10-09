@@ -49,6 +49,36 @@ pub fn ingest_event(bytes: &[u8], window: &mut AccessWindow) -> io::Result<()> {
 mod tests {
     use super::*;
     #[test]
+    fn ring_order_and_query_between_bounded_drains_do_not_change_retained_samples() {
+        let events = [[100u64, 4096, 7, 1], [120, 8192, 8, 2], [110, 4097, 7, 1]];
+        for order in [
+            [0, 1, 2],
+            [0, 2, 1],
+            [1, 0, 2],
+            [1, 2, 0],
+            [2, 0, 1],
+            [2, 1, 0],
+        ] {
+            let mut w = AccessWindow::new(30, 2, 4096).expect("window");
+            let mut watermark = 0;
+            for index in order {
+                let raw: Vec<u8> = events[index]
+                    .into_iter()
+                    .flat_map(u64::to_ne_bytes)
+                    .collect();
+                ingest_event(&raw, &mut w).expect("valid delayed event");
+                watermark = watermark.max(events[index][0]);
+                w.counts(watermark, 4096, 7).expect("query between drains");
+            }
+            assert_eq!(w.retained_samples(), 2);
+            assert_eq!(w.capacity_evictions, 1);
+            assert_eq!(w.counts(120, 4096, 7).expect("reads").reads, 1);
+            assert_eq!(w.counts(120, 8192, 8).expect("writes").writes, 1);
+            assert_eq!(w.counts(140, 4096, 7).expect("expired read").reads, 0);
+            assert_eq!(w.counts(140, 8192, 8).expect("live write").writes, 1);
+        }
+    }
+    #[test]
     fn sample_decode_and_config_rejection() {
         let mut w = AccessWindow::new(100, 8, 4096).expect("window");
         let raw: Vec<u8> = [10u64, 0x1234, 7, 2]
@@ -63,27 +93,23 @@ mod tests {
             .flat_map(u64::to_ne_bytes)
             .collect();
         assert!(ingest_event(&bad, &mut w).is_err());
-        assert!(
-            ExplicitPebsConfig {
-                pmu_type: 1,
-                config: 1,
-                config1: 0,
-                period: 1000,
-                kind: AccessKind::Read
-            }
-            .validate()
-            .is_err()
-        );
-        assert!(
-            ExplicitPebsConfig {
-                pmu_type: 4,
-                config: 1,
-                config1: 0,
-                period: 0,
-                kind: AccessKind::Read
-            }
-            .validate()
-            .is_err()
-        );
+        assert!(ExplicitPebsConfig {
+            pmu_type: 1,
+            config: 1,
+            config1: 0,
+            period: 1000,
+            kind: AccessKind::Read
+        }
+        .validate()
+        .is_err());
+        assert!(ExplicitPebsConfig {
+            pmu_type: 4,
+            config: 1,
+            config1: 0,
+            period: 0,
+            kind: AccessKind::Read
+        }
+        .validate()
+        .is_err());
     }
 }

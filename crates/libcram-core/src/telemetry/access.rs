@@ -1,6 +1,6 @@
 //! Bounded window of samples, not inferred memory-operation totals.
 use std::io;
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AccessKind {
     Read,
     Write,
@@ -10,8 +10,11 @@ pub struct AccessCounts {
     pub reads: u64,
     pub writes: u64,
 }
-use std::collections::{HashMap, VecDeque};
-#[derive(Clone, Copy)]
+use std::{
+    cmp::Reverse,
+    collections::{BinaryHeap, HashMap},
+};
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 struct Event {
     time: u64,
     page: u64,
@@ -19,14 +22,15 @@ struct Event {
     kind: AccessKind,
 }
 /// Keeps samples in (now-window, now], with oldest-first capacity eviction.
-/// Timestamps use one monotonic clock and must arrive in nondecreasing order.
+/// Sources share one monotonic clock. Samples may arrive late within the current
+/// window; queries/expiry watermarks cannot move backwards.
 /// Counts are unweighted samples, NOT actual load/store operation counts.
 pub struct AccessWindow {
     window: u64,
     capacity: usize,
     page_size: u64,
     last: u64,
-    events: VecDeque<Event>,
+    events: BinaryHeap<Reverse<Event>>,
     pages: HashMap<(u32, u64), AccessCounts>,
     pub capacity_evictions: u64,
 }
@@ -43,13 +47,13 @@ impl AccessWindow {
             capacity,
             page_size,
             last: 0,
-            events: VecDeque::new(),
+            events: BinaryHeap::new(),
             pages: HashMap::new(),
             capacity_evictions: 0,
         })
     }
     fn remove_oldest(&mut self) {
-        if let Some(e) = self.events.pop_front() {
+        if let Some(Reverse(e)) = self.events.pop() {
             let key = (e.pid, e.page);
             if let Some(c) = self.pages.get_mut(&key) {
                 match e.kind {
@@ -72,8 +76,8 @@ impl AccessWindow {
         self.last = now;
         while self
             .events
-            .front()
-            .is_some_and(|e| now - e.time >= self.window)
+            .peek()
+            .is_some_and(|Reverse(e)| now - e.time >= self.window)
         {
             self.remove_oldest();
         }
@@ -86,10 +90,12 @@ impl AccessWindow {
         pid: u32,
         kind: AccessKind,
     ) -> io::Result<()> {
-        self.advance(time)?;
-        if self.events.len() == self.capacity {
-            self.remove_oldest();
-            self.capacity_evictions = self.capacity_evictions.saturating_add(1);
+        self.advance(time.max(self.last))?;
+        if self.last - time >= self.window {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "expired sample",
+            ));
         }
         let page = address & !(self.page_size - 1);
         let c = self.pages.entry((pid, page)).or_default();
@@ -97,12 +103,16 @@ impl AccessWindow {
             AccessKind::Read => c.reads += 1,
             AccessKind::Write => c.writes += 1,
         }
-        self.events.push_back(Event {
+        self.events.push(Reverse(Event {
             time,
             page,
             pid,
             kind,
-        });
+        }));
+        if self.events.len() > self.capacity {
+            self.remove_oldest();
+            self.capacity_evictions = self.capacity_evictions.saturating_add(1);
+        }
         Ok(())
     }
     pub fn counts(&mut self, now: u64, address: u64, pid: u32) -> io::Result<AccessCounts> {
@@ -120,6 +130,38 @@ impl AccessWindow {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn late_samples_from_interleaved_rings_survive_query_and_expire_in_time_order() {
+        let mut w = AccessWindow::new(30, 4, 4096).expect("window");
+        w.record(100, 4096, 1, AccessKind::Read).expect("ring A");
+        w.record(120, 4096, 1, AccessKind::Read).expect("ring A");
+        assert_eq!(w.counts(125, 4096, 1).expect("query").reads, 2);
+        w.record(110, 4096, 1, AccessKind::Write)
+            .expect("delayed ring B");
+        assert_eq!(
+            w.counts(125, 4096, 1).expect("query"),
+            AccessCounts {
+                reads: 2,
+                writes: 1
+            }
+        );
+        assert_eq!(
+            w.counts(130, 4096, 1).expect("expiry"),
+            AccessCounts {
+                reads: 1,
+                writes: 1
+            }
+        );
+        assert_eq!(
+            w.counts(140, 4096, 1).expect("expiry"),
+            AccessCounts {
+                reads: 1,
+                writes: 0
+            }
+        );
+        assert!(w.record(110, 4096, 1, AccessKind::Write).is_err());
+        assert!(w.counts(139, 4096, 1).is_err());
+    }
     #[test]
     fn aligned_window_eviction() {
         let mut w = AccessWindow::new(10, 2, 4096).expect("valid");
@@ -142,7 +184,8 @@ mod tests {
             w.counts(12, 0x1000, 7).expect("counts"),
             AccessCounts::default()
         );
-        assert!(w.record(11, 0, 7, AccessKind::Read).is_err());
+        assert!(w.record(11, 0, 7, AccessKind::Read).is_ok());
+        assert!(w.record(2, 0, 7, AccessKind::Read).is_err());
         assert!(AccessWindow::new(0, 1, 4096).is_err());
         assert!(AccessWindow::new(10, 0, 4096).is_err());
         assert!(AccessWindow::new(10, 1, 3000).is_err());

@@ -12,3 +12,17 @@ default=[]
 ebpf=["dep:aya"]
 [target.'cfg(target_os = "linux")'.dependencies]
 aya = { version = "0.13.1", optional = true }
+[[example]]
+name = "pebs_probe"
+required-features = ["ebpf"]
+[dev-dependencies]
+anyhow.workspace = true
+[[test]]
+name = "topology"
+path = "../../tests/unit/topology.rs"
+[[test]]
+name = "stress"
+path = "../../tests/stress/allocation.rs"
+[[test]]
+name = "fallback"
+path = "../../tests/integration/fallback.rs"

@@ -34,9 +34,9 @@ use super::{
     sampling::ingest_event,
 };
 use aya::{
-    Ebpf,
     maps::{MapData, RingBuf},
     programs::PerfEvent,
+    Ebpf,
 };
 use std::os::fd::{AsFd, AsRawFd, FromRawFd, OwnedFd};
 fn failure(e: impl std::fmt::Display) -> io::Error {
@@ -168,7 +168,7 @@ impl PebsSampler {
             })
         }
     }
-    /// Consume at most budget records. Invalid/out-of-order records are counted,
+    /// Consume at most budget records. Invalid/expired records are counted,
     /// never inferred. Ring overflow is observable via dropped_samples().
     pub fn poll(&mut self, window: &mut AccessWindow, budget: usize) -> PollReport {
         let mut report = PollReport::default();
