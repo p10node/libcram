@@ -1,0 +1,98 @@
+[
+  {
+    "kind": "zero",
+    "name": "baseline",
+    "median_ns": 146.90334,
+    "min_ns": 145.155,
+    "max_ns": 154.59918,
+    "batches": 9
+  },
+  {
+    "kind": "zero",
+    "name": "packed4",
+    "median_ns": 147.30168,
+    "min_ns": 145.34916,
+    "max_ns": 152.03666,
+    "batches": 9
+  },
+  {
+    "kind": "zero",
+    "name": "interleaved4",
+    "median_ns": 147.025,
+    "min_ns": 145.9325,
+    "max_ns": 155.05916,
+    "batches": 9
+  },
+  {
+    "kind": "zero",
+    "name": "wide4",
+    "median_ns": 147.96584,
+    "min_ns": 146.40584,
+    "max_ns": 154.125,
+    "batches": 9
+  },
+  {
+    "kind": "ascii",
+    "name": "baseline",
+    "median_ns": 232.17082,
+    "min_ns": 230.095,
+    "max_ns": 244.54334,
+    "batches": 9
+  },
+  {
+    "kind": "ascii",
+    "name": "packed4",
+    "median_ns": 230.96166,
+    "min_ns": 229.6825,
+    "max_ns": 243.4225,
+    "batches": 9
+  },
+  {
+    "kind": "ascii",
+    "name": "interleaved4",
+    "median_ns": 237.58832,
+    "min_ns": 229.145,
+    "max_ns": 250.245,
+    "batches": 9
+  },
+  {
+    "kind": "ascii",
+    "name": "wide4",
+    "median_ns": 231.3775,
+    "min_ns": 229.28334,
+    "max_ns": 244.99584,
+    "batches": 9
+  },
+  {
+    "kind": "random",
+    "name": "baseline",
+    "median_ns": 1045.08166,
+    "min_ns": 1036.2575,
+    "max_ns": 1077.03418,
+    "batches": 9
+  },
+  {
+    "kind": "random",
+    "name": "packed4",
+    "median_ns": 1141.135,
+    "min_ns": 1124.64916,
+    "max_ns": 1180.25916,
+    "batches": 9
+  },
+  {
+    "kind": "random",
+    "name": "interleaved4",
+    "median_ns": 1211.95084,
+    "min_ns": 1201.33416,
+    "max_ns": 1262.8475,
+    "batches": 9
+  },
+  {
+    "kind": "random",
+    "name": "wide4",
+    "median_ns": 1073.59082,
+    "min_ns": 1062.4325,
+    "max_ns": 1117.29,
+    "batches": 9
+  }
+]

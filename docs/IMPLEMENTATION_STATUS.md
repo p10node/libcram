@@ -32,6 +32,12 @@ a CPU/microcode/kernel cause, a repair, or <1% overhead. Production code is unch
 
 ## Exact entropy follow-up
 
+[Counter-layout comparison](performance/entropy-layout-spike/README.md) rejected
+three further exact candidates: packed u64, interleaved u16 and four u32 banks.
+All passed 665 differential cases per variant on M1 and Linux/x86, but none
+improved random diagnostic medians. No production change or new Criterion
+acceptance is claimed; B remains open.
+
 [Short-period implementation, source hashes and raw evidence](performance/entropy-periodic/README.md):
 - Exact runtime-discovered period, verified against every byte including the partial tail.
 - Actual RED→GREEN plus three isolated behavioral mutation controls; bounded independent review.

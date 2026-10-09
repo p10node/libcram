@@ -1,0 +1,17 @@
+{
+  "native": {
+    "cpu": "Apple M1 Pro",
+    "arch": "arm64",
+    "rustc": "1.99.0 (b940084d7 2026-09-28)",
+    "host": "aarch64-apple-darwin",
+    "llvm": "23.1.1"
+  },
+  "linux": {
+    "environment": "s5 / Incus libcram-numa-test, pinned guest CPU 0",
+    "arch": "x86_64",
+    "rustc": "1.89.0 (29483883e 2025-08-04)",
+    "host": "x86_64-unknown-linux-gnu",
+    "llvm": "20.1.7"
+  },
+  "comparison_scope": "Within each executable/platform only; compiler versions differ across platforms."
+}
