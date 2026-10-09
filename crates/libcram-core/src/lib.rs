@@ -5,6 +5,7 @@ pub mod entropy;
 pub mod guard;
 pub mod hal;
 pub mod migration;
+pub mod runtime;
 pub mod telemetry;
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

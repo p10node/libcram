@@ -68,6 +68,9 @@ impl CramAllocator {
             .get(&(ptr.as_ptr() as usize))
             .ok_or(Error::UnknownAllocation)?;
         let mut state = r.state.lock().map_err(|_| Error::Poisoned)?;
+        if self.inner.managed.load(Ordering::Acquire) {
+            return Err(Error::Unsupported);
+        }
         state.sample = Some(sample);
         state.offset = 0;
         Ok(())
@@ -78,7 +81,6 @@ pub(crate) fn step(
     max_allocations: usize,
     max_pages: usize,
 ) -> Result<MigrationReport, Error> {
-    let mut report = MigrationReport::default();
     let mut cursor = inner.cursor.lock().map_err(|_| Error::Poisoned)?;
     let records = {
         let registry = inner.allocations.lock().map_err(|_| Error::Poisoned)?;
@@ -90,6 +92,16 @@ pub(crate) fn step(
             .map(|(_, r)| r.clone())
             .collect::<Vec<_>>()
     };
+    step_records(inner, records, max_pages, &mut cursor)
+}
+
+pub(crate) fn step_records(
+    inner: &Inner,
+    records: Vec<std::sync::Arc<crate::allocator::Allocation>>,
+    max_pages: usize,
+    cursor: &mut usize,
+) -> Result<MigrationReport, Error> {
+    let mut report = MigrationReport::default();
     let page = page_size();
     let mut remaining = max_pages.min(4096);
     for record in records {

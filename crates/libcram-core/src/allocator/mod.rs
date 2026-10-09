@@ -49,6 +49,7 @@ pub(crate) struct Allocation {
     pub(crate) cram_bytes: std::sync::atomic::AtomicU64,
 }
 pub(crate) struct Inner {
+    pub(crate) managed: std::sync::atomic::AtomicBool,
     pub(crate) allocations: Mutex<BTreeMap<usize, Arc<Allocation>>>,
     pub(crate) topology: Topology,
     pub(crate) numa: Arc<dyn Numa>,
@@ -66,6 +67,12 @@ pub struct CramAllocator {
     monitor: Mutex<Option<pressure::Monitor>>,
 }
 impl CramAllocator {
+    /// Stop and join the legacy migration monitor. Requires exclusive ownership
+    /// so another caller cannot restart it during a managed-runtime handover.
+    pub fn stop_monitoring(&mut self) -> Result<(), Error> {
+        self.monitor.get_mut().map_err(|_| Error::Poisoned)?.take();
+        Ok(())
+    }
     pub fn new() -> Result<Self, Error> {
         let allocator = Self::with_backend(Topology::discover()?, Arc::new(SystemNuma))?;
         if cfg!(target_os = "linux") {
@@ -77,6 +84,7 @@ impl CramAllocator {
         let topology = Topology::from_nodes(topology.nodes)?;
         Ok(Self {
             inner: Arc::new(Inner {
+                managed: std::sync::atomic::AtomicBool::new(false),
                 allocations: Mutex::new(BTreeMap::new()),
                 topology,
                 numa,
@@ -241,6 +249,13 @@ pub struct OwnedAllocation {
     inner: Arc<Inner>,
 }
 impl OwnedAllocation {
+    /// Attach independently synchronized entropy metadata without reading payload bytes.
+    pub fn observation_token(
+        &self,
+        entropy: f64,
+    ) -> Result<crate::runtime::ObservationToken, Error> {
+        crate::runtime::ObservationToken::new(&self.record, entropy)
+    }
     pub fn as_slice(&self) -> &[u8] {
         // SAFETY: Arc retains initialized mmap bytes; shared borrow prevents safe mutable access.
         unsafe { std::slice::from_raw_parts(self.record.address as *const u8, self.record.size) }
@@ -252,6 +267,13 @@ impl OwnedAllocation {
     pub fn record_sample(&self, sample: crate::migration::AccessSample) -> Result<(), Error> {
         sample.validate()?;
         let mut state = self.record.state.lock().map_err(|_| Error::Poisoned)?;
+        if self
+            .inner
+            .managed
+            .load(std::sync::atomic::Ordering::Acquire)
+        {
+            return Err(Error::Unsupported);
+        }
         state.sample = Some(sample);
         state.offset = 0;
         Ok(())
