@@ -1,0 +1,7 @@
+   Compiling libcram-core v0.1.0 (/root/libcram/crates/libcram-core)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.99s
+     Running `target/debug/examples/numa_vm_probe`
+queried 16 owned pages: all on node 0
+queried 16 owned pages: all on node 1
+queried 16 owned pages: all on node 0
+PASS: real SystemNuma bind, migration 0->1->0, placement queries and byte preservation; CRAM NOT tested

@@ -1,0 +1,7 @@
+   Compiling libcram-core v0.1.0 (/root/libcram/crates/libcram-core)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.28s
+     Running `target/debug/examples/numa_vm_probe`
+Error: system error: Invalid argument (os error 22)
+
+Caused by:
+    Invalid argument (os error 22)

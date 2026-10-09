@@ -1,0 +1,5 @@
+   Compiling libcram-core v0.1.0 (/root/libcram/crates/libcram-core)
+   Compiling libcram-ffi v0.1.0 (/root/libcram/crates/libcram-ffi)
+   Compiling libcram-bench v0.1.0 (/root/libcram/crates/libcram-bench)
+    Finished `bench` profile [optimized] target(s) in 17.48s
+  Executable ../../benches/entropy.rs (target/release/deps/entropy-a736fccf3f0e9931)

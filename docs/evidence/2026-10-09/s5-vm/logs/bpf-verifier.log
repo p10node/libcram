@@ -1,0 +1,4 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running `target/debug/examples/pebs_probe /root/libcram/libcram-pebs.bpf`
+sample_load: verifier load PASS (PMU attachment untested)
+sample_store: verifier load PASS (PMU attachment untested)

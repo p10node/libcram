@@ -1,0 +1,132 @@
+   Compiling libcram-core v0.1.0 (/root/libcram/crates/libcram-core)
+   Compiling libcram-ffi v0.1.0 (/root/libcram/crates/libcram-ffi)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.00s
+     Running unittests src/lib.rs (target/debug/deps/libcram_core-affa57e3e64fa0a7)
+
+running 13 tests
+test guard::device::tests::device_health_requires_fresh_observations_and_poison_is_sticky ... ok
+test guard::device::tests::exact_watermark_edges_and_invalid_capacity ... ok
+test guard::device::tests::storm_counts_unique_pages_expires_and_latches ... ok
+test hal::numa::mask_tests::kernel_maxnode_minus_one_still_includes_requested_bit ... ok
+test telemetry::access::tests::aligned_window_eviction ... ok
+test telemetry::access::tests::late_samples_from_interleaved_rings_survive_query_and_expire_in_time_order ... ok
+test telemetry::pebs::tests::precise_address_sampling_required ... ok
+test telemetry::sampling::tests::ring_order_and_query_between_bounded_drains_do_not_change_retained_samples ... ok
+test telemetry::sampling::tests::sample_decode_and_config_rejection ... ok
+test telemetry::tests::psi ... ok
+test entropy::tests::reference_and_dispatch ... ok
+test entropy::differential::random_unaligned_all_available_kernels ... ok
+test entropy::tests::exhaustive_lengths_alignments_and_uniform_transitions ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 28.53s
+
+     Running tests/allocation.rs (target/debug/deps/allocation-42159b0a17bc7df8)
+
+running 1 test
+test ownership_alignment_accounting_and_poison ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/device_policy.rs (target/debug/deps/device_policy-dc1ddcd7fc522e66)
+
+running 2 tests
+test missing_usage_pressure_and_poison_gate_real_allocation_policy ... ok
+test auto_initial_placement_is_size_based_and_pressure_gated ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running ../../tests/integration/fallback.rs (target/debug/deps/fallback-a3020d795d97aeaf)
+
+running 1 test
+test portable_dram_allocation_preserves_distinct_owned_buffers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/guard.rs (target/debug/deps/guard-3334963d72045001)
+
+running 1 test
+test catches_each_poison_byte_without_reading_payload ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/migration.rs (target/debug/deps/migration-4fa95b64544f921d)
+
+running 4 tests
+test failed_binding_is_not_reported_as_cram ... ok
+test raw_sample_reversal_reclaims_first_page_immediately ... ok
+test owned_sampling_moves_without_reading_mutable_caller_memory ... ok
+test explicit_owned_entropy_sampling_uses_a_synchronized_borrow ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/migration_lifetime.rs (target/debug/deps/migration_lifetime-7f6c43111a8323b5)
+
+running 2 tests
+test reports_partial_failures_without_marking_entire_allocation_cram ... ok
+test background_holds_mapping_lease_after_owner_drop ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/numa.rs (target/debug/deps/numa-a47a958a0bb23d12)
+
+running 2 tests
+test validates_page_ranges_and_reports_platform_capability ... ok
+test real_linux_syscalls_return_results_or_kernel_errors ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/pressure.rs (target/debug/deps/pressure-418cc54185ea05b7)
+
+running 1 test
+test callback_is_async_reentrant_replaceable_and_panic_isolated ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running ../../tests/stress/allocation.rs (target/debug/deps/stress-e996983e8cd437ad)
+
+running 1 test
+test sixty_four_threads_allocate_write_verify_and_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.90s
+
+     Running ../../tests/unit/topology.rs (target/debug/deps/topology-05eec417cab1fb42)
+
+running 4 tests
+test cxl_is_not_compressed_without_explicit_provenance ... ok
+test unavailable_sysfs_falls_back_to_uncompressed_uma ... ok
+test mock_sysfs_discovers_cxl_but_requires_compression_provenance ... ok
+test explicit_driver_flag_has_enabled_disabled_and_malformed_controls ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.85s
+
+     Running unittests src/lib.rs (target/debug/deps/cram-2cbacb0a82a7810a)
+
+running 3 tests
+test edge_tests::panic_payload_destructor_cannot_escape_boundary ... ok
+test tests::panic_is_status_not_unwind ... ok
+test edge_tests::callback_bridge_preserves_userdata_and_allows_reentry ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/abi.rs (target/debug/deps/abi-e27217ad8768a39e)
+
+running 5 tests
+test aligned_allocation_round_trip ... ok
+test canary_error_distinguishes_consumed_native_ownership ... ok
+test metadata_admission_rejects_invalid_samples_and_accepts_owned_updates ... ok
+test telemetry_and_invalid_arguments ... ok
+test parallel_allocations_and_thread_local_errors ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+   Doc-tests libcram_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests cram
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

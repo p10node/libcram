@@ -1,0 +1,9 @@
+inventory	0
+core-ffi	0
+numa-migration	0
+bpf-verifier	0
+pmu-counter	0
+pmu-precise	255
+entropy-build	0
+entropy	0
+entropy-budget	1

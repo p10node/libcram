@@ -1,5 +1,9 @@
 # Verification and acceptance status
 
+Follow-up: [s5 VM acceptance](S5_VM_ACCEPTANCE.md) adds real two-node Linux
+NUMA migration and BPF verifier evidence, and fixes an mbind maxnode bug.
+The remainder of this page records the earlier software snapshot.
+
 Date: 2026-10-09. Tested code: `74a15524530a8ab9c4a0fe42e49adab0c78acf1f`.
 The later documentation/evidence commit does not change the tested implementation.
 

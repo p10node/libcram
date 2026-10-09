@@ -1,0 +1,9 @@
+
+ Performance counter stats for 'sleep 0.1':
+
+            435871      cycles:u
+
+       0.114703583 seconds time elapsed
+
+       0.000000000 seconds user
+       0.014569000 seconds sys
