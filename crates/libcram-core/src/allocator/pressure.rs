@@ -3,13 +3,21 @@ use crate::{telemetry::PsiSample, Error};
 use std::{
     sync::{
         mpsc::{self, SyncSender},
-        Arc, Mutex, Weak,
+        Arc, Condvar, Mutex, Weak,
     },
     thread::{self, JoinHandle},
     time::Duration,
 };
 pub type PressureCallback = Arc<dyn Fn(u32) + Send + Sync>;
-type CallbackSlot = Arc<Mutex<(u64, Option<PressureCallback>)>>;
+#[derive(Default)]
+struct CallbackState {
+    generation: u64,
+    callback: Option<PressureCallback>,
+    in_flight: bool,
+    worker: Option<thread::ThreadId>,
+    quiescing: bool,
+}
+type CallbackSlot = Arc<(Mutex<CallbackState>, Condvar)>;
 pub(crate) struct Pressure {
     pub sample: Mutex<(PsiSample, u32)>,
     callback: CallbackSlot,
@@ -17,7 +25,8 @@ pub(crate) struct Pressure {
 }
 impl Pressure {
     pub fn new() -> Result<Self, Error> {
-        let callback: CallbackSlot = Arc::new(Mutex::new((0, None)));
+        let callback: CallbackSlot =
+            Arc::new((Mutex::new(CallbackState::default()), Condvar::new()));
         let callbacks = callback.clone();
         let (tx, rx) = mpsc::sync_channel(1);
         thread::Builder::new()
@@ -25,16 +34,28 @@ impl Pressure {
             .spawn(move || {
                 while let Ok((generation, level)) = rx.recv() {
                     let cb = {
-                        let slot = callbacks.lock().unwrap_or_else(|e| e.into_inner());
-                        if slot.0 == generation {
-                            slot.1.clone()
+                        let mut slot = callbacks.0.lock().unwrap_or_else(|e| e.into_inner());
+                        if slot.generation == generation && !slot.quiescing {
+                            let cb = slot.callback.clone();
+                            slot.in_flight = cb.is_some();
+                            slot.worker = Some(thread::current().id());
+                            cb
                         } else {
                             None
                         }
                     };
                     if let Some(cb) = cb {
-                        let _ =
-                            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| cb(level)));
+                        if let Err(payload) =
+                            std::panic::catch_unwind(std::panic::AssertUnwindSafe(move || {
+                                cb(level)
+                            }))
+                        {
+                            // A panic payload may panic again in Drop. Keep the worker alive.
+                            std::mem::forget(payload);
+                        }
+                        let mut slot = callbacks.0.lock().unwrap_or_else(|e| e.into_inner());
+                        slot.in_flight = false;
+                        callbacks.1.notify_all();
                     }
                 }
             })?;
@@ -68,7 +89,12 @@ impl Pressure {
         Ok(())
     }
     pub(crate) fn notify(&self, level: u32) -> Result<(), Error> {
-        let generation = self.callback.lock().map_err(|_| Error::Poisoned)?.0;
+        let generation = self
+            .callback
+            .0
+            .lock()
+            .map_err(|_| Error::Poisoned)?
+            .generation;
         // Bounded, best-effort notifications: slow callbacks cannot block allocation or monitoring.
         let _ = self.tx.try_send((generation, level));
         Ok(())
@@ -145,6 +171,33 @@ impl Inner {
     }
 }
 impl CramAllocator {
+    /// Remove the callback and wait until selected/in-flight delivery has finished.
+    /// Queued old generations are discarded. On success, old captured state can
+    /// be released. Concurrent registration/quiescence and self-wait return
+    /// WouldBlock. Do not hold a lock needed by the callback while calling this.
+    pub fn unregister_pressure_callback_and_wait(&self) -> Result<(), Error> {
+        let callbacks = &self.inner.pressure.callback;
+        let mut slot = callbacks.0.lock().map_err(|_| Error::Poisoned)?;
+        if slot.quiescing || (slot.in_flight && slot.worker == Some(thread::current().id())) {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::WouldBlock,
+                "callback quiescence already in progress or self-wait",
+            )
+            .into());
+        }
+        slot.quiescing = true;
+        slot.generation = slot.generation.wrapping_add(1);
+        // Drop captured user state outside the internal lock: its destructor
+        // may re-enter allocator APIs.
+        let previous = slot.callback.take();
+        while slot.in_flight {
+            slot = callbacks.1.wait(slot).map_err(|_| Error::Poisoned)?;
+        }
+        slot.quiescing = false;
+        drop(slot);
+        drop(previous);
+        Ok(())
+    }
     /// Supply trusted physical device occupancy. Reports expire after one second.
     /// Unknown/zero capacity blocks CRAM; process allocation bytes are not a valid substitute.
     pub fn submit_device_usage(&self, used: u64, capacity: u64) -> Result<(), Error> {
@@ -193,10 +246,20 @@ impl CramAllocator {
             .inner
             .pressure
             .callback
+            .0
             .lock()
             .map_err(|_| Error::Poisoned)?;
-        slot.0 = slot.0.wrapping_add(1);
-        slot.1 = callback;
+        if slot.quiescing {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::WouldBlock,
+                "callback quiescence in progress",
+            )
+            .into());
+        }
+        slot.generation = slot.generation.wrapping_add(1);
+        let previous = std::mem::replace(&mut slot.callback, callback);
+        drop(slot);
+        drop(previous);
         Ok(())
     }
     pub fn submit_pressure(&self, sample: PsiSample) -> Result<(), Error> {

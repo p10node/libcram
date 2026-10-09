@@ -144,7 +144,7 @@ fn callback_bridge(
 ) -> Option<std::sync::Arc<dyn Fn(u32) + Send + Sync>> {
     let address = user as usize;
     callback.map(|cb| {
-        // SAFETY: registration contract keeps callback/userdata live and thread-safe until exit.
+        // SAFETY: caller keeps code/userdata live until quiescence or process exit.
         std::sync::Arc::new(move |level| unsafe { cb(level, address as *mut c_void) })
             as std::sync::Arc<dyn Fn(u32) + Send + Sync>
     })
@@ -154,8 +154,9 @@ pub type CramPressureCallback = Option<unsafe extern "C" fn(u32, *mut c_void)>;
 /// This is NOT a quiescent unregister: an already scheduled callback may still run.
 /// # Safety
 /// callback must be thread-safe and must not throw, unwind, or longjmp. user and
-/// the callback code must remain valid until process exit, even after replacement
-/// or unregister. No ownership is transferred. Invocation is asynchronous without
+/// the callback code must remain valid until successful quiescent unregister or
+/// process exit, even after replacement or nonblocking unregister. No ownership
+/// is transferred. Invocation is asynchronous without
 /// core locks. Do not call this with Go-managed userdata.
 #[no_mangle]
 pub unsafe extern "C" fn cram_register_pressure_callback(
@@ -166,6 +167,21 @@ pub unsafe extern "C" fn cram_register_pressure_callback(
         let callback = callback_bridge(callback, user);
         allocator()?
             .register_pressure_callback(callback)
+            .map_err(status)
+    })
+    .err()
+    .unwrap_or(CRAM_OK)
+}
+/// Quiescent unregister. On OK no previously registered callback can still run,
+/// so its userdata and callback code may be released. Returns CRAM_ERROR for a
+/// self-wait or concurrent quiescence/registration conflict. Never call while
+/// holding an application lock needed by the callback. Serialize callback
+/// registration externally when managing shared userdata lifetimes.
+#[no_mangle]
+pub extern "C" fn cram_unregister_pressure_callback_and_wait() -> i32 {
+    boundary(|| {
+        allocator()?
+            .unregister_pressure_callback_and_wait()
             .map_err(status)
     })
     .err()
@@ -211,6 +227,40 @@ pub extern "C" fn cram_record_access_sample(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn quiescent_ffi_unregister_allows_userdata_release() {
+        use std::sync::mpsc;
+        unsafe extern "C" fn callback(_: u32, user: *mut c_void) {
+            // SAFETY: the test keeps the Box alive through quiescent unregister.
+            let tx = unsafe { &*user.cast::<mpsc::Sender<i32>>() };
+            let _ = tx.send(cram_unregister_pressure_callback_and_wait());
+        }
+        let (tx, rx) = mpsc::channel();
+        let mut user = Box::new(tx);
+        // SAFETY: userdata is stable, Send/Sync, and not freed before quiescence.
+        assert_eq!(
+            unsafe {
+                cram_register_pressure_callback(
+                    Some(callback),
+                    (&mut *user as *mut mpsc::Sender<i32>).cast(),
+                )
+            },
+            CRAM_OK
+        );
+        allocator()
+            .expect("allocator")
+            .submit_pressure(Default::default())
+            .expect("notify");
+        assert_eq!(
+            rx.recv_timeout(std::time::Duration::from_secs(2))
+                .expect("callback"),
+            CRAM_ERROR
+        );
+        assert_eq!(cram_unregister_pressure_callback_and_wait(), CRAM_OK);
+        drop(user);
+        assert_eq!(cram_last_error(), CRAM_OK);
+        assert_eq!(cram_unregister_pressure_callback_and_wait(), CRAM_OK);
+    }
     #[test]
     fn panic_is_status_not_unwind() {
         assert_eq!(

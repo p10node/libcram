@@ -45,11 +45,15 @@ Initialize once with `cram_init`, allocate with `cram_alloc`, release with
 `cram_last_error` is thread-local. Raw-pointer output and callback arguments must
 obey the safety conditions in the generated header.
 
-Do not assume callback replacement cancels a callback already queued or running.
-The current C contract requires callback code and userdata to remain valid until
-process exit. Use static or otherwise process-lifetime storage; do not pass stack
-addresses or Go-managed pointers. The callback must not unwind, throw, or longjmp.
-Callbacks should enqueue short application notifications and return promptly.
+Callback replacement and ordinary nonblocking unregister are not lifetime barriers.
+Call `cram_unregister_pressure_callback_and_wait()` and release callback code or
+userdata **only after `CRAM_OK`**. On error, keep them alive. The operation rejects
+self-wait from the callback thread and a concurrent quiescent unregister; never
+hold an application lock that the callback needs while waiting. Serialize callback
+registration, replacement and userdata/code lifetime management in the application.
+Without a successful quiescent unregister, keep process-lifetime storage; do not
+pass stack addresses or Go-managed pointers. The callback must not unwind, throw,
+or longjmp. Callbacks should enqueue short notifications and return promptly.
 
 ## C++
 

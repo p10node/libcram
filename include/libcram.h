@@ -88,11 +88,21 @@ int32_t cram_get_telemetry(cram_telemetry *output);
  * This is NOT a quiescent unregister: an already scheduled callback may still run.
  * # Safety
  * callback must be thread-safe and must not throw, unwind, or longjmp. user and
- * the callback code must remain valid until process exit, even after replacement
- * or unregister. No ownership is transferred. Invocation is asynchronous without
+ * the callback code must remain valid until successful quiescent unregister or
+ * process exit, even after replacement or nonblocking unregister. No ownership
+ * is transferred. Invocation is asynchronous without
  * core locks. Do not call this with Go-managed userdata.
  */
 int32_t cram_register_pressure_callback(CramPressureCallback callback, void *user);
+
+/**
+ * Quiescent unregister. On OK no previously registered callback can still run,
+ * so its userdata and callback code may be released. Returns CRAM_ERROR for a
+ * self-wait or concurrent quiescence/registration conflict. Never call while
+ * holding an application lock needed by the callback. Serialize callback
+ * registration externally when managing shared userdata lifetimes.
+ */
+int32_t cram_unregister_pressure_callback_and_wait(void);
 
 /**
  * Report trusted physical usage for the selected CRAM node. Reports expire after one second.
