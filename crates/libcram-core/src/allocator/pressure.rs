@@ -8,6 +8,9 @@ use std::{
     thread::{self, JoinHandle},
     time::Duration,
 };
+#[cfg(test)]
+mod tests;
+
 pub type PressureCallback = Arc<dyn Fn(u32) + Send + Sync>;
 #[derive(Default)]
 struct CallbackState {

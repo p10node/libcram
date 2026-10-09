@@ -1,0 +1,5 @@
+    Checking libcram-core v0.1.0 ($WORKSPACE/libcram/crates/libcram-core)
+    Checking libcram-ffi v0.1.0 ($WORKSPACE/libcram/crates/libcram-ffi)
+    Checking libcram-bench v0.1.0 ($WORKSPACE/libcram/crates/libcram-bench)
+    Checking libcram-python v0.1.0 ($WORKSPACE/libcram/bindings/python)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.96s

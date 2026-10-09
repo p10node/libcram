@@ -1,0 +1,20 @@
+
+running 3 tests
+test allocator::pressure::tests::queued_old_generation_cannot_call_replacement ... ok
+test allocator::pressure::tests::callback_destructor_reentry_and_panic_do_not_kill_worker ... ok
+test allocator::pressure::tests::replacement_barrier_waits_for_old_callback_and_rejects_competitors ... FAILED
+
+failures:
+
+failures:
+    allocator::pressure::tests::replacement_barrier_waits_for_old_callback_and_rejects_competitors
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 19 filtered out; finished in 2.01s
+
+
+thread 'cram-callback' (17168619) panicked at crates/libcram-core/src/allocator/pressure/tests.rs:131:13:
+deliberate callback capture destructor panic
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'allocator::pressure::tests::replacement_barrier_waits_for_old_callback_and_rejects_competitors' (17168618) panicked at crates/libcram-core/src/allocator/pressure/tests.rs:89:5:
+assertion failed: registration_rejected && second_wait_rejected

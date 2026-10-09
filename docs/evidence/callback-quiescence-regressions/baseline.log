@@ -1,0 +1,12 @@
+
+running 3 tests
+test allocator::pressure::tests::queued_old_generation_cannot_call_replacement ... ok
+test allocator::pressure::tests::replacement_barrier_waits_for_old_callback_and_rejects_competitors ... ok
+test allocator::pressure::tests::callback_destructor_reentry_and_panic_do_not_kill_worker ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 19 filtered out; finished in 0.00s
+
+
+thread 'cram-callback' (17167315) panicked at crates/libcram-core/src/allocator/pressure/tests.rs:131:13:
+deliberate callback capture destructor panic
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

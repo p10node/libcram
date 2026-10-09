@@ -1,0 +1,36 @@
+{
+  "results": [
+    {
+      "variant": "baseline",
+      "exit": 0
+    },
+    {
+      "variant": "skip-inflight-wait",
+      "exit": 101
+    },
+    {
+      "variant": "ignore-generation",
+      "exit": 101
+    },
+    {
+      "variant": "allow-registration-during-wait",
+      "exit": 101
+    },
+    {
+      "variant": "allow-competing-wait",
+      "exit": 101
+    },
+    {
+      "variant": "lose-worker-on-panic",
+      "exit": "timeout"
+    },
+    {
+      "variant": "restored",
+      "exit": 0
+    }
+  ],
+  "canonical_hashes_unchanged": {
+    "crates/libcram-core/src/allocator/pressure.rs": "4e0bf3ff68dd6fa0ddc52e23f969e9ff0fd170c948f89521762397890051a8b6",
+    "crates/libcram-core/src/allocator/pressure/tests.rs": "50dbef311bcd8b0c3e001a0892c18e4d86f108476dd93d47d6b1fb1c08fef0e3"
+  }
+}

@@ -86,6 +86,16 @@ worktree remains. All tracked gate processes are exited. The dedicated owned
 Linux test VM and its build/evidence caches are retained, not deleted; no user
 workload or host security policy was modified for closure.
 
+## Callback regression follow-up
+
+Three state-synchronized callback regressions now cover replacement while an old
+callback is in flight, queued generation rejection, competing quiescence and
+captured-state destructor reentry/panic. Five isolated mutation controls detect
+broken behavior. The macOS workspace has 86 passing tests and all-feature Clippy
+passes; production logic and the frozen SDK artifact are unchanged. See the
+[raw evidence and limits](evidence/callback-quiescence-regressions/README.md).
+This does not close B, C or the real-device/long-soak gates.
+
 ## Remaining order
 
 1. B: new exact histogram construction experiments, with real M1 and x86
