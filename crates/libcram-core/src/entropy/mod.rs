@@ -49,6 +49,48 @@ fn scalar_hist(data: &[u8], hist: &mut [usize; 256]) {
         hist[b as usize] += 1;
     }
 }
+/// Four disjoint banks remove same-symbol dependencies between adjacent bytes.
+/// A batch contributes at most 8192 to any u16 counter, and at most 32768
+/// to their sum. Merge before the next batch to retain arbitrary-length inputs.
+#[inline]
+fn banked_hist(data: &[u8], hist: &mut [usize; 256]) {
+    if data.len() < 64 {
+        scalar_hist(data, hist);
+        return;
+    }
+    for batch in data.chunks(32768) {
+        let mut counters = [[0u16; 256]; 4];
+        let [h0, h1, h2, h3] = &mut counters;
+        let (chunks, remainder) = batch.as_chunks::<32>();
+        for chunk in chunks {
+            for bytes in chunk.as_chunks::<8>().0 {
+                let word = u64::from_ne_bytes(*bytes);
+                // Preserve the word load on AArch64 instead of eight byte loads.
+                // SAFETY: register-only identity; no memory or flags are changed.
+                #[cfg(target_arch = "aarch64")]
+                let word = unsafe {
+                    let mut word = word;
+                    std::arch::asm!("/* {word} */", word = inout(reg) word,
+                        options(pure, nomem, nostack, preserves_flags));
+                    word
+                };
+                h0[(word & 255) as usize] += 1;
+                h1[((word >> 8) & 255) as usize] += 1;
+                h2[((word >> 16) & 255) as usize] += 1;
+                h3[((word >> 24) & 255) as usize] += 1;
+                h0[((word >> 32) & 255) as usize] += 1;
+                h1[((word >> 40) & 255) as usize] += 1;
+                h2[((word >> 48) & 255) as usize] += 1;
+                h3[(word >> 56) as usize] += 1;
+            }
+        }
+        for i in 0..256 {
+            hist[i] += (h0[i] + h1[i] + h2[i] + h3[i]) as usize;
+        }
+        scalar_hist(remainder, hist);
+    }
+}
+
 fn select() -> Kernel {
     #[cfg(target_arch = "x86_64")]
     {
@@ -105,86 +147,56 @@ unsafe fn neon(data: &[u8], hist: &mut [usize; 256]) {
         }
         hist[first as usize] += offset;
     }
-    let data = &data[offset..];
-    if data.len() < 64 {
-        scalar_hist(data, hist);
-        return;
-    }
-    // Eight independent counters break dependency chains for repeated symbols.
-    // Each lane receives at most 8192 bytes per batch, so both u16 increments
-    // and the four-lane partial sums (at most 32768) are exact without overflow.
-    // Merge into usize before processing another batch to support arbitrary sizes.
-    for batch in data.chunks(65536) {
-        let mut counters = [[0u16; 256]; 8];
-        let [h0, h1, h2, h3, h4, h5, h6, h7] = &mut counters;
-        let (chunks, remainder) = batch.as_chunks::<64>();
-        for chunk in chunks {
-            for j in 0..8 {
-                // SAFETY: each eight-byte unaligned load is inside this chunk.
-                let mut word = unsafe { chunk.as_ptr().add(j * 8).cast::<u64>().read_unaligned() };
-                // Keep the word intact without imposing a memory-ordering barrier.
-                // SAFETY: this empty register-only assembly preserves its input.
-                unsafe {
-                    std::arch::asm!("/* {word} */", word = inout(reg) word, options(pure, nomem, nostack, preserves_flags));
-                }
-                h0[(word & 255) as usize] += 1;
-                h1[((word >> 8) & 255) as usize] += 1;
-                h2[((word >> 16) & 255) as usize] += 1;
-                h3[((word >> 24) & 255) as usize] += 1;
-                h4[((word >> 32) & 255) as usize] += 1;
-                h5[((word >> 40) & 255) as usize] += 1;
-                h6[((word >> 48) & 255) as usize] += 1;
-                h7[(word >> 56) as usize] += 1;
-            }
-        }
-        for i in 0..256 {
-            hist[i] +=
-                (h0[i] + h1[i] + h2[i] + h3[i]) as usize + (h4[i] + h5[i] + h6[i] + h7[i]) as usize;
-        }
-        scalar_hist(remainder, hist);
-    }
+    banked_hist(&data[offset..], hist);
 }
 #[cfg(target_arch = "x86_64")]
 #[target_feature(enable = "avx2")]
 unsafe fn avx2(data: &[u8], hist: &mut [usize; 256]) {
     use std::arch::x86_64::*;
-    let (chunks, remainder) = data.as_chunks::<32>();
-    for chunk in chunks {
-        // SAFETY: the chunk contains 32 readable bytes; loadu permits unaligned input.
-        let equal = unsafe {
-            _mm256_cmpeq_epi8(
-                _mm256_loadu_si256(chunk.as_ptr().cast()),
-                _mm256_set1_epi8(chunk[0] as i8),
-            )
-        };
-        if _mm256_movemask_epi8(equal) == -1 {
-            hist[chunk[0] as usize] += 32;
-        } else {
-            scalar_hist(chunk, hist);
+    let mut offset = 0;
+    if let Some(&first) = data.first() {
+        let expected = _mm256_set1_epi8(first as i8);
+        while data.len() - offset >= 64 {
+            // SAFETY: both unaligned vector loads fit in this cache line.
+            let equal = unsafe {
+                let p = data.as_ptr().add(offset);
+                _mm256_and_si256(
+                    _mm256_cmpeq_epi8(_mm256_loadu_si256(p.cast()), expected),
+                    _mm256_cmpeq_epi8(_mm256_loadu_si256(p.add(32).cast()), expected),
+                )
+            };
+            if _mm256_movemask_epi8(equal) != -1 {
+                break;
+            }
+            offset += 64;
         }
+        hist[first as usize] += offset;
     }
-    scalar_hist(remainder, hist);
+    banked_hist(&data[offset..], hist);
 }
 #[cfg(target_arch = "x86_64")]
 #[target_feature(enable = "avx512bw")]
 unsafe fn avx512(data: &[u8], hist: &mut [usize; 256]) {
     use std::arch::x86_64::*;
-    let (chunks, remainder) = data.as_chunks::<64>();
-    for chunk in chunks {
-        // SAFETY: the chunk contains 64 readable bytes; loadu permits unaligned input.
-        let equal = unsafe {
-            _mm512_cmpeq_epi8_mask(
-                _mm512_loadu_si512(chunk.as_ptr().cast()),
-                _mm512_set1_epi8(chunk[0] as i8),
-            )
-        };
-        if equal == u64::MAX {
-            hist[chunk[0] as usize] += 64;
-        } else {
-            scalar_hist(chunk, hist);
+    let mut offset = 0;
+    if let Some(&first) = data.first() {
+        let expected = _mm512_set1_epi8(first as i8);
+        while data.len() - offset >= 64 {
+            // SAFETY: the loop bounds this unaligned 64-byte vector load.
+            let equal = unsafe {
+                _mm512_cmpeq_epi8_mask(
+                    _mm512_loadu_si512(data.as_ptr().add(offset).cast()),
+                    expected,
+                )
+            };
+            if equal != u64::MAX {
+                break;
+            }
+            offset += 64;
         }
+        hist[first as usize] += offset;
     }
-    scalar_hist(remainder, hist);
+    banked_hist(&data[offset..], hist);
 }
 #[cfg(test)]
 mod differential;

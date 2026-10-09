@@ -1,4 +1,43 @@
 use super::*;
+
+#[test]
+fn banked_histogram_collisions_tails_and_batch_boundaries() {
+    let mut state = 0x1234_5678_9abc_def0u64;
+    for pattern in 0..6 {
+        let data: Vec<u8> = (0..131200)
+            .map(|i| match pattern {
+                0 => 255,
+                1 => (i % 4) as u8,
+                2 => ((i / 4) % 256) as u8,
+                3 => u8::from(i % 257 == 0),
+                4 => (i % 256) as u8,
+                _ => {
+                    state ^= state << 13;
+                    state ^= state >> 7;
+                    state ^= state << 17;
+                    state as u8
+                }
+            })
+            .collect();
+        for offset in 0..32 {
+            for len in [
+                0, 1, 7, 8, 31, 32, 33, 63, 64, 65, 511, 512, 513, 4095, 4096, 4097, 32767, 32768,
+                32769, 65535, 65536, 65537, 131073,
+            ] {
+                let bytes = &data[offset..offset + len];
+                let mut expected = [17usize; 256];
+                let mut actual = expected;
+                scalar_hist(bytes, &mut expected);
+                banked_hist(bytes, &mut actual);
+                assert_eq!(
+                    actual, expected,
+                    "pattern={pattern}, offset={offset}, len={len}"
+                );
+            }
+        }
+    }
+}
+
 #[test]
 fn random_unaligned_all_available_kernels() {
     let mut seed = 0x87162dff_u64;
