@@ -1,0 +1,27 @@
+{
+  "scope": "Diagnostic only; no Criterion confidence bound or strict acceptance",
+  "source_sha256": "fb05adbe76e08f068e0acb2d4691070d76cedec332dd0f02c666901390303709",
+  "median_ns": {
+    "zero/baseline": 146.2925,
+    "zero/fused": 146.91584,
+    "zero/fused_simd": 151.0225,
+    "zero/fused_simd8": 147.3575,
+    "ascii/baseline": 1113.39,
+    "ascii/fused": 1152.955,
+    "ascii/fused_simd": 1068.69416,
+    "ascii/fused_simd8": 1106.365,
+    "random/baseline": 1030.34,
+    "random/fused": 1067.51584,
+    "random/fused_simd": 1004.595,
+    "random/fused_simd8": 1032.1725
+  },
+  "files": {
+    "recorded-build.py": "0f3e8a00d6b510608ec990297fd9fe72f5004131cd3f5584c98c3313f4e705a5",
+    "simd-first.log": "559cdc92a059e4f38d470e236d672c91e74fc4fffcd1f35eb16f84ed25d0645f",
+    "output.log": "8290bb06aeb511590caa49cfb5a1309bd22168d9bd728ebc38e1a55a6b950336",
+    "scalar-first.log": "21baea16d5f4fc2defab815640faa546a2decacdad71ca26194d3407de09335e",
+    "experiment.py": "81192fe50ae9c831450e4ddf467512387cbacee217c65be4248b099d9deb257a",
+    "README.md": "1cb345c57a56745c613b6b3b9f9015591c5e40e116d859cb7b58c0ebb68071af",
+    "compiled-main.rs": "155898e3903c9b48aa3a166ea240e71cff793d7aada51bfd9611a402a1e34f96"
+  }
+}

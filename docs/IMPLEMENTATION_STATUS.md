@@ -88,8 +88,11 @@ workload or host security policy was modified for closure.
 
 ## Remaining order
 
-1. B: new exact histogram/finishing optimization experiments, with real M1 and
-   x86 measurements against the unchanged distribution/budget contract.
+1. B: new exact histogram construction experiments, with real M1 and x86
+   measurements against the unchanged distribution/budget contract. The
+   [fused-finalization spike](performance/entropy-fused-spike/README.md) found
+   only a small NEON diagnostic gain; no candidate was promoted and the strict
+   acceptance remains FAIL.
 2. C: resolve qualified all-load attribution on suitable owned hardware and
    measure attributed active kernel plus userspace CPU cost; throughput noise
    is not a <1% result.
