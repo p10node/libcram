@@ -1,7 +1,8 @@
 # A–E implementation and acceptance status
 
-Engineering verification snapshot: `3edfa98d95e039cdaca20e9906de3d10db301f2a`.
-Subsequent evidence/status-only commits do not change the packaged implementation.
+Frozen SDK/full-bindings verification snapshot: `3edfa98d95e039cdaca20e9906de3d10db301f2a`.
+Newer follow-ups have separate evidence below. The existing SDK archives do not
+include the subsequent production entropy optimization.
 **The whole A–E goal is not complete.** Software integration is not a substitute
 for the open performance and physical-device requirements below.
 
@@ -11,13 +12,22 @@ for the open performance and physical-device requirements below.
 | --- | --- | --- |
 | A: managed runtime | Owned allocation metadata; start/stop; bounded intake and migration; policy and trusted health bridge; stale/lost/offline fail-closed behavior | Production CRAM workload acceptance depends on C/D hardware gates |
 | A: evacuation liveness | Continuous source failure still evacuates; hot observations cannot rewind pressure evacuation; page/record quotas retained | Real-device endurance and long-duration soak |
-| B: exact Shannon | Banked histogram; arbitrary bytes, alignment/tails and differential tests; NEON/AVX2 measurements | Strict 4 KiB <1000 ns remains FAIL for ASCII/random on both measured machines |
+| B: exact Shannon | Banked histogram plus byte-verified short-period counting; unchanged ASCII benchmark now <1000 ns on M1/AVX2 VM; exact differential tests | Strict 4 KiB <1000 ns remains FAIL for random on both measured machines |
 | C: process PEBS | Owned-thread attachment/cleanup and partial-failure cleanup; explicit Broadwell-X L1-hot attribution; missing capability is an error | All-load attribution FAIL on tested host; total active kernel + collector <1% of one core NOT ESTABLISHED; no universal CPU profile |
 | D: physical-health adapter | Atomic trusted report convention; provenance, generations, freshness, bounds, symlink/permission controls; fixture tests | No real CRAM device available; physical occupancy, compression savings and poison/device behavior not accepted |
 | E: callback ownership | Explicit quiescent unregister barrier; ordinary unregister is not a lifetime barrier | Callers must release userdata/code only after the waiting API returns CRAM_OK |
 | E: bindings | Native C/C++17/Go; Python; CPU Torch zero-copy; generated-header agreement | Does not claim GPU Torch support |
 | E: engineering SDK | Clean-source native macOS/Linux archives; full payload hashes including nested manifests; extracted C/C++ consumers assert actual loaded-library provenance | Not a signed/notarized production certification or real-device qualification |
 | E: integration | Frozen-source macOS/Linux gates, independent bounded static re-review, short fixture soak; archived side worktrees | Long-duration production soak remains open |
+
+## Exact entropy follow-up
+
+[Short-period implementation, source hashes and raw evidence](performance/entropy-periodic/README.md):
+- Exact runtime-discovered period, verified against every byte including the partial tail.
+- Actual RED→GREEN plus three isolated behavioral mutation controls; bounded independent review.
+- Fresh default-feature workspace tests: macOS 88 PASS, Linux VM 89 PASS; all-target/all-feature Clippy PASS on both.
+- Unchanged Criterion upper-mean bounds (zero/ASCII/random, ns): M1 152.884/242.731/1080.987; VM 243.575/292.325/2972.236.
+- Both strict gates still FAIL on random; benchmark inputs and 1000 ns budget unchanged. Earlier SDK/bindings/soak receipts remain tied to their original snapshot.
 
 ## Review repairs
 

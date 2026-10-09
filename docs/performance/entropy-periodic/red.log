@@ -1,0 +1,20 @@
+
+running 1 test
+test periodic::tests::short_period_requires_complete_byte_equality ... FAILED
+
+failures:
+
+---- periodic::tests::short_period_requires_complete_byte_equality stdout ----
+
+thread 'periodic::tests::short_period_requires_complete_byte_equality' (17238503) panicked at $WORKSPACE/libcram-repeat/crates/libcram-core/src/entropy/periodic.rs:17:21:
+assertion `left == right` failed: width=1,offset=0,len=128
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    periodic::tests::short_period_requires_complete_byte_equality
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,86 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.26
+   Compiling crossbeam-utils v0.8.23
+   Compiling serde_core v1.0.229
+   Compiling libc v0.2.190
+   Compiling zerocopy v0.8.62
+   Compiling crossbeam-epoch v0.9.21
+   Compiling autocfg v1.5.1
+   Compiling zmij v1.0.23
+   Compiling crossbeam-deque v0.8.8
+   Compiling serde v1.0.229
+   Compiling num-traits v0.2.19
+   Compiling either v1.19.0
+   Compiling thiserror v2.0.21
+   Compiling cfg-if v1.0.5
+   Compiling rayon-core v1.13.0
+   Compiling serde_json v1.0.151
+   Compiling ciborium-io v0.2.2
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling regex-syntax v0.8.11
+   Compiling syn v3.0.6
+   Compiling syn v2.0.119
+   Compiling clap_lex v1.1.1
+   Compiling anstyle v1.0.14
+   Compiling plotters-backend v0.3.7
+   Compiling clap_builder v4.6.7
+   Compiling plotters-svg v0.3.7
+   Compiling itertools v0.10.5
+   Compiling cast v0.3.0
+   Compiling same-file v1.0.6
+   Compiling rayon v1.12.0
+   Compiling walkdir v2.5.0
+   Compiling plotters v0.3.7
+   Compiling is-terminal v0.4.17
+   Compiling regex-automata v0.4.18
+   Compiling anes v0.1.6
+   Compiling oorandom v11.1.5
+   Compiling once_cell v1.21.4
+   Compiling criterion-plot v0.5.0
+   Compiling clap v4.6.7
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling regex v1.13.1
+   Compiling zerocopy-derive v0.8.62
+   Compiling libcram-core v0.1.0 ($WORKSPACE/libcram-repeat/crates/libcram-core)
+   Compiling tinytemplate v1.2.1
+   Compiling libcram-ffi v0.1.0 ($WORKSPACE/libcram-repeat/crates/libcram-ffi)
+   Compiling half v2.7.1
+   Compiling ciborium-ll v0.2.2
+   Compiling ciborium v0.2.2
+   Compiling criterion v0.5.1
+   Compiling libcram-bench v0.1.0 ($WORKSPACE/libcram-repeat/crates/libcram-bench)
+    Finished `bench` profile [optimized] target(s) in 13.33s
+     Running ../../benches/entropy.rs ($WORKSPACE/libcram/target/repeat-build/release/deps/entropy-b3b235974267e0f0)
+Gnuplot not found, using plotters backend
+Benchmarking entropy/dispatch/zero/4096
+Benchmarking entropy/dispatch/zero/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/zero/4096: Collecting 100 samples in estimated 5.0006 s (33M iterations)
+Benchmarking entropy/dispatch/zero/4096: Analyzing
+entropy/dispatch/zero/4096
+                        time:   [151.90 ns 152.52 ns 153.21 ns]
+                        thrpt:  [24.899 GiB/s 25.011 GiB/s 25.114 GiB/s]
+Found 4 outliers among 100 measurements (4.00%)
+  4 (4.00%) high mild
+Benchmarking entropy/dispatch/ascii/4096
+Benchmarking entropy/dispatch/ascii/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/ascii/4096: Collecting 100 samples in estimated 5.0009 s (21M iterations)
+Benchmarking entropy/dispatch/ascii/4096: Analyzing
+entropy/dispatch/ascii/4096
+                        time:   [239.47 ns 239.92 ns 240.51 ns]
+                        thrpt:  [15.861 GiB/s 15.900 GiB/s 15.930 GiB/s]
+Found 3 outliers among 100 measurements (3.00%)
+  3 (3.00%) high mild
+Benchmarking entropy/dispatch/random/4096
+Benchmarking entropy/dispatch/random/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/random/4096: Collecting 100 samples in estimated 5.0007 s (4.7M iterations)
+Benchmarking entropy/dispatch/random/4096: Analyzing
+entropy/dispatch/random/4096
+                        time:   [1.0590 µs 1.0666 µs 1.0744 µs]
+                        thrpt:  [3.5507 GiB/s 3.5763 GiB/s 3.6023 GiB/s]
+Found 6 outliers among 100 measurements (6.00%)
+  5 (5.00%) high mild
+  1 (1.00%) high severe
+

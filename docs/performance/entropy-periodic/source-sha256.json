@@ -1,0 +1,8 @@
+{
+  "crates/libcram-core/src/entropy/mod.rs": "f8d8d7bd7a33fb1d165051bcaaaf57e838a97ee247a11dbd9264259270ba108c",
+  "crates/libcram-core/src/entropy/periodic.rs": "4bd087b1553d377a4adb62187974c5b54e33c5450694410ec85e692226caf1c0",
+  "crates/libcram-core/src/entropy/differential.rs": "001369199616ba4fffb5f5e2b11e563c3cd7567426ce3dc030ecf0a7fb9dafb3",
+  "benches/entropy.rs": "ddb3052bc8219ebfdf648088920c4ff77cbcdf5200ce4c59c00d7e8544416ac5",
+  "scripts/entropy_budget.py": "49adc276ad61c264288ed0c92dc392ee07b661163bbfe27b52fdf56c0464535a",
+  "Cargo.lock": "2c7aeddd5047c12183407cbd1d04309cf5863ae95263bd3023f5d94145bb2975"
+}

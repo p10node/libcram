@@ -1,0 +1,44 @@
+{
+  "results": [
+    {
+      "control": "baseline",
+      "test_exits": [
+        0,
+        0
+      ]
+    },
+    {
+      "control": "partial-proof",
+      "test_exits": [
+        101,
+        101
+      ]
+    },
+    {
+      "control": "lost-tail",
+      "test_exits": [
+        0,
+        101
+      ]
+    },
+    {
+      "control": "wrong-weight",
+      "test_exits": [
+        0,
+        101
+      ]
+    },
+    {
+      "control": "restored",
+      "test_exits": [
+        0,
+        0
+      ]
+    }
+  ],
+  "source_sha256": {
+    "mod.rs": "f8d8d7bd7a33fb1d165051bcaaaf57e838a97ee247a11dbd9264259270ba108c",
+    "differential.rs": "001369199616ba4fffb5f5e2b11e563c3cd7567426ce3dc030ecf0a7fb9dafb3",
+    "periodic.rs": "4bd087b1553d377a4adb62187974c5b54e33c5450694410ec85e692226caf1c0"
+  }
+}

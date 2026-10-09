@@ -1,6 +1,47 @@
 use super::*;
 
 #[test]
+fn repeated_blocks_validate_every_byte_and_preserve_additive_tails() {
+    let tile: Vec<u8> = (0..64).map(|i| (i * 37 + 19) as u8).collect();
+    let mut data: Vec<u8> = (0..131200).map(|i| tile[i % 64]).collect();
+    for offset in 0..64 {
+        for len in [
+            0, 1, 63, 64, 65, 127, 128, 129, 255, 256, 257, 4095, 4096, 4097, 32767, 32768, 32769,
+            65535, 65536, 65537, 131073,
+        ] {
+            let bytes = &data[offset..offset + len];
+            assert_eq!(periodic::period(bytes), if len < 128 { 0 } else { 64 });
+            let mut expected = [17usize; 256];
+            let mut actual = expected;
+            scalar_hist(bytes, &mut expected);
+            banked_hist(bytes, &mut actual);
+            assert_eq!(actual, expected, "offset={offset}, len={len}");
+            assert_eq!(
+                shannon_entropy(bytes).to_bits(),
+                scalar_entropy(bytes).to_bits()
+            );
+        }
+    }
+    // A change anywhere in the reference, repeated blocks or tail cannot be
+    // hidden by a partial comparison, fingerprint or retained input result.
+    for position in 0..4097 {
+        data[position] ^= 0x81;
+        let bytes = &data[..4097];
+        assert_eq!(periodic::period(bytes), 0, "position={position}");
+        let mut expected = [17usize; 256];
+        let mut actual = expected;
+        scalar_hist(bytes, &mut expected);
+        banked_hist(bytes, &mut actual);
+        assert_eq!(actual, expected, "position={position}");
+        assert_eq!(
+            shannon_entropy(bytes).to_bits(),
+            scalar_entropy(bytes).to_bits()
+        );
+        data[position] ^= 0x81;
+    }
+}
+
+#[test]
 fn banked_histogram_collisions_tails_and_batch_boundaries() {
     let mut state = 0x1234_5678_9abc_def0u64;
     for pattern in 0..6 {

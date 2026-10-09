@@ -35,15 +35,16 @@ mock-topology/container fallback tests:
 
 The tested NUMA nodes are DRAM, not CRAM. Physical CRAM placement, compression
 and device-occupancy integration still require compatible hardware and a driver.
-The unchanged 4 KiB entropy budget of 1000 ns still fails for ASCII and
-pseudorandom input on both the Apple M1 Pro and the Linux x86_64 VM. VM timings
+The unchanged 4 KiB entropy budget of 1000 ns still fails for pseudorandom input
+on both the Apple M1 Pro and the Linux x86_64 VM. Exact runtime-verified periodic
+counting brings the unchanged ASCII benchmark below budget on both. VM timings
 are not isolated bare-metal performance results. This is not a production-ready
 or all-requirements-complete claim.
 
 See [current A–E feature matrix and open acceptance gates](docs/IMPLEMENTATION_STATUS.md),
 [Linux NUMA VM acceptance](docs/S5_VM_ACCEPTANCE.md),
 [native PEBS scope/evidence](docs/PEBS_HOST_ACCEPTANCE.md),
-[updated strict entropy measurements](docs/performance/entropy-update.md), and
+[latest strict entropy measurements](docs/performance/entropy-periodic/README.md), and
 [verification history](docs/VERIFICATION.md). These separate software correctness,
 ordinary DRAM NUMA movement and actual hardware/performance acceptance.
 

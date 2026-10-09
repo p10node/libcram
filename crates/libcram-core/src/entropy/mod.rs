@@ -49,11 +49,22 @@ fn scalar_hist(data: &[u8], hist: &mut [usize; 256]) {
         hist[b as usize] += 1;
     }
 }
+mod periodic;
+
 /// Four disjoint banks remove same-symbol dependencies between adjacent bytes.
 /// A batch contributes at most 8192 to any u16 counter, and at most 32768
 /// to their sum. Merge before the next batch to retain arbitrary-length inputs.
 #[inline]
-fn banked_hist(data: &[u8], hist: &mut [usize; 256]) {
+fn banked_hist(mut data: &[u8], hist: &mut [usize; 256]) {
+    let period = periodic::period(data);
+    if let Some(repeats) = data.len().checked_div(period) {
+        // Full byte equality was verified before weighting each reference byte.
+        // Duplicate symbols accumulate normally; the partial tail is counted below.
+        for &byte in &data[..period] {
+            hist[byte as usize] += repeats;
+        }
+        data = &data[repeats * period..];
+    }
     if data.len() < 64 {
         scalar_hist(data, hist);
         return;

@@ -1,0 +1,20 @@
+
+running 1 test
+test entropy::differential::repeated_blocks_validate_every_byte_and_preserve_additive_tails ... FAILED
+
+failures:
+
+---- entropy::differential::repeated_blocks_validate_every_byte_and_preserve_additive_tails stdout ----
+
+thread 'entropy::differential::repeated_blocks_validate_every_byte_and_preserve_additive_tails' (17268171) panicked at /var/folders/ws/hhlmghps1mjf1_lchf2qfh5h0000gn/T/libcram-periodic-0hl2a96n/differential.rs:30:9:
+assertion `left == right` failed: position=128
+  left: 64
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    entropy::differential::repeated_blocks_validate_every_byte_and_preserve_additive_tails
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.02s
+

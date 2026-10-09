@@ -1,0 +1,88 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.26
+   Compiling quote v1.0.47
+   Compiling crossbeam-utils v0.8.23
+   Compiling serde_core v1.0.229
+   Compiling libc v0.2.190
+   Compiling zerocopy v0.8.62
+   Compiling crossbeam-epoch v0.9.21
+   Compiling zmij v1.0.23
+   Compiling serde v1.0.229
+   Compiling autocfg v1.5.1
+   Compiling syn v3.0.6
+   Compiling syn v2.0.119
+   Compiling crossbeam-deque v0.8.8
+   Compiling num-traits v0.2.19
+   Compiling rayon-core v1.13.0
+   Compiling serde_json v1.0.151
+   Compiling either v1.19.0
+   Compiling cfg-if v1.0.5
+   Compiling thiserror v2.0.21
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling anstyle v1.0.14
+   Compiling memchr v2.8.3
+   Compiling ciborium-io v0.2.2
+   Compiling itoa v1.0.18
+   Compiling clap_lex v1.1.1
+   Compiling regex-syntax v0.8.11
+   Compiling plotters-backend v0.3.7
+   Compiling plotters-svg v0.3.7
+   Compiling clap_builder v4.6.7
+   Compiling zerocopy-derive v0.8.62
+   Compiling regex-automata v0.4.18
+   Compiling itertools v0.10.5
+   Compiling same-file v1.0.6
+   Compiling cast v0.3.0
+   Compiling walkdir v2.5.0
+   Compiling plotters v0.3.7
+   Compiling rayon v1.12.0
+   Compiling criterion-plot v0.5.0
+   Compiling libcram-core v0.1.0 (/root/libcram-periodic.10lnib/crates/libcram-core)
+   Compiling tinytemplate v1.2.1
+   Compiling half v2.7.1
+   Compiling regex v1.13.1
+   Compiling ciborium-ll v0.2.2
+   Compiling ciborium v0.2.2
+   Compiling clap v4.6.7
+   Compiling is-terminal v0.4.17
+   Compiling anes v0.1.6
+   Compiling oorandom v11.1.5
+   Compiling once_cell v1.21.4
+   Compiling criterion v0.5.1
+   Compiling libcram-ffi v0.1.0 (/root/libcram-periodic.10lnib/crates/libcram-ffi)
+   Compiling libcram-bench v0.1.0 (/root/libcram-periodic.10lnib/crates/libcram-bench)
+    Finished `bench` profile [optimized] target(s) in 2m 33s
+     Running ../../benches/entropy.rs (target/release/deps/entropy-e460db15b69cee49)
+Gnuplot not found, using plotters backend
+Benchmarking entropy/dispatch/zero/4096
+Benchmarking entropy/dispatch/zero/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/zero/4096: Collecting 100 samples in estimated 5.0001 s (21M iterations)
+Benchmarking entropy/dispatch/zero/4096: Analyzing
+entropy/dispatch/zero/4096
+                        time:   [239.23 ns 243.46 ns 249.44 ns]
+                        thrpt:  [15.293 GiB/s 15.668 GiB/s 15.946 GiB/s]
+Found 7 outliers among 100 measurements (7.00%)
+  2 (2.00%) high mild
+  5 (5.00%) high severe
+Benchmarking entropy/dispatch/ascii/4096
+Benchmarking entropy/dispatch/ascii/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/ascii/4096: Collecting 100 samples in estimated 5.0008 s (17M iterations)
+Benchmarking entropy/dispatch/ascii/4096: Analyzing
+entropy/dispatch/ascii/4096
+                        time:   [288.42 ns 289.81 ns 292.21 ns]
+                        thrpt:  [13.055 GiB/s 13.163 GiB/s 13.226 GiB/s]
+Found 9 outliers among 100 measurements (9.00%)
+  4 (4.00%) high mild
+  5 (5.00%) high severe
+Benchmarking entropy/dispatch/random/4096
+Benchmarking entropy/dispatch/random/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/random/4096: Collecting 100 samples in estimated 5.0047 s (1.7M iterations)
+Benchmarking entropy/dispatch/random/4096: Analyzing
+entropy/dispatch/random/4096
+                        time:   [2.9558 µs 2.9873 µs 3.0205 µs]
+                        thrpt:  [1.2629 GiB/s 1.2770 GiB/s 1.2906 GiB/s]
+Found 8 outliers among 100 measurements (8.00%)
+  1 (1.00%) high mild
+  7 (7.00%) high severe
+
