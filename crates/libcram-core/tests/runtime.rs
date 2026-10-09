@@ -158,7 +158,10 @@ fn failing_batch_cannot_partially_promote() {
     }));
     let mut runtime = Runtime::new(allocator, source, RuntimeConfig::default()).expect("runtime");
     assert!(runtime.tick().is_err());
-    assert!(backend.0.lock().expect("moves").is_empty());
+    // Failed intake never promotes; independent fail-closed evacuation may bind
+    // unknown initial residency to the DRAM node.
+    assert_eq!(*backend.0.lock().expect("moves"), vec![0]);
+    assert_eq!(runtime.telemetry().cram_bytes, 0);
 }
 #[test]
 fn worker_runs_pipeline_and_stop_wakes_long_interval() {
@@ -586,5 +589,39 @@ fn pressure_without_observations_evacuates_with_page_quota() {
     rt.tick().unwrap();
     rt.tick().unwrap();
     assert_eq!(rt.telemetry().cram_bytes, 0);
+    assert_eq!(*b.0.lock().unwrap(), vec![0, 0, 0]);
+}
+
+#[test]
+fn continuous_source_failure_still_evacuates_with_one_page_quota() {
+    struct Offline;
+    impl Collector for Offline {
+        fn poll(&mut self) -> Result<Option<Observation>, Error> {
+            panic!("offline device must prevent access observation intake")
+        }
+        fn device_update(&mut self) -> Result<Option<DeviceUpdate>, Error> {
+            Err(Error::Unsupported)
+        }
+    }
+    let (a, b) = allocator();
+    a.submit_device_usage(0, 100).unwrap();
+    let _owned = a
+        .allocate_owned(page_size() * 3, page_size(), AccessHint::ReadHeavy)
+        .unwrap();
+    let mut rt = Runtime::new(
+        a,
+        Offline,
+        RuntimeConfig {
+            max_pages: 1,
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    for remaining in [2, 1, 0] {
+        assert!(rt.tick().is_err());
+        assert_eq!(rt.telemetry().cram_bytes, (page_size() * remaining) as u64);
+    }
+    assert_eq!(rt.status().errors, 3);
+    assert_eq!(rt.status().pages_attempted, 3);
     assert_eq!(*b.0.lock().unwrap(), vec![0, 0, 0]);
 }

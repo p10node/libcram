@@ -121,8 +121,11 @@ the existing migration engine using at most the remaining page quota and
 `max_observations` registry records (engine capped at 128). Cursor-based passes
 progress over later ticks. Managed mode prohibits legacy metadata; temporary
 observation samples are cleared, so this path never revives undated promotion
-metadata. Error ticks revoke health and perform **no migration**; evacuation
-under a continuously failing source is explicitly deferred. This is bounded
+metadata. Failed intake ticks revoke health and independently evacuate using
+that tick's page/record quotas, so a continuously failing producer cannot strand
+CRAM mappings indefinitely. The failed observation batch is never promoted.
+Errors after event migration has started do not trigger another scan: accounting
+may be incomplete, so retrying could exceed the quota. This is bounded
 best-effort evacuation, not a hard completion deadline or full stop evacuation.
 Syscalls/custom collectors/filesystem reads may block; Rust cannot enforce a
 hard latency bound. Actual per-page failure accounting is still engine-owned.

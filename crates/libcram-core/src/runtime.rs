@@ -219,10 +219,31 @@ impl<C: Collector> Runtime<C> {
     }
     pub fn tick(&mut self) -> Result<(), Error> {
         self.status.ticks = self.status.ticks.saturating_add(1);
-        let result = self.tick_inner();
+        let mut collection_complete = false;
+        let result = self.tick_inner(&mut collection_complete);
         if result.is_err() {
             self.status.errors = self.status.errors.saturating_add(1);
             let _ = self.allocator.submit_device_usage(0, 0);
+            // Failed intake must not strand existing CRAM pages indefinitely.
+            // No event migration has started, so the full page quota is available.
+            // After migration begins we do not retry here: an error could already
+            // have spent the quota even if it could not return an accounting report.
+            if !collection_complete {
+                if let Ok(report) = crate::migration::step(
+                    &self.allocator.inner,
+                    self.config.max_observations,
+                    self.config.max_pages,
+                ) {
+                    self.status.pages_attempted = self
+                        .status
+                        .pages_attempted
+                        .saturating_add(report.pages_attempted as u64);
+                    self.status.pages_moved = self
+                        .status
+                        .pages_moved
+                        .saturating_add(report.pages_moved as u64);
+                }
+            }
         }
         self.status.degraded = result.is_err() || self.allocator.inner.pressure_level() >= 2;
         if self.status.degraded {
@@ -231,7 +252,7 @@ impl<C: Collector> Runtime<C> {
         *self.shared_status.lock().unwrap_or_else(|e| e.into_inner()) = self.status.clone();
         result
     }
-    fn tick_inner(&mut self) -> Result<(), Error> {
+    fn tick_inner(&mut self, collection_complete: &mut bool) -> Result<(), Error> {
         if let Some(update) = self.source.device_update()? {
             if update.poison_pages.len() > 64 {
                 return Err(Error::InvalidSample);
@@ -249,6 +270,7 @@ impl<C: Collector> Runtime<C> {
             };
             batch.push(observation);
         }
+        *collection_complete = true;
         let mut remaining = self.config.max_pages;
         for observation in batch {
             if remaining == 0 {
