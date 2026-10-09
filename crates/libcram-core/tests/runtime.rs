@@ -406,9 +406,8 @@ fn oversized_poison_batch_is_rejected_before_health_or_poll() {
     let (allocator, backend) = allocator();
     allocator.submit_device_usage(0, 100).unwrap();
     let mut runtime = Runtime::new(allocator, Oversized, RuntimeConfig::default()).unwrap();
-    let before = runtime.telemetry().pressure_level;
     assert!(matches!(runtime.tick(), Err(Error::InvalidSample)));
-    assert_eq!(runtime.telemetry().pressure_level, before);
+    assert!(runtime.telemetry().pressure_level >= 2);
     assert!(backend.0.lock().unwrap().is_empty());
     assert_eq!(runtime.status().errors, 1);
 }
@@ -537,4 +536,55 @@ fn expired_token_fresh_event_future_event_and_foreign_identity_are_dropped() {
         .allocate_owned(page_size(), page_size(), AccessHint::WriteHeavy)
         .unwrap();
     assert_eq!(later.as_slice().len(), page_size());
+}
+
+#[test]
+fn stopped_runtime_revokes_health_for_future_allocations() {
+    let (a, _) = allocator();
+    let mut rt = Runtime::new(a, Source(VecDeque::new()), RuntimeConfig::default()).unwrap();
+    rt.tick().unwrap();
+    let mut worker = rt.start().unwrap();
+    worker.stop().unwrap();
+    assert!(worker.telemetry().pressure_level >= 2);
+    let _owned = worker
+        .allocate_owned(page_size(), page_size(), AccessHint::ReadHeavy)
+        .unwrap();
+    assert_eq!(worker.telemetry().cram_bytes, 0);
+}
+#[test]
+fn pressure_without_observations_evacuates_with_page_quota() {
+    struct Pressure;
+    impl Collector for Pressure {
+        fn poll(&mut self) -> Result<Option<Observation>, Error> {
+            Ok(None)
+        }
+        fn device_update(&mut self) -> Result<Option<DeviceUpdate>, Error> {
+            Ok(Some(DeviceUpdate {
+                used_bytes: 99,
+                capacity_bytes: 100,
+                poison_pages: vec![],
+            }))
+        }
+    }
+    let (a, b) = allocator();
+    a.submit_device_usage(0, 100).unwrap();
+    let _owned = a
+        .allocate_owned(page_size() * 3, page_size(), AccessHint::ReadHeavy)
+        .unwrap();
+    let mut rt = Runtime::new(
+        a,
+        Pressure,
+        RuntimeConfig {
+            max_pages: 1,
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(rt.telemetry().cram_bytes, (page_size() * 3) as u64);
+    rt.tick().unwrap();
+    assert_eq!(rt.telemetry().cram_bytes, (page_size() * 2) as u64);
+    rt.tick().unwrap();
+    rt.tick().unwrap();
+    assert_eq!(rt.telemetry().cram_bytes, 0);
+    assert_eq!(*b.0.lock().unwrap(), vec![0, 0, 0]);
 }

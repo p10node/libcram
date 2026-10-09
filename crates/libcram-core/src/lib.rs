@@ -6,6 +6,7 @@ pub mod guard;
 pub mod hal;
 pub mod migration;
 pub mod runtime;
+pub mod runtime_bridge;
 pub mod telemetry;
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

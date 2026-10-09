@@ -15,6 +15,17 @@ pub struct ObservationToken {
     created: Instant,
 }
 impl ObservationToken {
+    /// Metadata only; temporarily upgrades the weak identity, never reads payload.
+    pub fn range(&self) -> Option<std::ops::Range<usize>> {
+        let record = self.record.upgrade()?;
+        Some(record.address..record.address.checked_add(record.size)?)
+    }
+    pub fn created_at(&self) -> Instant {
+        self.created
+    }
+    pub(crate) fn same_allocation(&self, other: &Self) -> bool {
+        Weak::ptr_eq(&self.record, &other.record)
+    }
     pub(crate) fn new(record: &Arc<Allocation>, entropy: f64) -> Result<Self, Error> {
         AccessSample {
             reads: 0,
@@ -121,6 +132,8 @@ pub struct Runtime<C: Collector> {
 }
 impl<C: Collector> Drop for Runtime<C> {
     fn drop(&mut self) {
+        let _ = self.allocator.submit_device_usage(0, 0);
+        self.status.degraded = true;
         self.status.stopped = true;
         *self.shared_status.lock().unwrap_or_else(|e| e.into_inner()) = self.status.clone();
     }
@@ -206,13 +219,10 @@ impl<C: Collector> Runtime<C> {
     }
     pub fn tick(&mut self) -> Result<(), Error> {
         self.status.ticks = self.status.ticks.saturating_add(1);
-        let mut rejected_update = false;
-        let result = self.tick_inner(&mut rejected_update);
+        let result = self.tick_inner();
         if result.is_err() {
             self.status.errors = self.status.errors.saturating_add(1);
-            if !rejected_update {
-                let _ = self.allocator.submit_device_usage(0, 0);
-            }
+            let _ = self.allocator.submit_device_usage(0, 0);
         }
         self.status.degraded = result.is_err() || self.allocator.inner.pressure_level() >= 2;
         if self.status.degraded {
@@ -221,10 +231,9 @@ impl<C: Collector> Runtime<C> {
         *self.shared_status.lock().unwrap_or_else(|e| e.into_inner()) = self.status.clone();
         result
     }
-    fn tick_inner(&mut self, rejected_update: &mut bool) -> Result<(), Error> {
+    fn tick_inner(&mut self) -> Result<(), Error> {
         if let Some(update) = self.source.device_update()? {
             if update.poison_pages.len() > 64 {
-                *rejected_update = true;
                 return Err(Error::InvalidSample);
             }
             self.allocator
@@ -302,6 +311,23 @@ impl<C: Collector> Runtime<C> {
                 .pages_moved
                 .saturating_add(report.pages_moved as u64);
             remaining = remaining.saturating_sub(report.pages_attempted);
+        }
+        // Managed ownership forbids legacy samples; observation samples were cleared
+        // above. This scan can only evacuate, never resurrect undated metadata.
+        if remaining > 0 && self.allocator.inner.pressure_level() >= 2 {
+            let report = crate::migration::step(
+                &self.allocator.inner,
+                self.config.max_observations,
+                remaining,
+            )?;
+            self.status.pages_attempted = self
+                .status
+                .pages_attempted
+                .saturating_add(report.pages_attempted as u64);
+            self.status.pages_moved = self
+                .status
+                .pages_moved
+                .saturating_add(report.pages_moved as u64);
         }
         Ok(())
     }
