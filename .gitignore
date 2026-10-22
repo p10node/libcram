@@ -7,3 +7,4 @@ __pycache__/
 *.a
 *.egg-info/
 /bench-results/
+.DS_Store
