@@ -1,0 +1,28 @@
+====================================================================================================
+$SCRATCH/diag/jitter-l1hit.log
+CONFIG work_cpu=30 collector_cpu=25 load=0x1d1 store=0x82d0 periods=[2000003, 200003, 50021, 20011] pairs=30 rounds=100 poll_ms=100 jitter=true tsc_per_ns=2.095327 bucket_ns=[64, 250, 1000, 2000, 4000, 8000, 16000, 64000]
+period= 2000003 pairs=30 samples/s med=     105 cpu_delta med= +0.38% CI95[+0.04,+0.69] wall_delta med= +0.25% collector=0.1295%core (max 0.1810)
+      direct stolen time per sample (gap delta) med=  37020 ns CI95[-37220,88403]  gap-time fraction delta med=+0.370% CI95[-0.391,+0.927]
+      mean gaps/block base    [314.1, 100.1, 3.3, 24.5, 203.5, 364.4, 33.3, 6.1]
+      mean gaps/block sampled [316.4, 118.7, 2.0, 28.1, 222.5, 405.6, 38.6, 8.9]  mean samples/block 26
+period=  200003 pairs=30 samples/s med=    1051 cpu_delta med= +0.79% CI95[+0.59,+1.01] wall_delta med= +0.83% collector=0.0778%core (max 0.1055)
+      direct stolen time per sample (gap delta) med=   6409 ns CI95[4619,8913]  gap-time fraction delta med=+0.617% CI95[+0.474,+0.915]
+      mean gaps/block base    [315.7, 97.7, 4.2, 27.9, 202.5, 409.4, 35.7, 9.8]
+      mean gaps/block sampled [335.9, 74.5, 3.4, 64.5, 411.5, 420.8, 53.1, 23.1]  mean samples/block 261
+period=   50021 pairs=30 samples/s med=    4154 cpu_delta med= +2.33% CI95[+1.75,+2.69] wall_delta med= +2.40% collector=0.1590%core (max 0.2577)
+      direct stolen time per sample (gap delta) med=   4974 ns CI95[3750,6940]  gap-time fraction delta med=+2.136% CI95[+1.467,+2.767]
+      mean gaps/block base    [289.4, 74.1, 2.7, 29.9, 203.6, 382.4, 23.2, 3.2]
+      mean gaps/block sampled [367.1, 108.3, 3, 353.6, 866.4, 428.8, 54.5, 14.9]  mean samples/block 1033.6
+period=   20011 pairs=30 samples/s med=   10115 cpu_delta med= +4.80% CI95[+4.39,+5.23] wall_delta med= +4.77% collector=0.3228%core (max 0.3793)
+      direct stolen time per sample (gap delta) med=   4667 ns CI95[4071,4916]  gap-time fraction delta med=+4.557% CI95[+3.799,+4.784]
+      mean gaps/block base    [249.4, 102.0, 2.0, 28.3, 200.3, 379.0, 34.1, 6.7]
+      mean gaps/block sampled [338.1, 79.8, 3.9, 1460.2, 1177.3, 454.6, 72.2, 21.5]  mean samples/block 2507.4
+CPU-time regression: cost/sample = 4516 ns CI95[3973,5045] intercept=+0.28%
+Gap-time regression: cost/sample = 4177 ns CI95[3608,4770] intercept=+0.326%
+====================================================================================================
+$SCRATCH/diag/work-l1hit.log
+CONFIG work_cpu=30 collector_cpu=25 load=0x1d1 store=0x82d0 periods=[2000003, 1000003, 500009] pairs=30 rounds=600 poll_ms=100 jitter=false tsc_per_ns=2.095343 bucket_ns=[64, 250, 1000, 2000, 4000, 8000, 16000, 64000]
+period= 2000003 pairs=30 samples/s med=    2242 cpu_delta med= +1.29% CI95[+0.16,+2.12] wall_delta med= +0.84% collector=0.1842%core (max 0.3311)
+period= 1000003 pairs=30 samples/s med=    4431 cpu_delta med= +2.41% CI95[+1.58,+2.79] wall_delta med= +2.71% collector=0.1495%core (max 0.2255)
+period=  500009 pairs=30 samples/s med=    8701 cpu_delta med= +4.42% CI95[+3.84,+4.95] wall_delta med= +4.73% collector=0.2522%core (max 0.3509)
+CPU-time regression: cost/sample = 5145 ns CI95[3798,6625] intercept=+0.04%

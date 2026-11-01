@@ -33,14 +33,45 @@ with their diagnostic text; neither is reported as NoSamples.
 Caller must map events to owned allocation generations and reject samples older
 than allocation creation. This API makes no allocator/runtime decisions.
 
+### Broadwell-X profile, period pairing and rate governor
+
+- `sampling::broadwell_x::configs(load_period)` returns the audited pair
+  `0x67d1` (retired loads: L1/L2/L3 hit, L3 miss, LFB hit) and `0x82d0` (all
+  stores), user-only, after `broadwell_x::detected()` confirms family 6
+  model 79. It replaces ALL_LOADS `0x81d0`, whose PEBS address is wrong on
+  this part.
+- Two configured events must have distinct, coprime periods
+  (`sampling::periods_independent`). `PebsSampler::attach`, `set_periods` and
+  `ProcessPebsCollector::new` reject other pairs. Reason: PEBS format 2 drops
+  both records when the two counters overflow within ~1,000 events of each
+  other; equal periods on a loop with balanced loads and stores lost every
+  sample. `companion_period(p)` gives the store period ≈ p·65/64, so read and
+  write sample weights differ by only ~1.6%.
+- `pebs::PebsProgram::load` loads the object once; `PebsProgram::attach`
+  returns `PebsEvents` (perf FDs, counts, `set_periods`) for one TID/CPU.
+  `PebsSampler` is the single-target wrapper over both.
+- `ProcessPebsCollector` runs a `RateGovernor` by default, capping each
+  monitored CPU at `DEFAULT_MAX_SAMPLES_PER_CPU_SEC` (1,200). It reads PMU
+  counts at most every `RATE_INTERVAL` (100 ms) inside `poll`, scales every
+  period by one shared factor and reprograms samplers with
+  `PERF_EVENT_IOC_PERIOD`; new samplers start at the governed periods.
+  `with_rate_limit(None)` disables it before the first poll. `period_scale()`
+  and `periods()` report the current weights: each sample stands for about
+  `periods()[i]` events of its kind.
+
 ## Bounds and lifecycle
 
-- One sampler per `(TID, /stat starttime, selected CPU)`, maximum 32 samplers.
-  Each sampler has one or two explicitly configured perf-event FDs; this is a
-  sampler/ring quota, not a total-FD quota. BPF loader/map FDs are additional.
+- One `PebsProgram` (loaded BPF object, 256 KiB ring, DROPPED map) per
+  selected CPU, loaded at that CPU's first attachment and shared by every
+  thread attached there. One attachment per `(TID, /stat starttime, selected
+  CPU)`, maximum 32, each with one or two explicitly configured perf-event
+  FDs. This is an attachment quota, not a total-FD quota; BPF loader/map FDs
+  are additional. Programs are not shared across CPUs: the kernel BPF ring
+  takes a trylock in NMI context, so concurrent CPUs on one ring could lose
+  reservations.
 - Maximum 8192 drain attempts and output events per poll. Empty-ring attempts
-  also spend budget. One record per ring turn with a persistent round-robin
-  cursor prevents a permanently busy first ring starving later stable rings.
+  also spend budget. One record per CPU ring turn with a persistent
+  round-robin cursor prevents a permanently busy CPU starving the others.
 - Trusted object bytes must be nonempty and at most 4 MiB. CPU/config counts,
   duplicates, CPU integer range, periods, PMU shape and all limits are checked
   before internal allocation/attachment. Input Vecs already belong to caller;
@@ -50,18 +81,22 @@ than allocation creation. This API makes no allocator/runtime decisions.
   Each stat read is limited to 4097 bytes, rejecting more than 4096. No other
   process inventory is traversed. Membership/starttime are checked again after
   new attachment. Existing generations are reconciled on every poll; exits and
-  reuse drop old samplers before replacements are admitted.
+  reuse drop old attachments before replacements are admitted.
 - Any refresh, capacity, attachment, decode or observed ring-loss error clears
-  all attachments and discards the whole current output batch. A subsequent
-  poll retries. Drop owns/drops every sampler/FD without workers. A collector
+  all attachments and programs, discarding queued ring records and the whole
+  current output batch. A subsequent poll reloads and retries. Drop
+  owns/drops every program/FD without workers. A collector
   carried across fork is rejected when polled in the child.
 
 ## Honest limitations
 
 Sampling covers **only selected CPUs** and **only explicitly audited raw events**.
-No architecture profile is guessed. The parent's native Broadwell-X evidence
-for L1-hit loads `0x01d1` and stores `0x82d0` is not evidence for all-loads
-`0x81d0`, other CPUs, or universal access coverage.
+No architecture profile is guessed or auto-selected. The audited Broadwell-X
+profile (`0x67d1` loads, `0x82d0` stores) is not evidence for other CPUs.
+ALL_LOADS `0x81d0` stays wrong on that part. With mixed-latency loads, PEBS
+samples concentrate on loads that retire after a stall, so per-page sample
+counts over-represent cache-missing loads
+([evidence](evidence/2026-11-01/governor/README.md)).
 
 Proc scans are not atomic. Threads created after a scan wait until the next
 poll; short-lived threads can be missed. Churn can force fail-closed retries
@@ -73,10 +108,17 @@ Exits after a scan are recognized next poll. No process-wide snapshot or complet
 coverage claim is made.
 
 DROPPED is a best-effort cumulative per-CPU diagnostic, checked on all retained
-rings after draining; it is not atomic and does not measure PMU scheduling loss
-or kernel recursion suppression. A successful empty poll is not evidence of
-hardware availability, workload inactivity, or zero memory accesses. Sampling
-and attachment overhead are not benchmarked; there is no <1% CPU claim.
+rings after draining; it is not atomic and does not measure PMU scheduling loss,
+kernel recursion suppression or PEBS records the kernel drops before the BPF
+handler (format-2 collisions, which independent periods prevent). A successful
+empty poll is not evidence of hardware availability, workload inactivity, or
+zero memory accesses. Sampling cost on s5 Broadwell-X: ≈4.7 µs per sample on
+the sampled core plus ≈0.3% of a core for the governed collector. At the
+default cap of 1,200 samples/s per CPU the worst steady state is 0.89% of one
+core. One-time costs are not in that figure: ≈40–50 ms of collector CPU per
+selected CPU (program load), ≈0.15 ms per thread attach + detach, and up to
+100 ms at the base period after the first attachment. Load bursts shorter
+than 100 ms are bounded only by the kernel's sample-rate limit.
 
 ## Executed checks
 

@@ -13,7 +13,7 @@ for the open performance and physical-device requirements below.
 | A: managed runtime | Owned allocation metadata; start/stop; bounded intake and migration; policy and trusted health bridge; stale/lost/offline fail-closed behavior | Production CRAM workload acceptance depends on C/D hardware gates |
 | A: evacuation liveness | Continuous source failure still evacuates; hot observations cannot rewind pressure evacuation; page/record quotas retained | Real-device endurance and long-duration soak |
 | B: exact Shannon | Banked histogram plus byte-verified short-period counting; unchanged ASCII benchmark now <1000 ns on M1/AVX2 VM; exact differential tests | Strict 4 KiB <1000 ns remains FAIL for random on both measured machines |
-| C: process PEBS | Owned-thread attachment/cleanup and partial-failure cleanup; explicit Broadwell-X L1-hot attribution; missing capability is an error | All-load attribution FAIL on tested host; total active kernel + collector <1% of one core NOT ESTABLISHED; no universal CPU profile |
+| C: process PEBS | Owned-thread attachment/cleanup and partial-failure cleanup; explicit Broadwell-X L1-hot attribution; missing capability is an error | ALL_LOADS DLA FAIL on tested host (root cause: CPU PEBS records microcode-load addresses); audited `0x67d1`/`0x82d0` Broadwell-X profile PASSES attribution; rate governor (default 1,200 samples/s/CPU) gives worst steady state 0.89% of one core on s5; one BPF program per CPU shared by its threads (thread attach ≈0.13 ms); NOT covered: ≈40–50 ms one-time load per CPU, sub-100 ms bursts, sampling bias toward post-stall loads; no universal CPU profile |
 | D: physical-health adapter | Atomic trusted report convention; provenance, generations, freshness, bounds, symlink/permission controls; fixture tests | No real CRAM device available; physical occupancy, compression savings and poison/device behavior not accepted |
 | E: callback ownership | Explicit quiescent unregister barrier; ordinary unregister is not a lifetime barrier | Callers must release userdata/code only after the waiting API returns CRAM_OK |
 | E: bindings | Native C/C++17/Go; Python; CPU Torch zero-copy; generated-header agreement | Does not claim GPU Torch support |
@@ -29,6 +29,28 @@ L1_HIT controls remain valid. Every stream identifies the actual load instructio
 but ALL_LOADS data addresses are wrong. Address-only replay independently confirms
 the corrected multi-column parser. This narrows the failure; it does not establish
 a CPU/microcode/kernel cause, a repair, or <1% overhead. Production code is unchanged.
+
+[2026-11-01 root cause and cost measurement](evidence/2026-11-01/README.md):
+the PEBS DLA field captures microcode-issued loads (constant `0xfeb8xxxx`, once
+`TSS.RSP0` in cpu_entry_area) whenever they qualify for the event's umask and
+privilege filter. Affected on this host: ALL_LOADS, STLB_MISS_LOADS, L1_MISS
+and load latency, plus L1_HIT and ALL_STORES with OS counting. Microcode
+`0xb000040` is the newest available. The `0xd1/0x67` union matches the
+ALL_LOADS count within 0.5% with valid DLA. The end-to-end cost is
+4.2–5.1 µs/sample, almost all of it PEBS assist plus PMI/NMI; the BPF program
+cost is not measurable above zero.
+
+[2026-11-01 profile and governor](evidence/2026-11-01/governor/README.md):
+`sampling::broadwell_x::configs` (`0x67d1` + `0x82d0`) passes owned attribution
+through the BPF path, including DRAM loads. Two PEBS periods must be distinct
+and coprime: PEBS format 2 drops nearly all records when equal periods keep
+the counters aligned. `ProcessPebsCollector` now caps samples per CPU with a
+shared period scale. Measured worst steady state at the 1,200/s default:
+0.93% of one core.
+
+[2026-11-01 shared program](evidence/2026-11-01/shared-program/README.md):
+threads on one CPU share one loaded BPF object. A thread attach costs 0.13 ms
+of collector CPU instead of ≈43 ms. Re-measured worst steady state: 0.89%.
 
 ## Exact entropy follow-up
 
@@ -129,8 +151,8 @@ This does not close B, C or the real-device/long-soak gates.
    [fused-finalization spike](performance/entropy-fused-spike/README.md) found
    only a small NEON diagnostic gain; no candidate was promoted and the strict
    acceptance remains FAIL.
-2. C: resolve qualified all-load attribution on suitable owned hardware and
-   measure attributed active kernel plus userspace CPU cost; throughput noise
-   is not a <1% result.
+2. C: decide whether the post-stall PEBS sampling bias needs per-data-source
+   load events, and whether sub-100 ms load bursts need a shorter governor
+   interval.
 3. D/E: obtain a real CRAM fixture before physical capacity/poison/compression
    acceptance and long-duration end-to-end production qualification.

@@ -1,0 +1,7 @@
+RESULT load=0x67d1 P1=2000003 P2=2000003 counts=1073745080,1073739107 expected=536,536 samples=536,536 lost_samples=0,0 throttle=0,0 inrange=536,536
+RESULT load=0x67d1 P1=2000003 P2=3236069 counts=1073743934,1073740144 expected=536,331 samples=536,331 lost_samples=0,0 throttle=0,0 inrange=536,331
+RESULT load=0x1d1 P1=2000003 P2=2000003 counts=1073399610,1073739109 expected=536,536 samples=536,536 lost_samples=0,0 throttle=0,0 inrange=536,536
+RESULT load=0x81d0 P1=2000003 P2=2000003 counts=1073777812,1073739121 expected=536,536 samples=536,536 lost_samples=0,0 throttle=0,0 inrange=0,536
+RESULT load=0x67d1 P1=200003 P2=200003 counts=1073742037,1073741783 expected=5368,5368 samples=0,0 lost_samples=15,15 throttle=0,0 inrange=0,0
+RESULT load=0x67d1 P1=200003 P2=323609 counts=1073751332,1073724487 expected=5368,3317 samples=5368,3317 lost_samples=0,0 throttle=0,0 inrange=5368,3317
+RESULT load=0x67d1 P1=2000003 P2=2000003 counts=1073778053,1073768083 expected=536,536 samples=536,536 lost_samples=0,0 throttle=0,0 inrange=536,536 (drain per chunk)

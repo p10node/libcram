@@ -1,0 +1,15 @@
+====================================================================================================
+gov-work-cap1200.log
+CONFIG work_cpu=30 collector_cpu=25 load=0x67d1 store=0x82d0 load_periods=[200003] store_period=companion pairs=20 rounds=40000 poll_ms=100 jitter=false cap=Some(1200) tsc_per_ns=2.095347 bucket_ns=[64, 250, 1000, 2000, 4000, 8000, 16000, 64000]
+period=  200003 pairs=20 block_wall_s med=4.48 samples/s med=    1509 cpu_delta med=+0.60% CI95[+0.32%,+1.28%] wall_delta med=+0.60% collector=1.3832%core (max 1.5885)
+      governed: final scale med=22.00 settled samples/s med=1057 CI95[1050,1063] max=1110
+      one-time per attach: transient samples med=2116, collector attach CPU med=49.9 ms (2 samplers: workload + collector thread)
+      collector steady CPU (excl. attach) med=0.2727%core CI95[0.2698,0.2790] max=0.2925
+====================================================================================================
+gov-jitter-cap1200.log
+CONFIG work_cpu=30 collector_cpu=25 load=0x67d1 store=0x82d0 load_periods=[20011] store_period=companion pairs=15 rounds=1500 poll_ms=100 jitter=true cap=Some(1200) tsc_per_ns=2.095353 bucket_ns=[64, 250, 1000, 2000, 4000, 8000, 16000, 64000]
+period=   20011 pairs=15 block_wall_s med=3.71 samples/s med=    1252 cpu_delta med=+0.60% CI95[+0.40%,+0.67%] wall_delta med=+0.60% collector=1.6477%core (max 1.8844)
+      stolen-time fraction delta med=+0.274% CI95[-0.037,+1.410]
+      governed: final scale med=10.40 settled samples/s med=1007 CI95[996,1014] max=1044
+      one-time per attach: transient samples med=1002, collector attach CPU med=50.0 ms (2 samplers: workload + collector thread)
+      collector steady CPU (excl. attach) med=0.2790%core CI95[0.2722,0.2870] max=0.2926

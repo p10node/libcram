@@ -37,6 +37,51 @@ includes elapsed workload slowdown but is not an isolated, attributed accounting
 of all kernel sampling and userspace CPU work. The strict acceptance gate remains
 open; it was not replaced by this proxy or by a replay-only collector benchmark.
 
+## 2026-11-01: root cause and measured CPU cost
+
+See [evidence/2026-11-01](evidence/2026-11-01/README.md). Two findings:
+
+- **ALL_LOADS:** the CPU (hardware plus microcode) writes the address of a
+  microcode-issued load into the PEBS DLA field whenever that load qualifies for
+  the event's umask and privilege filter. The perf config, the kernel, libcram,
+  and missing DLA support are each ruled out. `event=0xd1,umask=0x67`
+  (user-only) matches the ALL_LOADS count and has valid addresses on this host.
+- **CPU cost:** each sample costs ≈4.5 µs (95% CI 3.6–5.1). The BPF part is
+  below what the method can resolve. The collector adds ≤0.3% of a core at a
+  100 ms poll. Staying <1% requires ≤~1,700 samples/s per monitored core. At
+  the fixed period of 2,000,003, a light workload costs ≈0.5% (PASS) and an
+  L1-streaming workload costs ≈1.2–1.5% (FAIL).
+
+## 2026-11-01: profile adopted and rate governor
+
+See [evidence/2026-11-01/governor](evidence/2026-11-01/governor/README.md).
+
+- **Profile:** `sampling::broadwell_x::configs` uses `0x67d1` loads and
+  `0x82d0` stores, user-only. Through the real PebsSampler + BPF path, load
+  counts match the loads the workload retires (1.0005 L1, 1.009 L1+DRAM), and
+  99.0–99.97% of read samples land in the owned read regions. ALL_LOADS still
+  gets 0%. With mixed-latency loads, PEBS samples concentrate on loads that
+  retire after a stall (0.09% of samples are L1 hits against 88.9% of loads).
+- **Period pairing:** with equal load and store periods, PEBS format 2 dropped
+  almost every record of a loop with balanced loads and stores (0 of 5,368 per
+  event, kernel path without BPF). libcram now rejects pairs that are not
+  distinct and coprime, and `companion_period` gives store ≈ load·65/64.
+- **Governor:** `ProcessPebsCollector` caps samples per monitored CPU (default
+  1,200/s) with one shared period scale via `PERF_EVENT_IOC_PERIOD`. On the
+  worst-case L1-streaming loop the steady rate was 1,050/s (max 1,130) and the
+  collector cost 0.29% of a core. Worst steady state = 1,200 × 4.99 µs
+  (upper CI) + 0.33% = **0.93% of one core: PASS**. A cap of 1,500 measured
+  1.08% worst case and FAILS.
+- **Shared program per CPU**
+  ([evidence](evidence/2026-11-01/shared-program/README.md)): threads on one
+  CPU share one loaded BPF object. Attaching a new thread costs 0.13 ms of
+  collector CPU instead of ≈43 ms, and a full attach + detach cycle costs
+  0.15 ms. Re-measured gate at cap 1,200: steady 1,057/s, collector 0.27%
+  (max 0.29%), worst steady state **0.89%: PASS**.
+- **Not covered by <1%:** ≈40–50 ms of collector CPU once per selected CPU,
+  the first ≤100 ms at the base period, and load bursts shorter than the
+  100 ms governor interval (bounded only by the kernel's sample-rate limit).
+
 ## Independent all-load diagnostic follow-up
 
 A [standalone C/perf diagnostic](evidence/pebs-address-diagnostic/README.md)

@@ -1,0 +1,21 @@
+CONFIG jit cpu=30 period=20011 kind=none tsc_per_ns=2.095228
+JBLOCK pair=0 kind=base cpu_ns=247902175 gaps=1719 gap_ns=9270981 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=0 kind=sampled cpu_ns=247628423 gaps=1552 gap_ns=6884875 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=1 kind=sampled cpu_ns=248498523 gaps=1506 gap_ns=10407129 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=1 kind=base cpu_ns=247845378 gaps=1722 gap_ns=5795198 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=2 kind=base cpu_ns=246466462 gaps=1535 gap_ns=3300823 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=2 kind=sampled cpu_ns=245823758 gaps=1242 gap_ns=4102690 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=3 kind=sampled cpu_ns=248678696 gaps=1401 gap_ns=9611338 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=3 kind=base cpu_ns=248005592 gaps=1324 gap_ns=8619001 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=4 kind=base cpu_ns=250292623 gaps=2286 gap_ns=9714088 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=4 kind=sampled cpu_ns=248582384 gaps=1486 gap_ns=8939228 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=5 kind=sampled cpu_ns=248376905 gaps=1550 gap_ns=12002646 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=5 kind=base cpu_ns=248975416 gaps=1438 gap_ns=10090622 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=6 kind=base cpu_ns=248635570 gaps=1666 gap_ns=8284848 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=6 kind=sampled cpu_ns=248750901 gaps=1729 gap_ns=12875259 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=7 kind=sampled cpu_ns=247609684 gaps=2027 gap_ns=12118483 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=7 kind=base cpu_ns=248798901 gaps=1336 gap_ns=9446792 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=8 kind=base cpu_ns=247677978 gaps=1961 gap_ns=11427634 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=8 kind=sampled cpu_ns=248891204 gaps=1506 gap_ns=9581564 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=9 kind=sampled cpu_ns=248095352 gaps=1372 gap_ns=8508299 samples=0 counts=0,0 sum=3255307777704198144
+JBLOCK pair=9 kind=base cpu_ns=249305658 gaps=2805 gap_ns=8382523 samples=0 counts=0,0 sum=3255307777704198144

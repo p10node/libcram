@@ -22,8 +22,12 @@ mock-topology/container fallback tests:
 - **Kernel BPF and PMU:** guest verifier/basic counters pass; the guest still
   rejects precise sampling (`max_precise=0`). On the physical host, an explicitly
   audited L1-hot load/store profile passes address attribution, owned-thread
-  arrival/exit and descriptor cleanup checks. All-load attribution and total
-  sampling+collector overhead below 1% of one CPU core remain open.
+  arrival/exit and descriptor cleanup checks. ALL_LOADS addresses fail because
+  the CPU records microcode-issued loads in the PEBS address field. The audited
+  `0x67d1` retired-load profile replaces it and passes attribution. A rate
+  governor (default 1,200 samples/s per CPU) holds the measured worst steady
+  state at 0.89% of one core. One BPF program per CPU is shared by its
+  threads, so attaching a thread costs ≈0.13 ms of collector CPU.
 - **Managed Rust runtime:** bounded event/device intake, weak allocation-generation
   tokens, rolling access counts, worker shutdown and pressure/source-failure
   evacuation are implemented with deterministic integration tests. The optional

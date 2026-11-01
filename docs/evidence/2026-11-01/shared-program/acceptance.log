@@ -1,0 +1,40 @@
+### ./managed_pebs_acceptance program.bpf 30
+thread_attachment_history=1,2,1
+first_poll_cpu_us=38876 new_thread_poll_cpu_us=129 churn_attach_detach_cpu_us=151 loaded_programs=1
+l1_reads=1637 stores=1885 wrong_reads=0 wrong_writes=0 status=Sampling
+governor_cap=1200 period_scale=17.734 periods=[3546849, 3602285] settled_events=2141 settled_secs=1.992 settled_samples_per_sec=1075
+partial_attach_error=PEBS perf_event_open failed (unsupported precise event, invalid CPU/event, perf_event_paranoid or missing CAP_PERFMON): Invalid argument (os error 22)
+MANAGED_PEBS_LIFECYCLE_L1_ATTRIBUTION_GOVERNOR_PASS
+exit=0
+### ./pebs_acceptance program.bpf 30 2000003 retired-loads l1
+load_event=retired-loads config=0x67d1 workload=l1; cache-specific events do NOT represent all loads
+measurement_wall_ns=3000063175 measurement_rounds=27458 baseline=false
+periods=[2000003, 2031253]
+raw_pmu_counts=[7201442766, 7200264431] expected_loads=7197949952 expected_stores=7197949952 load_coverage=1.00049 store_coverage=1.00032
+cpu=30 period=2000003 events=2 rounds=27458 checksum=4340410367744147456 accepted=7144 rejected=0 dropped=0 l1_reads=3597 chase_reads=0 other_reads=3 read_in_range=0.9992 read_region_writes=0 write_region_reads=0 write_region_writes=3543 other_writes=1
+PEBS_ATTRIBUTION_PASS; overhead is NOT measured by this probe
+exit=0
+### ./pebs_acceptance program.bpf 30 20011 retired-loads mixed
+load_event=retired-loads config=0x67d1 workload=mixed; cache-specific events do NOT represent all loads
+measurement_wall_ns=3000127585 measurement_rounds=6021 baseline=false
+periods=[20011, 20323]
+raw_pmu_counts=[223834591, 26108403] expected_loads=221958144 expected_stores=24662016 load_coverage=1.00845 store_coverage=1.05865
+cpu=30 period=20011 events=2 rounds=6021 checksum=9765923333070716928 accepted=7208 rejected=0 dropped=0 l1_reads=1 chase_reads=6378 other_reads=71 read_in_range=0.9890 read_region_writes=0 write_region_reads=0 write_region_writes=702 other_writes=56
+sampled_l1_share=0.0002 retired_l1_share=0.8889
+PEBS_ATTRIBUTION_PASS; overhead is NOT measured by this probe
+exit=0
+### ./pebs_acceptance program.bpf 30 2000003 all-loads l1
+load_event=all-loads config=0x81d0 workload=l1; cache-specific events do NOT represent all loads
+measurement_wall_ns=3000048000 measurement_rounds=25793 baseline=false
+periods=[2000003, 2031253]
+raw_pmu_counts=[6764936695, 6763693318] expected_loads=6761480192 expected_stores=6761480192 load_coverage=1.00051 store_coverage=1.00033
+cpu=30 period=2000003 events=2 rounds=25793 checksum=11936128515896246272 accepted=6711 rejected=0 dropped=0 l1_reads=0 chase_reads=0 other_reads=3382 read_in_range=0.0000 read_region_writes=0 write_region_reads=0 write_region_writes=3327 other_writes=2
+Error: insufficient independently attributed load/store samples
+exit=1
+### harness delivery smoke
+retired-loads accepted=520 dropped=0 counts=[524288600, 524286015] periods=[2000003, 2031253]
+retired-loads accepted=520 dropped=0 counts=[524288615, 524285983] periods=[2000003, 2031253]
+all-loads accepted=520 dropped=0 counts=[524296511, 524286023] periods=[2000003, 2031253]
+all-loads accepted=520 dropped=0 counts=[524296557, 524285978] periods=[2000003, 2031253]
+### governed attach smoke
+coll_cpu_ns=47966117 attach_cpu_ns=44827561 settled_accepted=593 settled_ns=603371953 scale=22.669 coll_cpu_ns=52684783 attach_cpu_ns=50586206 settled_accepted=593 settled_ns=571906556 scale=22.656 

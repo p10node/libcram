@@ -1,0 +1,296 @@
+## host
+6.8.0-146-generic
+microcode	: 0xb000040
+model name	: Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz
+3
+14000
+## iomem entries containing 0xfeb80000
+end
+## L1-resident sequential loads (16 KiB)
+### ./pebsdiag 30 seq 81d0 0 2000003 2 u 1
+RESULT cpu=30 mode=seq cfg=0x81d0 cfg1=0 period=2000003 prec=2 priv=u count=1644001550 rounds=6270 samples=821 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x7ab7940dd000-0x7ab7940e1000
+  top_addr: 0xfeb80048x346 0xfeb80008x325 0xfeb80040x150
+  top_ip:   0x401df8x821
+  top_src:  0x1e05080022x821
+exit=0
+### ./pebsdiag 30 seq 81d0 0 2000003 2 uk 1
+RESULT cpu=30 mode=seq cfg=0x81d0 cfg1=0 period=2000003 prec=2 priv=uk count=1737634999 rounds=6618 samples=868 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=1 distinct_page=1 mean_weight=0.0 range=0x77c35d36a000-0x77c35d36e000
+  top_addr: 0xfeb819c8x868
+  top_ip:   0x401df8x866 0xffffffff97789830x1 0xffffffff9780ebf6x1
+  top_src:  0x1e05080022x868
+exit=0
+### ./pebsdiag 30 seq 01d1 0 2000003 2 u 1
+RESULT cpu=30 mode=seq cfg=0x1d1 cfg1=0 period=2000003 prec=2 priv=u count=1731349388 rounds=6609 samples=865 inrange=865 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=4 mean_weight=0.0 range=0x74e359222000-0x74e359226000
+  top_addr: 0x74e359224aa8x751 0x74e3592237d8x5 0x74e359223f50x4 0x74e3592248e8x4 0x74e359225350x4 0x74e359225888x4
+  top_ip:   0x401df8x865
+  top_src:  0x1e05080022x865
+exit=0
+### ./pebsdiag 30 seq 01d1 0 2000003 2 uk 1
+RESULT cpu=30 mode=seq cfg=0x1d1 cfg1=0 period=2000003 prec=2 priv=uk count=1742866554 rounds=6647 samples=871 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=1 distinct_page=1 mean_weight=0.0 range=0x7f355e38b000-0x7f355e38f000
+  top_addr: 0xfeb819c8x871
+  top_ip:   0x401df8x870 0xffffffff9778964dx1
+  top_src:  0x1e05080022x871
+exit=0
+### ./pebsdiag 30 seq 01c2 0 2000003 2 u 1
+RESULT cpu=30 mode=seq cfg=0x1c2 cfg1=0 period=2000003 prec=2 priv=u count=6824757518 rounds=6493 samples=3412 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=1 distinct_page=1 mean_weight=0.0 range=0x72910f590000-0x72910f594000
+  top_addr: 0xfeb819c8x3412
+  top_ip:   0x401dffx2283 0x401df8x1061 0x401dfbx29 0x401e05x29
+  top_src:  0x1e05080021x3412
+exit=0
+### ./pebsdiag 30 seq 01c2 0 2000003 2 uk 1
+RESULT cpu=30 mode=seq cfg=0x1c2 cfg1=0 period=2000003 prec=2 priv=uk count=6805376952 rounds=6451 samples=3402 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=1 distinct_page=1 mean_weight=0.0 range=0x75147134e000-0x751471352000
+  top_addr: 0xfeb819c8x3402
+  top_ip:   0x401dffx2278 0x401df8x1037 0x401dfbx39 0x401e05x29
+  top_src:  0x1e05080021x3402
+exit=0
+### ./pebsdiag 30 seq 81d0 0 2000003 1 u 1
+RESULT cpu=30 mode=seq cfg=0x81d0 cfg1=0 period=2000003 prec=1 priv=u count=1737877011 rounds=6628 samples=868 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x7ad434f60000-0x7ad434f64000
+  top_addr: 0xfeb80008x344 0xfeb80048x338 0xfeb80040x186
+  top_ip:   0x401dfbx868
+  top_src:  0x1e05080022x868
+exit=0
+### ./pebsdiag 30 seq 81d0 0 2000003 3 u 1
+RESULT cpu=30 mode=seq cfg=0x81d0 cfg1=0 period=2000003 prec=3 priv=u count=1755448191 rounds=6695 samples=877 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x73a1f55ec000-0x73a1f55f0000
+  top_addr: 0xfeb80008x357 0xfeb80048x336 0xfeb80040x184
+  top_ip:   0x401df8x877
+  top_src:  0x1e05080022x877
+exit=0
+### ./pebsdiag 30 seq 81d0 0 200003 2 u 1
+RESULT cpu=30 mode=seq cfg=0x81d0 cfg1=0 period=200003 prec=2 priv=u count=1689624378 rounds=6441 samples=8447 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x714742ca1000-0x714742ca5000
+  top_addr: 0xfeb80048x3349 0xfeb80008x3305 0xfeb80040x1793
+  top_ip:   0x401df8x8442 0x7ffe5d1bcae6x1 0x714742aeca5bx1 0x402268x1
+  top_src:  0x1e05080022x8447
+exit=0
+### ./pebsdiag 12 seq 81d0 0 2000003 2 u 1
+RESULT cpu=12 mode=seq cfg=0x81d0 cfg1=0 period=2000003 prec=2 priv=u count=1658418894 rounds=6325 samples=829 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x78c1c1af0000-0x78c1c1af4000
+  top_addr: 0xfeb80048x339 0xfeb80008x299 0xfeb80040x191
+  top_ip:   0x401df8x829
+  top_src:  0x1e05080022x829
+exit=0
+### ./pebsdiag 30 seq 1cd 3 200003 2 u 1
+RESULT cpu=30 mode=seq cfg=0x1cd cfg1=3 period=200003 prec=2 priv=u count=25250706 rounds=6689 samples=126 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=2 mean_weight=7.2 range=0x7dd8d4239000-0x7dd8d423d000
+  top_addr: 0xfeb81038x8 0xfeb81988x7 0xfeb80fc0x5 0xfeb81018x4 0xfeb80fd8x4 0xfeb81748x4
+  top_ip:   0x401df8x126
+  top_src:  0x10268100142x125 0x10250100142x1
+exit=0
+### ./pebsdiag 30 seq 81d0 0 2000003 2 u 1
+RESULT cpu=30 mode=seq cfg=0x81d0 cfg1=0 period=2000003 prec=2 priv=u count=1755170606 rounds=6694 samples=877 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x70f93a85e000-0x70f93a862000
+  top_addr: 0xfeb80008x414 0xfeb80048x299 0xfeb80040x164
+  top_ip:   0x401df8x876 0x7ffc42d69b11x1
+  top_src:  0x1e05080022x877
+exit=0
+### ./pebsdiag 30 seq 01d1 0 2000003 2 u 1
+RESULT cpu=30 mode=seq cfg=0x1d1 cfg1=0 period=2000003 prec=2 priv=u count=1742539459 rounds=6652 samples=871 inrange=871 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=4 mean_weight=0.0 range=0x78bad60c1000-0x78bad60c5000
+  top_addr: 0x78bad60c10a8x769 0x78bad60c1660x6 0x78bad60c4cd0x4 0x78bad60c2438x4 0x78bad60c4530x4 0x78bad60c11c0x4
+  top_ip:   0x401df8x871
+  top_src:  0x1e05080022x871
+exit=0
+### ./pebsdiag 30 bss 81d0 0 2000003 2 u 1
+RESULT cpu=30 mode=bss cfg=0x81d0 cfg1=0 period=2000003 prec=2 priv=u count=1762828006 rounds=6723 samples=881 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x405100-0x409100
+  top_addr: 0xfeb80008x351 0xfeb80048x342 0xfeb80040x188
+  top_ip:   0x401e20x881
+  top_src:  0x1e05080022x881
+exit=0
+### ./pebsdiag 30 bss 01d1 0 2000003 2 u 1
+RESULT cpu=30 mode=bss cfg=0x1d1 cfg1=0 period=2000003 prec=2 priv=u count=1781253028 rounds=6800 samples=890 inrange=890 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=5 mean_weight=0.0 range=0x405100-0x409100
+  top_addr: 0x405de8x799 0x405208x4 0x4085e8x4 0x405880x3 0x406e50x3 0x407660x2
+  top_ip:   0x401e20x890
+  top_src:  0x1e05080022x890
+exit=0
+### ./pebsdiag 30 stack 81d0 0 2000003 2 u 1
+RESULT cpu=30 mode=stack cfg=0x81d0 cfg1=0 period=2000003 prec=2 priv=u count=1726953439 rounds=6586 samples=863 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x7ffc36e28e00-0x7ffc36e29e00
+  top_addr: 0xfeb80048x372 0xfeb80008x326 0xfeb80040x165
+  top_ip:   0x401dc0x863
+  top_src:  0x1e05080022x863
+exit=0
+### ./pebsdiag 30 syscall 81d0 0 2000003 2 u 1
+RESULT cpu=30 mode=syscall cfg=0x81d0 cfg1=0 period=2000003 prec=2 priv=u count=1200366343 rounds=4566 samples=600 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x7549654d2000-0x7549654d6000
+  top_addr: 0xfeb80008x238 0xfeb80048x238 0xfeb80040x124
+  top_ip:   0x401e80x597 0x4012d4x2 0x754965327535x1
+  top_src:  0x1e05080022x600
+exit=0
+## subsets of ALL_LOADS
+### ./pebsdiag 30 split 41d0 0 200003 2 u 1
+RESULT cpu=30 mode=split cfg=0x41d0 cfg1=0 period=200003 prec=2 priv=u count=789091507 rounds=24171 samples=3945 inrange=3943 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=5 mean_weight=0.0 range=0x7c00e2866000-0x7c00e286a000
+  top_addr: 0x7c00e28685bcx2837 0x7c00e28692fcx35 0x7c00e286767cx35 0x7c00e286867cx32 0x7c00e28682bcx29 0x7c00e286967cx28
+  top_ip:   0x401ef0x3943 0x7c00e2793debx2
+  top_src:  0x1e05080022x3945
+exit=0
+### ./pebsdiag 30 split 41d0 0 200003 2 uk 1
+RESULT cpu=30 mode=split cfg=0x41d0 cfg1=0 period=200003 prec=2 priv=uk count=788438537 rounds=24151 samples=3942 inrange=3940 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=5 mean_weight=0.0 range=0x7da064aa5000-0x7da064aa9000
+  top_addr: 0x7da064aa89bcx2665 0x7da064aa7ffcx92 0x7da064aa5ffcx79 0x7da064aa6ffcx73 0x7da064aa5efcx32 0x7da064aa767cx32
+  top_ip:   0x401ef0x3940 0x7da064993debx2
+  top_src:  0x1e05080022x3942
+exit=0
+### ./pebsdiag 30 lock 21d0 0 200003 2 u 1
+RESULT cpu=30 mode=lock cfg=0x21d0 cfg1=0 period=200003 prec=2 priv=u count=139199305 rounds=1392 samples=695 inrange=695 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=4 mean_weight=0.0 range=0x780074131000-0x780074135000
+  top_addr: 0x7800741317f8x569 0x780074131018x2 0x780074131038x2 0x780074131058x2 0x780074131078x2 0x780074131098x2
+  top_ip:   0x401d68x695
+  top_src:  0x1e05080022x695
+exit=0
+### ./pebsdiag 30 lock 21d0 0 200003 2 uk 1
+RESULT cpu=30 mode=lock cfg=0x21d0 cfg1=0 period=200003 prec=2 priv=uk count=139912027 rounds=1399 samples=699 inrange=699 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=4 mean_weight=0.0 range=0x75854eff6000-0x75854effa000
+  top_addr: 0x75854eff9968x616 0x75854eff6d80x3 0x75854eff9308x2 0x75854eff6fe0x2 0x75854eff6ee8x2 0x75854eff6a80x2
+  top_ip:   0x401d68x699
+  top_src:  0x1e05080022x699
+exit=0
+### ./pebsdiag 30 chase 11d0 0 20011 2 u 1.5
+RESULT cpu=30 mode=chase cfg=0x11d0 cfg1=0 period=20011 prec=2 priv=u count=11531784 rounds=59 samples=576 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=1 distinct_page=1 mean_weight=0.0 range=0x7acbeca00000-0x7acbfca00000
+  top_addr: 0xfeb80008x576
+  top_ip:   0x401f1ax299 0x401f1ex277
+  top_src:  0x1e05080022x576
+exit=0
+### ./pebsdiag 30 chase 11d0 0 20011 2 uk 1.5
+RESULT cpu=30 mode=chase cfg=0x11d0 cfg1=0 period=20011 prec=2 priv=uk count=11390054 rounds=58 samples=569 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x7f647e800000-0x7f648e800000
+  top_addr: 0xfeb81088x448 0xfeb81048x120 0xfeb81008x1
+  top_ip:   0x401f1ax292 0x401f1ex275 0xffffffff977764d3x1 0xffffffff9776f418x1
+  top_src:  0x1e05080022x569
+exit=0
+## data-source events by residency
+### ./pebsdiag 30 chase 81d0 0 20011 2 u 1
+RESULT cpu=30 mode=chase cfg=0x81d0 cfg1=0 period=20011 prec=2 priv=u count=188461476 rounds=937 samples=9417 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=4 distinct_page=2 mean_weight=0.0 range=0x7d59b33e8000-0x7d59b3408000
+  top_addr: 0xfeb80008x3760 0xfeb80048x3656 0xfeb80040x2000 0xfffffe7942873004x1
+  top_ip:   0x401f1ex4702 0x401f1ax4667 0x4022a8x27 0x402268x6
+  top_src:  0x1e05080022x9417
+exit=0
+### ./pebsdiag 30 chase 67d1 0 20011 2 u 1
+RESULT cpu=30 mode=chase cfg=0x67d1 cfg1=0 period=20011 prec=2 priv=u count=194969608 rounds=966 samples=9743 inrange=9655 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=64 mean_weight=0.0 range=0x7a216a678000-0x7a216a698000
+  top_addr: 0x7a216a682a40x9438 0x7a216a686e80x9 0x7a216a685440x9 0x7a216a67bb80x9 0x7a216a681dc0x8 0x7a216a67fec0x8
+  top_ip:   0x401f1ex4831 0x401f1ax4824 0x4022a8x40 0x40218cx26
+  top_src:  0x1e05080022x9743
+exit=0
+### ./pebsdiag 30 chase 02d1 0 20011 2 u 1
+RESULT cpu=30 mode=chase cfg=0x2d1 cfg1=0 period=20011 prec=2 priv=u count=194231856 rounds=976 samples=9706 inrange=9704 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=34 mean_weight=0.0 range=0x7ccefa122000-0x7ccefa142000
+  top_addr: 0x7ccefa129040x9351 0x7ccefa130600x15 0x7ccefa138a00x10 0x7ccefa12f2c0x9 0x7ccefa12d200x9 0x7ccefa129740x9
+  top_ip:   0x401f1ex4867 0x401f1ax4837 0x7ffcfdbfdaf3x1 0x40218cx1
+  top_src:  0x1e05080022x9706
+exit=0
+### ./pebsdiag 30 chase 02d1 0 20011 2 uk 1
+RESULT cpu=30 mode=chase cfg=0x2d1 cfg1=0 period=20011 prec=2 priv=uk count=192308128 rounds=964 samples=9610 inrange=9601 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=40 mean_weight=0.0 range=0x738460f62000-0x738460f82000
+  top_addr: 0x738460f79540x9247 0x738460f668c0x12 0x738460f79680x10 0x738460f68a00x9 0x738460f65b00x9 0x738460f73880x9
+  top_ip:   0x401f1ex4845 0x401f1ax4756 0xffffffff9776f3fax3 0xffffffff9788c886x1
+  top_src:  0x1e05080022x9610
+exit=0
+### ./pebsdiag 30 chase 81d0 0 20011 2 u 1
+RESULT cpu=30 mode=chase cfg=0x81d0 cfg1=0 period=20011 prec=2 priv=u count=37625769 rounds=187 samples=1880 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x76a96ea00000-0x76a96ee00000
+  top_addr: 0xfeb80008x774 0xfeb80048x704 0xfeb80040x402
+  top_ip:   0x401f1ax937 0x401f1ex933 0x4022a8x5 0x402268x3
+  top_src:  0x1e05080022x1880
+exit=0
+### ./pebsdiag 30 chase 67d1 0 20011 2 u 1
+RESULT cpu=30 mode=chase cfg=0x67d1 cfg1=0 period=20011 prec=2 priv=u count=37608037 rounds=186 samples=1879 inrange=1854 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=64 mean_weight=0.0 range=0x754b53e00000-0x754b54200000
+  top_addr: 0x754b541c3080x1816 0x754b54062900x1 0x754b541e5100x1 0x754b5415d940x1 0x754b53f17500x1 0x754b53e6eac0x1
+  top_ip:   0x401f1ax934 0x401f1ex920 0x40218cx15 0x4022a8x5
+  top_src:  0x1e05080022x1879
+exit=0
+### ./pebsdiag 30 chase 04d1 0 20011 2 u 1
+RESULT cpu=30 mode=chase cfg=0x4d1 cfg1=0 period=20011 prec=2 priv=u count=37181504 rounds=186 samples=1858 inrange=1857 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=64 mean_weight=0.0 range=0x7bd90da00000-0x7bd90de00000
+  top_addr: 0x7bd90dd9e240x1795 0x7bd90db50280x1 0x7bd90dc01040x1 0x7bd90db0c300x1 0x7bd90da7de40x1 0x7bd90dbbdc40x1
+  top_ip:   0x401f1ex934 0x401f1ax923 0x401f22x1
+  top_src:  0x1e05080022x1858
+exit=0
+### ./pebsdiag 30 chase 04d1 0 20011 2 uk 1
+RESULT cpu=30 mode=chase cfg=0x4d1 cfg1=0 period=20011 prec=2 priv=uk count=35770635 rounds=178 samples=1787 inrange=1776 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=64 mean_weight=0.0 range=0x7d24edc00000-0x7d24ee000000
+  top_addr: 0x7d24edc6c980x1724 0x7d24edda8100x1 0x7d24edd617c0x1 0x7d24ede8d640x1 0x7d24edf48540x1 0x7d24edd3e200x1
+  top_ip:   0x401f1ex889 0x401f1ax887 0xffffffff97775ad0x1 0xffffffff98856fd2x1
+  top_src:  0x1e05080022x1787
+exit=0
+### ./pebsdiag 30 chase 08d1 0 20011 2 u 1
+RESULT cpu=30 mode=chase cfg=0x8d1 cfg1=0 period=20011 prec=2 priv=u count=35982447 rounds=180 samples=1798 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=4 distinct_page=2 mean_weight=0.0 range=0x74e941200000-0x74e941600000
+  top_addr: 0xfeb80008x722 0xfeb80048x662 0xfeb80040x413 0xfffffe7942873004x1
+  top_ip:   0x401f1ex936 0x401f1ax862
+  top_src:  0x1e05080022x1798
+exit=0
+### ./pebsdiag 30 chase 08d1 0 20011 2 uk 1
+RESULT cpu=30 mode=chase cfg=0x8d1 cfg1=0 period=20011 prec=2 priv=uk count=38219329 rounds=190 samples=1909 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x793b0ce00000-0x793b0d200000
+  top_addr: 0xfeb80048x771 0xfeb80008x745 0xfeb80040x393
+  top_ip:   0x401f1ax952 0x401f1ex950 0xffffffff977e3dc5x1 0xffffffff9784a15cx1
+  top_src:  0x1e05080022x1909
+exit=0
+### ./pebsdiag 30 chase 81d0 0 20011 2 u 1.5
+RESULT cpu=30 mode=chase cfg=0x81d0 cfg1=0 period=20011 prec=2 priv=u count=12104543 rounds=60 samples=604 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x75c301000000-0x75c311000000
+  top_addr: 0xfeb80008x244 0xfeb80048x237 0xfeb80040x123
+  top_ip:   0x401f1ex310 0x401f1ax291 0x4022a8x3
+  top_src:  0x1e05080022x604
+exit=0
+### ./pebsdiag 30 chase 67d1 0 20011 2 u 1.5
+RESULT cpu=30 mode=chase cfg=0x67d1 cfg1=0 period=20011 prec=2 priv=u count=12335364 rounds=61 samples=616 inrange=609 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=64 mean_weight=0.0 range=0x758e85600000-0x758e95600000
+  top_addr: 0x758e8e571fc0x553 0x758e8fda0740x1 0x758e934c2880x1 0x758e94f2c540x1 0x758e8685a940x1 0x758e8a9f2a80x1
+  top_ip:   0x401f1ax305 0x401f1ex304 0x40218cx4 0x4022a8x2
+  top_src:  0x1e05080022x616
+exit=0
+### ./pebsdiag 30 chase 20d1 0 20011 2 u 1.5
+RESULT cpu=30 mode=chase cfg=0x20d1 cfg1=0 period=20011 prec=2 priv=u count=11490155 rounds=58 samples=574 inrange=574 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=64 mean_weight=0.0 range=0x73c6f7400000-0x73c707400000
+  top_addr: 0x73c7028e0140x511 0x73c6f991bac0x1 0x73c703836000x1 0x73c700798580x1 0x73c6f7cc3500x1 0x73c6fdb2a300x1
+  top_ip:   0x401f1ax299 0x401f1ex275
+  top_src:  0x1e05080022x574
+exit=0
+### ./pebsdiag 30 chase 20d1 0 20011 2 uk 1.5
+RESULT cpu=30 mode=chase cfg=0x20d1 cfg1=0 period=20011 prec=2 priv=uk count=11703836 rounds=59 samples=584 inrange=581 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=64 mean_weight=0.0 range=0x7cdd05c00000-0x7cdd15c00000
+  top_addr: 0x7cdd0f7e8740x521 0x7cdd0be20d40x1 0x7cdd0de9f8c0x1 0x7cdd1016f100x1 0x7cdd0671c300x1 0x7cdd06086ac0x1
+  top_ip:   0x401f1ax294 0x401f1ex287 0xffffffff97767fb0x1 0xffffffff97e78bbcx1
+  top_src:  0x1e05080022x584
+exit=0
+## mixed L1 + DRAM: union umask count vs ALL_LOADS
+### ./pebsdiag 30 mixed 81d0 0 100003 2 u 1.5
+RESULT cpu=30 mode=mixed cfg=0x81d0 cfg1=0 period=100003 prec=2 priv=u count=685603026 rounds=5265 samples=6855 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=3 distinct_page=1 mean_weight=0.0 range=0x727d96200000-0x727d9a200000
+  top_addr: 0xfeb80008x2737 0xfeb80048x2623 0xfeb80040x1495
+  top_ip:   0x4019a0x5792 0x4019afx1049 0x4022a8x4 0x727d9a393defx2
+  top_src:  0x1e05080022x6855
+exit=0
+### ./pebsdiag 30 mixed 67d1 0 100003 2 u 1.5
+RESULT cpu=30 mode=mixed cfg=0x67d1 cfg1=0 period=100003 prec=2 priv=u count=668383879 rounds=5131 samples=6683 inrange=6667 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=64 mean_weight=0.0 range=0x7738cfe00000-0x7738d3e00000
+  top_addr: 0x7738d2d659c0x1497 0x7738d4172128x227 0x7738d41720d0x180 0x7738d41721a8x169 0x7738d4172140x154 0x7738d41721b8x152
+  top_ip:   0x4019a0x5881 0x4019afx786 0x40218ex4 0x4022a8x3
+  top_src:  0x1e05080022x6683
+exit=0
+### ./pebsdiag 30 mixed 27d1 0 100003 2 u 1.5
+RESULT cpu=30 mode=mixed cfg=0x27d1 cfg1=0 period=100003 prec=2 priv=u count=672372167 rounds=5164 samples=6723 inrange=6714 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=64 mean_weight=0.0 range=0x71eb20a00000-0x71eb24a00000
+  top_addr: 0x71eb24dff108x2147 0x71eb24dff0c8x132 0x71eb24dff0e8x131 0x71eb24dff0c0x129 0x71eb24dff138x123 0x71eb24dff0e0x121
+  top_ip:   0x4019a0x5811 0x4019afx903 0x4022a8x4 0x402394x1
+  top_src:  0x1e05080022x6723
+exit=0
+### ./pebsdiag 30 mixed 01d1 0 100003 2 u 1.5
+RESULT cpu=30 mode=mixed cfg=0x1d1 cfg1=0 period=100003 prec=2 priv=u count=664374525 rounds=5184 samples=6643 inrange=6639 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=61 distinct_page=5 mean_weight=0.0 range=0x774934800000-0x774938800000
+  top_addr: 0x774938a60000x938 0x774938a601f0x129 0x774938a600f0x125 0x774938a601d8x124 0x774938a601f8x122 0x774938a601e8x121
+  top_ip:   0x4019a0x6639 0x4022a8x1 0x402268x1 0x4012c4x1
+  top_src:  0x1e05080022x6643
+exit=0
+### ./pebsdiag 30 mixed 20d1 0 100003 2 u 1.5
+RESULT cpu=30 mode=mixed cfg=0x20d1 cfg1=0 period=100003 prec=2 priv=u count=10710847 rounds=5359 samples=107 inrange=107 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=64 mean_weight=0.0 range=0x7458bf000000-0x7458c3000000
+  top_addr: 0x7458c0eb9c00x44 0x7458c0899980x1 0x7458c05a5b40x1 0x7458c1e92d40x1 0x7458c1b14100x1 0x7458c24373c0x1
+  top_ip:   0x4019afx107
+  top_src:  0x1e05080022x107
+exit=0
+### ./pebsdiag 30 mixed 40d1 0 100003 2 u 1.5
+RESULT cpu=30 mode=mixed cfg=0x40d1 cfg1=0 period=100003 prec=2 priv=u count=43719 rounds=5332 samples=0 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=0 distinct_page=0 mean_weight=0.0 range=0x7c7d66600000-0x7c7d6a600000
+  top_addr:
+  top_ip:  
+  top_src: 
+exit=0
+## stores
+### ./pebsdiag 30 store 82d0 0 2000003 2 u 1
+RESULT cpu=30 mode=store cfg=0x82d0 cfg1=0 period=2000003 prec=2 priv=u count=1872745991 rounds=7143 samples=936 inrange=936 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=4 mean_weight=0.0 range=0x787789d77000-0x787789d7b000
+  top_addr: 0x787789d79b58x839 0x787789d78598x3 0x787789d78680x3 0x787789d7a3b0x3 0x787789d78b38x3 0x787789d79e10x3
+  top_ip:   0x401dabx936
+  top_src:  0x1e05080184x936
+exit=0
+### ./pebsdiag 30 store 82d0 0 2000003 2 uk 1
+RESULT cpu=30 mode=store cfg=0x82d0 cfg1=0 period=2000003 prec=2 priv=uk count=1872390529 rounds=7135 samples=936 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=1 distinct_page=1 mean_weight=0.0 range=0x76d007b24000-0x76d007b28000
+  top_addr: 0x803bx936
+  top_ip:   0x401dabx936
+  top_src:  0x1e05080184x936
+exit=0
+### ./pebsdiag 30 store 67d1 0 2000003 2 u 1
+RESULT cpu=30 mode=store cfg=0x67d1 cfg1=0 period=2000003 prec=2 priv=u count=566397 rounds=7237 samples=0 inrange=0 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=0 distinct_page=0 mean_weight=0.0 range=0x741209e5c000-0x741209e60000
+  top_addr:
+  top_ip:  
+  top_src: 
+exit=0
+### ./pebsdiag 30 seq 67d1 0 2000003 2 u 1
+RESULT cpu=30 mode=seq cfg=0x67d1 cfg1=0 period=2000003 prec=2 priv=u count=1747083465 rounds=6663 samples=873 inrange=873 zero=0 lost=0 throttle=0 othertid=0 distinct_addr=64+ distinct_page=4 mean_weight=0.0 range=0x7f691bced000-0x7f691bcf1000
+  top_addr: 0x7f691bcef020x764 0x7f691bceed00x5 0x7f691bcedf78x4 0x7f691bceea40x4 0x7f691bced4d8x4 0x7f691bcefdd0x3
+  top_ip:   0x401df8x873
+  top_src:  0x1e05080022x873
+exit=0
+## done
