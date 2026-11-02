@@ -1,0 +1,42 @@
+    Finished `bench` profile [optimized] target(s) in 0.10s
+     Running ../../benches/entropy.rs (target/release/deps/entropy-a736fccf3f0e9931)
+Gnuplot not found, using plotters backend
+Benchmarking entropy/floor/scatter_store/4096
+Benchmarking entropy/floor/scatter_store/4096: Warming up for 3.0000 s
+Benchmarking entropy/floor/scatter_store/4096: Collecting 100 samples in estimated 5.0093 s (2.7M iterations)
+Benchmarking entropy/floor/scatter_store/4096: Analyzing
+entropy/floor/scatter_store/4096
+                        time:   [1.8219 µs 1.8253 µs 1.8286 µs]
+                        thrpt:  [2.0861 GiB/s 2.0899 GiB/s 2.0938 GiB/s]
+Found 5 outliers among 100 measurements (5.00%)
+  2 (2.00%) low mild
+  3 (3.00%) high mild
+Benchmarking entropy/dispatch/zero/4096
+Benchmarking entropy/dispatch/zero/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/zero/4096: Collecting 100 samples in estimated 5.0002 s (19M iterations)
+Benchmarking entropy/dispatch/zero/4096: Analyzing
+entropy/dispatch/zero/4096
+                        time:   [258.08 ns 258.54 ns 259.02 ns]
+                        thrpt:  [14.728 GiB/s 14.755 GiB/s 14.781 GiB/s]
+Benchmarking entropy/dispatch/ascii/4096
+Benchmarking entropy/dispatch/ascii/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/ascii/4096: Collecting 100 samples in estimated 5.0008 s (17M iterations)
+Benchmarking entropy/dispatch/ascii/4096: Analyzing
+entropy/dispatch/ascii/4096
+                        time:   [285.39 ns 285.86 ns 286.41 ns]
+                        thrpt:  [13.319 GiB/s 13.344 GiB/s 13.367 GiB/s]
+Found 5 outliers among 100 measurements (5.00%)
+  1 (1.00%) low mild
+  4 (4.00%) high mild
+Benchmarking entropy/dispatch/random/4096
+Benchmarking entropy/dispatch/random/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/random/4096: Collecting 100 samples in estimated 5.0033 s (1.7M iterations)
+Benchmarking entropy/dispatch/random/4096: Analyzing
+entropy/dispatch/random/4096
+                        time:   [2.9567 µs 2.9623 µs 2.9681 µs]
+                        thrpt:  [1.2852 GiB/s 1.2877 GiB/s 1.2902 GiB/s]
+Found 6 outliers among 100 measurements (6.00%)
+  3 (3.00%) low mild
+  2 (2.00%) high mild
+  1 (1.00%) high severe
+

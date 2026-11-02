@@ -1,0 +1,30 @@
+{
+  "upper_mean_ns": {
+    "ascii": 303.59395121753784,
+    "random": 2773.426333702571,
+    "zero": 248.55221472088647
+  },
+  "floor_scatter_store_lower_ns": 1664.844813886068,
+  "sla": "calibrated",
+  "strict": {
+    "budget_ns": 1000.0,
+    "failures": [
+      "random: upper mean confidence bound 2773.426333702571 ns is not < 1000.0 ns"
+    ]
+  },
+  "calibrated": {
+    "floor_ratio": 1.5,
+    "budget_ns": 2497.2672208291024,
+    "ratio_to_floor": {
+      "ascii": 0.18235570588041244,
+      "random": 1.6658767895782791,
+      "zero": 0.14929452441919663
+    },
+    "failures": [
+      "random: upper mean confidence bound 2773.426333702571 ns is not < 2497.2672208291024 ns"
+    ]
+  },
+  "failures": [
+    "random: upper mean confidence bound 2773.426333702571 ns is not < 2497.2672208291024 ns"
+  ]
+}

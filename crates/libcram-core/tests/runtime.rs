@@ -206,7 +206,7 @@ fn managed_constructor_joins_legacy_monitor() {
         .record_sample(libcram_core::migration::AccessSample {
             reads: 100,
             writes: 0,
-            entropy: 0.0,
+            entropy: 0.0.into(),
         })
         .expect("legacy sample");
     allocator
@@ -424,7 +424,7 @@ fn managed_ownership_rejects_legacy_metadata_even_after_stop() {
     let sample = libcram_core::migration::AccessSample {
         reads: 100,
         writes: 0,
-        entropy: 0.0,
+        entropy: 0.0.into(),
     };
     owned.record_sample(sample).unwrap();
     let runtime =

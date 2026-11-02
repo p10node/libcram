@@ -1,0 +1,18 @@
+entropy/floor/scatter_store/4096
+                        time:   [798.50 ns 799.59 ns 800.73 ns]
+entropy/dispatch/zero/4096
+                        time:   [154.97 ns 156.38 ns 158.36 ns]
+entropy/verdict/zero/4096
+                        time:   [208.57 ns 211.47 ns 216.94 ns]
+entropy/dispatch/ascii/4096
+                        time:   [242.37 ns 246.94 ns 256.20 ns]
+entropy/verdict/ascii/4096
+                        time:   [236.29 ns 237.19 ns 238.31 ns]
+entropy/dispatch/random/4096
+                        time:   [1.0670 µs 1.0824 µs 1.1108 µs]
+entropy/verdict/random/4096
+                        time:   [610.33 ns 611.76 ns 613.30 ns]
+entropy/verdict/mid/4096
+                        time:   [1.2125 µs 1.2142 µs 1.2161 µs]
+entropy/diagnostic/mid/4096
+                        time:   [1.1114 µs 1.1151 µs 1.1198 µs]

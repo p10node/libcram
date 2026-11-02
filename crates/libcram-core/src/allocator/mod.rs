@@ -249,12 +249,13 @@ pub struct OwnedAllocation {
     inner: Arc<Inner>,
 }
 impl OwnedAllocation {
-    /// Attach independently synchronized entropy metadata without reading payload bytes.
+    /// Attach independently synchronized entropy metadata without reading payload
+    /// bytes: a value in bits per byte, or an exact `Entropy` verdict.
     pub fn observation_token(
         &self,
-        entropy: f64,
+        entropy: impl Into<crate::migration::Entropy>,
     ) -> Result<crate::runtime::ObservationToken, Error> {
-        crate::runtime::ObservationToken::new(&self.record, entropy)
+        crate::runtime::ObservationToken::new(&self.record, entropy.into())
     }
     pub fn as_slice(&self) -> &[u8] {
         // SAFETY: Arc retains initialized mmap bytes; shared borrow prevents safe mutable access.
@@ -280,7 +281,9 @@ impl OwnedAllocation {
     }
     /// Explicitly profile at most the first 4096 bytes under a shared borrow.
     /// The caller supplies genuine access counts; the allocator never invents them.
-    /// This prefix estimate need not represent the entropy of the entire allocation.
+    /// The sample holds the exact compressibility verdict for that prefix
+    /// (`Entropy::of`), which need not represent the entire allocation. Use
+    /// `entropy::shannon_entropy` when the value itself is needed.
     pub fn profile(
         &self,
         reads: u64,
@@ -290,7 +293,7 @@ impl OwnedAllocation {
         let sample = crate::migration::AccessSample {
             reads,
             writes,
-            entropy: crate::entropy::shannon_entropy(&data[..data.len().min(4096)]),
+            entropy: crate::migration::Entropy::of(&data[..data.len().min(4096)]),
         };
         self.record_sample(sample)?;
         Ok(sample)

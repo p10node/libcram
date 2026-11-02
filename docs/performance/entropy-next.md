@@ -41,7 +41,7 @@ Both baseline and candidate used exactly:
 
 ```sh
 cargo bench --locked --bench entropy -- 'entropy/dispatch/.*/4096'
-python3 scripts/entropy_budget.py target/criterion
+python3 scripts/entropy_budget.py --sla strict target/criterion
 ```
 
 Criterion defaults were retained: 3-second warm-up, 100 samples, estimated

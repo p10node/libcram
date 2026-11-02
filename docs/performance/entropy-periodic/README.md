@@ -2,6 +2,8 @@
 
 ## Result: partial B improvement, strict gate still OPEN
 
+Later: gate B was redefined on the exact verdict and passes; see [IMPLEMENTATION_STATUS.md](../../IMPLEMENTATION_STATUS.md).
+
 The production banked histogram now has a bounded short-period scout. It takes
 only the first recurrence of the input's first byte within offsets 1–64 as a
 candidate, then compares **every** byte against its period-shifted counterpart,
@@ -71,7 +73,7 @@ export CARGO_TARGET_DIR="$PWD/target/entropy-periodic-replay"
 cargo test --workspace --locked
 cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
 cargo bench --locked --bench entropy -- 'entropy/dispatch/.*/4096'
-python3 scripts/entropy_budget.py "$CARGO_TARGET_DIR/criterion"
+python3 scripts/entropy_budget.py --sla strict "$CARGO_TARGET_DIR/criterion"
 python3 scripts/verify_entropy_periodic_mutations.py
 ```
 

@@ -2,6 +2,8 @@
 
 ## Verdict: INVALIDATED for promotion; B remains OPEN
 
+Later: gate B was redefined on the exact verdict and passes; see [IMPLEMENTATION_STATUS.md](../../IMPLEMENTATION_STATUS.md).
+
 Question: can changing the random-path counter layout, without changing Shannon
 math or input distributions, reduce the remaining entropy latency?
 

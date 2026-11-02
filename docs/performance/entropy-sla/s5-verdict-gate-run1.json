@@ -1,0 +1,54 @@
+{
+  "upper_mean_ns": {
+    "ascii": 283.25667772680805,
+    "random": 2934.621003651566,
+    "zero": 235.39731303378613
+  },
+  "floor_scatter_store_lower_ns": 1641.842520280537,
+  "sla": "calibrated",
+  "strict": {
+    "budget_ns": 1000.0,
+    "failures": [
+      "random: upper mean confidence bound 2934.621003651566 ns is not < 1000.0 ns"
+    ]
+  },
+  "calibrated": {
+    "floor_ratio": 1.5,
+    "budget_ns": 2462.7637804208052,
+    "ratio_to_floor": {
+      "ascii": 0.17252365816327425,
+      "random": 1.7873949342901263,
+      "zero": 0.1433738681548852
+    },
+    "failures": [
+      "random: upper mean confidence bound 2934.621003651566 ns is not < 2462.7637804208052 ns"
+    ]
+  },
+  "target": "verdict",
+  "verdict": {
+    "upper_mean_ns": {
+      "ascii": 282.62107669334097,
+      "mid": 3176.3678285702003,
+      "random": 1548.1177074192735,
+      "zero": 243.71073199094428
+    },
+    "strict": {
+      "budget_ns": 1000.0,
+      "failures": [
+        "random: upper mean confidence bound 1548.1177074192735 ns is not < 1000.0 ns"
+      ]
+    },
+    "calibrated": {
+      "floor_ratio": 1.5,
+      "budget_ns": 2462.7637804208052,
+      "ratio_to_floor": {
+        "ascii": 0.17213653148966462,
+        "mid": 1.9346361111584949,
+        "random": 0.9429148583353482,
+        "zero": 0.14843733730888034
+      },
+      "failures": []
+    }
+  },
+  "failures": []
+}

@@ -5,6 +5,9 @@ Worktree: `$WORKSPACE/libcram-entropy`.
 
 ## Status: PARTIAL, strict target not met
 
+Later: gate B was redefined on the exact verdict and passes; see
+[IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+
 * Implemented a shared exact four-bank u16 histogram, 32-byte chunks and bounded
   32768-byte batches. NEON uses it after the unchanged uniform-prefix scan;
   AVX2/AVX512BW now use prefix-only uniform detection and the same helper.
@@ -52,7 +55,7 @@ Criterion command on s5 before treating the x86 code as an established speedup:
 cargo test --locked --release -p libcram-core entropy
 cargo clippy --locked -p libcram-core --all-targets -- -D warnings
 cargo bench --locked --bench entropy -- 'entropy/dispatch/.*/4096'
-python3 scripts/entropy_budget.py target/criterion
+python3 scripts/entropy_budget.py --sla strict target/criterion
 ```
 
 Do not infer VM results from ARM results. The helper is portable Rust; its only

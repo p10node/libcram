@@ -1,0 +1,52 @@
+{
+  "upper_mean_ns": {
+    "ascii": 288.57091887003816,
+    "random": 2874.8451803017074,
+    "zero": 250.20281028561112
+  },
+  "floor_scatter_store_lower_ns": 1666.6539195566183,
+  "sla": "calibrated",
+  "strict": {
+    "budget_ns": 1000.0,
+    "failures": [
+      "random: upper mean confidence bound 2874.8451803017074 ns is not < 1000.0 ns"
+    ]
+  },
+  "calibrated": {
+    "floor_ratio": 1.5,
+    "budget_ns": 2499.9808793349275,
+    "ratio_to_floor": {
+      "ascii": 0.17314387557244457,
+      "random": 1.724920300830364,
+      "zero": 0.1501228343507408
+    },
+    "failures": [
+      "random: upper mean confidence bound 2874.8451803017074 ns is not < 2499.9808793349275 ns"
+    ]
+  },
+  "target": "verdict",
+  "verdict": {
+    "upper_mean_ns": {
+      "ascii": 290.0259258058291,
+      "mid": 3192.1956945086135,
+      "random": 800.0732153091607,
+      "zero": 247.79521715733256
+    },
+    "strict": {
+      "budget_ns": 1000.0,
+      "failures": []
+    },
+    "calibrated": {
+      "floor_ratio": 1.5,
+      "budget_ns": 2499.9808793349275,
+      "ratio_to_floor": {
+        "ascii": 0.17401688641093827,
+        "mid": 1.9153320656743402,
+        "random": 0.4800476007172533,
+        "zero": 0.14867826742534154
+      },
+      "failures": []
+    }
+  },
+  "failures": []
+}

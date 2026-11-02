@@ -1,0 +1,86 @@
+    Finished `bench` profile [optimized] target(s) in 0.31s
+     Running ../../benches/entropy.rs (target/release/deps/entropy-a736fccf3f0e9931)
+Gnuplot not found, using plotters backend
+Benchmarking entropy/floor/scatter_store/4096
+Benchmarking entropy/floor/scatter_store/4096: Warming up for 3.0000 s
+Benchmarking entropy/floor/scatter_store/4096: Collecting 100 samples in estimated 5.0035 s (3.0M iterations)
+Benchmarking entropy/floor/scatter_store/4096: Analyzing
+entropy/floor/scatter_store/4096
+                        time:   [1.6627 µs 1.6740 µs 1.6867 µs]
+                        thrpt:  [2.2616 GiB/s 2.2787 GiB/s 2.2943 GiB/s]
+Found 7 outliers among 100 measurements (7.00%)
+  5 (5.00%) high mild
+  2 (2.00%) high severe
+Benchmarking entropy/dispatch/zero/4096
+Benchmarking entropy/dispatch/zero/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/zero/4096: Collecting 100 samples in estimated 5.0005 s (20M iterations)
+Benchmarking entropy/dispatch/zero/4096: Analyzing
+entropy/dispatch/zero/4096
+                        time:   [249.82 ns 250.45 ns 251.09 ns]
+                        thrpt:  [15.193 GiB/s 15.232 GiB/s 15.270 GiB/s]
+Benchmarking entropy/verdict/zero/4096
+Benchmarking entropy/verdict/zero/4096: Warming up for 3.0000 s
+Benchmarking entropy/verdict/zero/4096: Collecting 100 samples in estimated 5.0005 s (21M iterations)
+Benchmarking entropy/verdict/zero/4096: Analyzing
+entropy/verdict/zero/4096
+                        time:   [247.07 ns 247.69 ns 248.35 ns]
+                        thrpt:  [15.360 GiB/s 15.401 GiB/s 15.440 GiB/s]
+Benchmarking entropy/dispatch/ascii/4096
+Benchmarking entropy/dispatch/ascii/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/ascii/4096: Collecting 100 samples in estimated 5.0001 s (18M iterations)
+Benchmarking entropy/dispatch/ascii/4096: Analyzing
+entropy/dispatch/ascii/4096
+                        time:   [284.53 ns 284.99 ns 285.54 ns]
+                        thrpt:  [13.360 GiB/s 13.385 GiB/s 13.407 GiB/s]
+Found 2 outliers among 100 measurements (2.00%)
+  2 (2.00%) high mild
+Benchmarking entropy/verdict/ascii/4096
+Benchmarking entropy/verdict/ascii/4096: Warming up for 3.0000 s
+Benchmarking entropy/verdict/ascii/4096: Collecting 100 samples in estimated 5.0010 s (17M iterations)
+Benchmarking entropy/verdict/ascii/4096: Analyzing
+entropy/verdict/ascii/4096
+                        time:   [285.73 ns 286.23 ns 286.75 ns]
+                        thrpt:  [13.303 GiB/s 13.327 GiB/s 13.351 GiB/s]
+Found 1 outliers among 100 measurements (1.00%)
+  1 (1.00%) high mild
+Benchmarking entropy/dispatch/random/4096
+Benchmarking entropy/dispatch/random/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/random/4096: Collecting 100 samples in estimated 5.0101 s (1.8M iterations)
+Benchmarking entropy/dispatch/random/4096: Analyzing
+entropy/dispatch/random/4096
+                        time:   [2.8366 µs 2.8487 µs 2.8609 µs]
+                        thrpt:  [1.3334 GiB/s 1.3391 GiB/s 1.3448 GiB/s]
+Found 3 outliers among 100 measurements (3.00%)
+  2 (2.00%) high mild
+  1 (1.00%) high severe
+Benchmarking entropy/verdict/random/4096
+Benchmarking entropy/verdict/random/4096: Warming up for 3.0000 s
+Benchmarking entropy/verdict/random/4096: Collecting 100 samples in estimated 5.0015 s (6.3M iterations)
+Benchmarking entropy/verdict/random/4096: Analyzing
+entropy/verdict/random/4096
+                        time:   [795.85 ns 796.55 ns 797.34 ns]
+                        thrpt:  [4.7843 GiB/s 4.7890 GiB/s 4.7932 GiB/s]
+Found 9 outliers among 100 measurements (9.00%)
+  4 (4.00%) high mild
+  5 (5.00%) high severe
+Benchmarking entropy/verdict/mid/4096
+Benchmarking entropy/verdict/mid/4096: Warming up for 3.0000 s
+Benchmarking entropy/verdict/mid/4096: Collecting 100 samples in estimated 5.0137 s (1.6M iterations)
+Benchmarking entropy/verdict/mid/4096: Analyzing
+entropy/verdict/mid/4096
+                        time:   [3.1598 µs 3.1634 µs 3.1675 µs]
+                        thrpt:  [1.2043 GiB/s 1.2059 GiB/s 1.2072 GiB/s]
+Found 4 outliers among 100 measurements (4.00%)
+  2 (2.00%) high mild
+  2 (2.00%) high severe
+Benchmarking entropy/diagnostic/mid/4096
+Benchmarking entropy/diagnostic/mid/4096: Warming up for 3.0000 s
+Benchmarking entropy/diagnostic/mid/4096: Collecting 100 samples in estimated 5.0011 s (1.8M iterations)
+Benchmarking entropy/diagnostic/mid/4096: Analyzing
+entropy/diagnostic/mid/4096
+                        time:   [2.8247 µs 2.8272 µs 2.8301 µs]
+                        thrpt:  [1.3479 GiB/s 1.3493 GiB/s 1.3505 GiB/s]
+Found 8 outliers among 100 measurements (8.00%)
+  5 (5.00%) high mild
+  3 (3.00%) high severe
+

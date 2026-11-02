@@ -1,0 +1,39 @@
+    Finished `bench` profile [optimized] target(s) in 0.08s
+     Running ../../benches/entropy.rs (target/release/deps/entropy-a736fccf3f0e9931)
+Gnuplot not found, using plotters backend
+Benchmarking entropy/floor/scatter_store/4096
+Benchmarking entropy/floor/scatter_store/4096: Warming up for 3.0000 s
+Benchmarking entropy/floor/scatter_store/4096: Collecting 100 samples in estimated 5.0082 s (3.0M iterations)
+Benchmarking entropy/floor/scatter_store/4096: Analyzing
+entropy/floor/scatter_store/4096
+                        time:   [1.6666 µs 1.6699 µs 1.6729 µs]
+                        thrpt:  [2.2802 GiB/s 2.2845 GiB/s 2.2889 GiB/s]
+Benchmarking entropy/dispatch/zero/4096
+Benchmarking entropy/dispatch/zero/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/zero/4096: Collecting 100 samples in estimated 5.0010 s (21M iterations)
+Benchmarking entropy/dispatch/zero/4096: Analyzing
+entropy/dispatch/zero/4096
+                        time:   [249.98 ns 251.76 ns 253.60 ns]
+                        thrpt:  [15.042 GiB/s 15.152 GiB/s 15.260 GiB/s]
+Found 2 outliers among 100 measurements (2.00%)
+  2 (2.00%) high mild
+Benchmarking entropy/dispatch/ascii/4096
+Benchmarking entropy/dispatch/ascii/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/ascii/4096: Collecting 100 samples in estimated 5.0002 s (17M iterations)
+Benchmarking entropy/dispatch/ascii/4096: Analyzing
+entropy/dispatch/ascii/4096
+                        time:   [300.34 ns 302.16 ns 303.99 ns]
+                        thrpt:  [12.549 GiB/s 12.625 GiB/s 12.701 GiB/s]
+Found 1 outliers among 100 measurements (1.00%)
+  1 (1.00%) high severe
+Benchmarking entropy/dispatch/random/4096
+Benchmarking entropy/dispatch/random/4096: Warming up for 3.0000 s
+Benchmarking entropy/dispatch/random/4096: Collecting 100 samples in estimated 5.0107 s (1.8M iterations)
+Benchmarking entropy/dispatch/random/4096: Analyzing
+entropy/dispatch/random/4096
+                        time:   [2.7591 µs 2.7639 µs 2.7691 µs]
+                        thrpt:  [1.3776 GiB/s 1.3802 GiB/s 1.3826 GiB/s]
+Found 4 outliers among 100 measurements (4.00%)
+  1 (1.00%) low mild
+  3 (3.00%) high mild
+

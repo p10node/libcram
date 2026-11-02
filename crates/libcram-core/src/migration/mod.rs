@@ -6,22 +6,59 @@ use crate::{
     Error,
 };
 use std::sync::atomic::Ordering;
+/// Byte entropy, in bits per byte, below which a read-heavy allocation is compressible.
+pub const COMPRESSIBLE_ENTROPY: f64 = 4.5;
+/// Entropy evidence for the compression policy.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Entropy {
+    /// Shannon entropy in bits per byte; must be finite and within [0, 8].
+    Value(f64),
+    /// The exact verdict `entropy < COMPRESSIBLE_ENTROPY` without the value, as
+    /// returned by `entropy::entropy_below`.
+    Compressible(bool),
+}
+impl From<f64> for Entropy {
+    fn from(value: f64) -> Self {
+        Self::Value(value)
+    }
+}
+impl Entropy {
+    /// Exact policy evidence for `data`. It equals the verdict of
+    /// `Entropy::Value(entropy::shannon_entropy(data))` but usually needs only
+    /// part of the bytes.
+    pub fn of(data: &[u8]) -> Self {
+        Self::Compressible(crate::entropy::entropy_below(data, COMPRESSIBLE_ENTROPY))
+    }
+    /// Whether the entropy is below `COMPRESSIBLE_ENTROPY`.
+    pub fn compressible(self) -> bool {
+        match self {
+            Self::Value(value) => value < COMPRESSIBLE_ENTROPY,
+            Self::Compressible(verdict) => verdict,
+        }
+    }
+    fn is_valid(self) -> bool {
+        match self {
+            Self::Value(value) => value.is_finite() && (0.0..=8.0).contains(&value),
+            Self::Compressible(_) => true,
+        }
+    }
+}
 #[derive(Clone, Copy, Debug)]
 pub struct AccessSample {
     pub reads: u64,
     pub writes: u64,
-    pub entropy: f64,
+    pub entropy: Entropy,
 }
 impl AccessSample {
     pub fn validate(&self) -> Result<(), Error> {
-        if !self.entropy.is_finite() || !(0.0..=8.0).contains(&self.entropy) {
-            Err(Error::InvalidSample)
-        } else {
+        if self.entropy.is_valid() {
             Ok(())
+        } else {
+            Err(Error::InvalidSample)
         }
     }
     fn compressed(&self) -> bool {
-        self.entropy < 4.5 && self.reads > 0 && self.reads / 4 > self.writes
+        self.entropy.compressible() && self.reads > 0 && self.reads / 4 > self.writes
     }
 }
 pub(crate) struct State {

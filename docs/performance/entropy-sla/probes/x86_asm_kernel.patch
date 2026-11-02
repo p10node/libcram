@@ -1,0 +1,116 @@
+diff --git a/crates/libcram-core/src/entropy/mod.rs b/crates/libcram-core/src/entropy/mod.rs
+index 28dfb9d..ec5418e 100644
+--- a/crates/libcram-core/src/entropy/mod.rs
++++ b/crates/libcram-core/src/entropy/mod.rs
+@@ -51,6 +51,78 @@ fn scalar_hist(data: &[u8], hist: &mut [usize; 256]) {
+ }
+ mod periodic;
+ 
++/// Counts whole 8-byte words of `batch` (at most 32768 bytes) into bank
++/// `lane & 3`, and returns the uncounted tail.
++#[cfg(not(target_arch = "x86_64"))]
++#[inline(always)]
++fn count_banks<'a>(batch: &'a [u8], counters: &mut [[u16; 256]; 4]) -> &'a [u8] {
++    let [h0, h1, h2, h3] = counters;
++    let (chunks, remainder) = batch.as_chunks::<32>();
++    for chunk in chunks {
++        for bytes in chunk.as_chunks::<8>().0 {
++            let word = u64::from_ne_bytes(*bytes);
++            // Preserve the word load on AArch64 instead of eight byte loads.
++            // SAFETY: register-only identity; no memory or flags are changed.
++            #[cfg(target_arch = "aarch64")]
++            let word = unsafe {
++                let mut word = word;
++                std::arch::asm!("/* {word} */", word = inout(reg) word,
++                    options(pure, nomem, nostack, preserves_flags));
++                word
++            };
++            h0[(word & 255) as usize] += 1;
++            h1[((word >> 8) & 255) as usize] += 1;
++            h2[((word >> 16) & 255) as usize] += 1;
++            h3[((word >> 24) & 255) as usize] += 1;
++            h0[((word >> 32) & 255) as usize] += 1;
++            h1[((word >> 40) & 255) as usize] += 1;
++            h2[((word >> 48) & 255) as usize] += 1;
++            h3[(word >> 56) as usize] += 1;
++        }
++    }
++    remainder
++}
++
++/// x86_64 version of the counting loop above. LLVM extracts bytes with
++/// shift-and-mask (17 ALU uops per word), and on Broadwell the loop is
++/// issue-bound. `al`/`ah` plus `shr rax, 16` needs 11. A per-word loop also
++/// measured faster than 32-byte unrolling
++/// (docs/performance/entropy-sla/probes/s5-x86-probes.log).
++#[cfg(target_arch = "x86_64")]
++#[inline(always)]
++fn count_banks<'a>(batch: &'a [u8], counters: &mut [[u16; 256]; 4]) -> &'a [u8] {
++    let base = counters.as_mut_ptr().cast::<u16>();
++    let (words, remainder) = batch.as_chunks::<8>();
++    for word in words {
++        // SAFETY: reads exactly the 8 bytes of `word`. Lane k (little-endian)
++        // increments counters[k & 3][byte], at byte offset 512 * (k & 3) + 2 * byte,
++        // which is below the 2048-byte size of `counters`. A batch holds at most
++        // 32768 bytes, so no u16 counter can wrap. `inc` changes only flags,
++        // the clobbered scratch registers and that memory.
++        unsafe {
++            std::arch::asm!(
++                "mov rax, qword ptr [{src}]",
++                "movzx ecx, al", "movzx edx, ah", "shr rax, 16",
++                "movzx esi, al", "movzx edi, ah", "shr rax, 16",
++                "inc word ptr [{base} + rcx*2]",
++                "inc word ptr [{base} + rdx*2 + 512]",
++                "inc word ptr [{base} + rsi*2 + 1024]",
++                "inc word ptr [{base} + rdi*2 + 1536]",
++                "movzx ecx, al", "movzx edx, ah", "shr rax, 16",
++                "movzx esi, al", "movzx edi, ah",
++                "inc word ptr [{base} + rcx*2]",
++                "inc word ptr [{base} + rdx*2 + 512]",
++                "inc word ptr [{base} + rsi*2 + 1024]",
++                "inc word ptr [{base} + rdi*2 + 1536]",
++                src = in(reg) word.as_ptr(), base = in(reg) base,
++                out("rax") _, out("rcx") _, out("rdx") _, out("rsi") _, out("rdi") _,
++                options(nostack),
++            );
++        }
++    }
++    remainder
++}
++
+ /// Four disjoint banks remove same-symbol dependencies between adjacent bytes.
+ /// A batch contributes at most 8192 to any u16 counter, and at most 32768
+ /// to their sum. Merge before the next batch to retain arbitrary-length inputs.
+@@ -71,30 +143,8 @@ fn banked_hist(mut data: &[u8], hist: &mut [usize; 256]) {
+     }
+     for batch in data.chunks(32768) {
+         let mut counters = [[0u16; 256]; 4];
+-        let [h0, h1, h2, h3] = &mut counters;
+-        let (chunks, remainder) = batch.as_chunks::<32>();
+-        for chunk in chunks {
+-            for bytes in chunk.as_chunks::<8>().0 {
+-                let word = u64::from_ne_bytes(*bytes);
+-                // Preserve the word load on AArch64 instead of eight byte loads.
+-                // SAFETY: register-only identity; no memory or flags are changed.
+-                #[cfg(target_arch = "aarch64")]
+-                let word = unsafe {
+-                    let mut word = word;
+-                    std::arch::asm!("/* {word} */", word = inout(reg) word,
+-                        options(pure, nomem, nostack, preserves_flags));
+-                    word
+-                };
+-                h0[(word & 255) as usize] += 1;
+-                h1[((word >> 8) & 255) as usize] += 1;
+-                h2[((word >> 16) & 255) as usize] += 1;
+-                h3[((word >> 24) & 255) as usize] += 1;
+-                h0[((word >> 32) & 255) as usize] += 1;
+-                h1[((word >> 40) & 255) as usize] += 1;
+-                h2[((word >> 48) & 255) as usize] += 1;
+-                h3[(word >> 56) as usize] += 1;
+-            }
+-        }
++        let remainder = count_banks(batch, &mut counters);
++        let [h0, h1, h2, h3] = &counters;
+         for i in 0..256 {
+             hist[i] += (h0[i] + h1[i] + h2[i] + h3[i]) as usize;
+         }

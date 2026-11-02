@@ -1,0 +1,74 @@
+# 2026-11-01T16:21:59Z  Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz rustc 1.89.0 (29483883e 2025-08-04) -C opt-level=3 -C codegen-units=1, taskset -c 0
+# x86_probe.rs sha256 f7a5db788ed8759f8524a939a53dce2153271edb08025fd3d9465b6fe5eca06d
+## run1
+correctness ok
+random/prod                 median   3151.9 ns  min   2656.8  vs prod   +0.0%
+random/bytes                median   2743.7 ns  min   2344.5  vs prod  -12.9%
+random/asm_idx              median   2624.6 ns  min   2349.0  vs prod  -16.7%
+random/asm_idx_x4           median   2722.4 ns  min   2370.2  vs prod  -13.6%
+random/asm_4b               median   2615.8 ns  min   2221.3  vs prod  -17.0%
+random/asm_4b_x4            median   2721.4 ns  min   2539.4  vs prod  -13.7%
+random/asm_lea              median   2851.6 ns  min   2554.0  vs prod   -9.5%
+random/asm_split            median   2616.8 ns  min   2401.4  vs prod  -17.0%
+random/asm_lea_split        median   2827.8 ns  min   2516.0  vs prod  -10.3%
+random/asm_bytes_lea        median   2647.7 ns  min   2349.2  vs prod  -16.0%
+random/floor(store only)    median   1672.6 ns  min   1414.8  vs prod  -46.9%
+seq/prod                 median   3082.7 ns  min   3034.4  vs prod   +0.0%
+seq/bytes                median   2727.5 ns  min   2673.8  vs prod  -11.5%
+seq/asm_idx              median   2570.3 ns  min   2542.9  vs prod  -16.6%
+seq/asm_idx_x4           median   2697.1 ns  min   2545.4  vs prod  -12.5%
+seq/asm_4b               median   2556.9 ns  min   2402.6  vs prod  -17.1%
+seq/asm_4b_x4            median   2698.7 ns  min   2639.4  vs prod  -12.5%
+seq/asm_lea              median   2792.4 ns  min   2669.9  vs prod   -9.4%
+seq/asm_split            median   2548.4 ns  min   2421.8  vs prod  -17.3%
+seq/asm_lea_split        median   2808.2 ns  min   2681.1  vs prod   -8.9%
+seq/asm_bytes_lea        median   2619.6 ns  min   2402.9  vs prod  -15.0%
+seq/floor(store only)    median   1877.0 ns  min   1778.8  vs prod  -39.1%
+## run2
+correctness ok
+random/prod                 median   3145.8 ns  min   2705.7  vs prod   +0.0%
+random/bytes                median   2745.3 ns  min   2548.5  vs prod  -12.7%
+random/asm_idx              median   2583.0 ns  min   2317.3  vs prod  -17.9%
+random/asm_idx_x4           median   2697.5 ns  min   2485.8  vs prod  -14.3%
+random/asm_4b               median   2591.4 ns  min   2472.6  vs prod  -17.6%
+random/asm_4b_x4            median   2676.1 ns  min   2407.1  vs prod  -14.9%
+random/asm_lea              median   2823.0 ns  min   2735.4  vs prod  -10.3%
+random/asm_split            median   2605.4 ns  min   2320.0  vs prod  -17.2%
+random/asm_lea_split        median   2796.2 ns  min   2446.8  vs prod  -11.1%
+random/asm_bytes_lea        median   2629.9 ns  min   2252.0  vs prod  -16.4%
+random/floor(store only)    median   1658.0 ns  min   1427.3  vs prod  -47.3%
+seq/prod                 median   3089.0 ns  min   3006.4  vs prod   +0.0%
+seq/bytes                median   2728.3 ns  min   2676.9  vs prod  -11.7%
+seq/asm_idx              median   2560.6 ns  min   2481.4  vs prod  -17.1%
+seq/asm_idx_x4           median   2713.3 ns  min   2665.8  vs prod  -12.2%
+seq/asm_4b               median   2561.2 ns  min   2471.2  vs prod  -17.1%
+seq/asm_4b_x4            median   2696.4 ns  min   2660.8  vs prod  -12.7%
+seq/asm_lea              median   2799.0 ns  min   2695.0  vs prod   -9.4%
+seq/asm_split            median   2579.5 ns  min   2535.6  vs prod  -16.5%
+seq/asm_lea_split        median   2801.6 ns  min   2678.5  vs prod   -9.3%
+seq/asm_bytes_lea        median   2636.6 ns  min   2532.5  vs prod  -14.6%
+seq/floor(store only)    median   1647.5 ns  min   1586.4  vs prod  -46.7%
+## run3
+correctness ok
+random/prod                 median   3099.2 ns  min   2955.8  vs prod   +0.0%
+random/bytes                median   2716.7 ns  min   2698.3  vs prod  -12.3%
+random/asm_idx              median   2600.6 ns  min   2455.4  vs prod  -16.1%
+random/asm_idx_x4           median   2675.3 ns  min   2608.5  vs prod  -13.7%
+random/asm_4b               median   2584.8 ns  min   2575.5  vs prod  -16.6%
+random/asm_4b_x4            median   2697.6 ns  min   2654.1  vs prod  -13.0%
+random/asm_lea              median   2796.4 ns  min   2775.6  vs prod   -9.8%
+random/asm_split            median   2581.2 ns  min   2567.7  vs prod  -16.7%
+random/asm_lea_split        median   2812.7 ns  min   2785.2  vs prod   -9.2%
+random/asm_bytes_lea        median   2621.2 ns  min   2568.8  vs prod  -15.4%
+random/floor(store only)    median   1663.5 ns  min   1634.2  vs prod  -46.3%
+seq/prod                 median   3129.1 ns  min   3021.3  vs prod   +0.0%
+seq/bytes                median   2754.5 ns  min   2703.0  vs prod  -12.0%
+seq/asm_idx              median   2566.8 ns  min   2522.9  vs prod  -18.0%
+seq/asm_idx_x4           median   2690.7 ns  min   2517.5  vs prod  -14.0%
+seq/asm_4b               median   2570.1 ns  min   2466.4  vs prod  -17.9%
+seq/asm_4b_x4            median   2703.8 ns  min   2590.6  vs prod  -13.6%
+seq/asm_lea              median   2797.2 ns  min   2734.4  vs prod  -10.6%
+seq/asm_split            median   2578.0 ns  min   2495.4  vs prod  -17.6%
+seq/asm_lea_split        median   2816.3 ns  min   2708.1  vs prod  -10.0%
+seq/asm_bytes_lea        median   2622.3 ns  min   2601.6  vs prod  -16.2%
+seq/floor(store only)    median   1646.9 ns  min   1599.8  vs prod  -47.4%

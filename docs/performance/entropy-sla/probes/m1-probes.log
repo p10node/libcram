@@ -1,0 +1,69 @@
+# 2026-11-01T11:58:21Z Apple M1 Pro rustc 1.99.1 (58cf8f9c3 2026-10-13) -C opt-level=3
+# production mod.rs sha256 f8d8d7bd7a33fb1d165051bcaaaf57e838a97ee247a11dbd9264259270ba108c
+## probe
+random/banked4_u16           median  1025.48 ns  min  1004.50
+random/lse16_1               median  4133.23 ns  min  4032.43
+random/lse32_1               median  4035.94 ns  min  4018.29
+random/lse16_2               median  4111.48 ns  min  4062.06
+random/mixed                 median  3207.87 ns  min  3171.99
+random/PROD_total            median  1064.14 ns  min  1051.79
+ascii/banked4_u16            median  1076.10 ns  min  1070.64
+ascii/lse16_1                median  4083.45 ns  min  4040.61
+ascii/lse32_1                median  4077.74 ns  min  4051.25
+ascii/lse16_2                median  4108.64 ns  min  4071.63
+ascii/mixed                  median  3114.19 ns  min  3014.40
+ascii/PROD_total             median   236.85 ns  min   235.06
+seq/banked4_u16              median  1002.79 ns  min   986.14
+seq/lse16_1                  median  4136.00 ns  min  4042.85
+seq/lse32_1                  median  4049.26 ns  min  4031.53
+seq/lse16_2                  median  4100.64 ns  min  4060.05
+seq/mixed                    median  3204.89 ns  min  3076.67
+seq/PROD_total               median  1071.56 ns  min  1056.84
+zero/banked4_u16             median  2541.43 ns  min  2521.91
+zero/lse16_1                 median  9180.50 ns  min  9010.81
+zero/lse32_1                 median  8655.79 ns  min  8612.95
+zero/lse16_2                 median  4684.86 ns  min  4661.61
+zero/mixed                   median  4574.14 ns  min  4521.60
+zero/PROD_total              median   148.46 ns  min   146.35
+## floor
+extract+add (no table)     median   865.62 ns  min   859.85
+scatter loads only         median   612.02 ns  min   606.08
+scatter stores only        median   805.14 ns  min   799.92
+scatter RMW (+1)           median   932.65 ns  min   928.17
+## hyb
+random/banked4                     median  1017.35 ns  min  1003.08
+random/neon_only                   median  2670.84 ns  min  2620.13
+random/hyb 512/1 (25% neon)        median  1204.10 ns  min  1184.84
+random/hyb 640/1 (20% neon)        median  1109.78 ns  min  1095.72
+random/hyb 384/1 (33% neon)        median  1311.44 ns  min  1302.80
+random/hyb 1024/1 (12.5%)          median  1084.41 ns  min  1077.05
+random/hyb 1024/2 (25%)            median  1185.70 ns  min  1178.03
+ascii/banked4                      median  1099.28 ns  min  1092.89
+ascii/neon_only                    median  2633.10 ns  min  2624.24
+ascii/hyb 512/1 (25% neon)         median  1190.09 ns  min  1183.26
+ascii/hyb 640/1 (20% neon)         median  1115.15 ns  min  1106.27
+ascii/hyb 384/1 (33% neon)         median  1306.60 ns  min  1299.93
+ascii/hyb 1024/1 (12.5%)           median  1111.14 ns  min  1102.85
+ascii/hyb 1024/2 (25%)             median  1211.52 ns  min  1182.08
+zero/banked4                       median  2562.50 ns  min  2552.52
+zero/neon_only                     median  2643.61 ns  min  2620.81
+zero/hyb 512/1 (25% neon)          median  1950.68 ns  min  1940.04
+zero/hyb 640/1 (20% neon)          median  2096.14 ns  min  2078.52
+zero/hyb 384/1 (33% neon)          median  1836.00 ns  min  1803.33
+zero/hyb 1024/1 (12.5%)            median  2257.43 ns  min  2238.16
+zero/hyb 1024/2 (25%)              median  1951.74 ns  min  1936.91
+correctness ok
+## fused
+prod 7.95685081166937636 f8 7.95685081166937547
+PROD total                     median  1059.18 ns  min  1045.29
+banks+merge+finish8(usize)     median  1085.73 ns  min  1048.09
+banks+fused4                   median  1024.94 ns  min  1014.79
+banks+fused8                   median  1032.57 ns  min  1017.08
+banks+fused_portable           median  1116.40 ns  min  1095.14
+banks only                     median   938.11 ns  min   933.84
+PROD total                     median  1054.95 ns  min  1048.43
+banks+merge+finish8(usize)     median  1067.72 ns  min  1049.85
+banks+fused4                   median  1022.75 ns  min  1009.87
+banks+fused8                   median  1023.64 ns  min  1008.85
+banks+fused_portable           median  1108.93 ns  min  1087.44
+banks only                     median   933.58 ns  min   930.17

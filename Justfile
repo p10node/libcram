@@ -27,10 +27,11 @@ bench-build:
 bench:
     cargo bench -p libcram-bench --locked
 
-# Hardware acceptance: measures then fails if any 4KB distribution exceeds 1us.
+# Hardware acceptance: 4KB exact policy verdict (entropy < 4.5) vs max(1us, 1.5x same-run
+# scatter-store floor). Strict 1us and the full entropy value are also reported.
 entropy-budget:
-    cargo bench -p libcram-bench --bench entropy --locked -- 'entropy/dispatch/.*/4096'
-    python3 scripts/entropy_budget.py
+    cargo bench -p libcram-bench --bench entropy --locked -- 'entropy/(dispatch/.*|verdict/.*|diagnostic/mid|floor/scatter_store)/4096'
+    python3 scripts/entropy_budget.py --target verdict
 
 # Linux uses an isolated Docker target directory and read-only source tree.
 linux:

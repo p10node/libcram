@@ -1,7 +1,7 @@
 //! Explicit opt-in managed collection. No payload aliases are ever sampled.
 use crate::{
     allocator::{AccessHint, Allocation, CramAllocator, OwnedAllocation, TelemetrySnapshot},
-    migration::AccessSample,
+    migration::{AccessSample, Entropy},
     Error,
 };
 use std::{
@@ -11,7 +11,7 @@ use std::{
 #[derive(Clone)]
 pub struct ObservationToken {
     record: Weak<Allocation>,
-    entropy: f64,
+    entropy: Entropy,
     created: Instant,
 }
 impl ObservationToken {
@@ -26,7 +26,7 @@ impl ObservationToken {
     pub(crate) fn same_allocation(&self, other: &Self) -> bool {
         Weak::ptr_eq(&self.record, &other.record)
     }
-    pub(crate) fn new(record: &Arc<Allocation>, entropy: f64) -> Result<Self, Error> {
+    pub(crate) fn new(record: &Arc<Allocation>, entropy: Entropy) -> Result<Self, Error> {
         AccessSample {
             reads: 0,
             writes: 0,

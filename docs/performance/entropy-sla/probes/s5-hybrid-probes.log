@@ -1,0 +1,77 @@
+# 2026-11-01T23:11:55Z  Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz rustc 1.89.0 (29483883e 2025-08-04) -C opt-level=3 -C codegen-units=1, taskset -c 0
+# hybrid_probe.rs sha256 93f2cd83f6aff377ff986e28b2720f080e26da349af5c33960b13a8f3b14ead4
+## run1
+dependent add chain 1.936 GHz, ymm logic ops 6.18/ns
+dependent add chain 2.061 GHz, ymm logic ops 6.19/ns
+correctness ok
+random m=1536 lowest 4.6711
+random m=2048 lowest 4.7871
+c16_flush/4096                 median    561.3 ns  min    458.8
+c16_l2/4096                    median    411.1 ns  min    406.2
+c32_l2/4096                    median    913.2 ns  min    903.7
+c32z_l2/4096                   median    933.3 ns  min    925.6
+c32_flush/4096                 median    940.4 ns  min    926.7
+c16_tr/4096                    median    347.3 ns  min    341.8
+c32_tr/4096                    median    760.0 ns  min    755.5
+c32z_tr/4096                   median    775.9 ns  min    771.9
+c16_tr/2560                    median    230.2 ns  min    228.7
+c32_tr/1536                    median    361.2 ns  min    356.9
+c32z_tr/1536                   median    363.4 ns  min    357.0
+hybrid m=1536 (tr/tr)          median    657.6 ns  min    650.7
+hybrid m=1536 (ztr/tr)         median    654.9 ns  min    648.8
+hybrid m=1536 (l2/l2)          median    981.3 ns  min    973.3
+hybrid m=1536 (l2/flush)       median    936.3 ns  min    929.2
+hybrid m=2048 (tr/tr)          median    702.1 ns  min    696.4
+hybrid m=2048 (ztr/tr)         median    702.9 ns  min    696.6
+hybrid m=2048 (l2/l2)          median   1016.8 ns  min   1006.4
+hybrid m=2048 (l2/flush)       median    969.9 ns  min    960.1
+## run2
+dependent add chain 2.510 GHz, ymm logic ops 7.54/ns
+dependent add chain 2.493 GHz, ymm logic ops 7.59/ns
+correctness ok
+random m=1536 lowest 4.6711
+random m=2048 lowest 4.7871
+c16_flush/4096                 median    457.9 ns  min    451.1
+c16_l2/4096                    median    427.2 ns  min    422.9
+c32_l2/4096                    median    898.5 ns  min    890.2
+c32z_l2/4096                   median    922.3 ns  min    917.9
+c32_flush/4096                 median    950.1 ns  min    940.3
+c16_tr/4096                    median    361.2 ns  min    356.4
+c32_tr/4096                    median    738.3 ns  min    729.2
+c32z_tr/4096                   median    766.3 ns  min    756.0
+c16_tr/2560                    median    224.3 ns  min    221.4
+c32_tr/1536                    median    342.6 ns  min    338.8
+c32z_tr/1536                   median    354.6 ns  min    347.9
+hybrid m=1536 (tr/tr)          median    635.5 ns  min    632.1
+hybrid m=1536 (ztr/tr)         median    639.0 ns  min    631.2
+hybrid m=1536 (l2/l2)          median    968.0 ns  min    953.7
+hybrid m=1536 (l2/flush)       median    912.9 ns  min    908.5
+hybrid m=2048 (tr/tr)          median    672.8 ns  min    668.7
+hybrid m=2048 (ztr/tr)         median    675.3 ns  min    673.1
+hybrid m=2048 (l2/l2)          median    993.8 ns  min    983.9
+hybrid m=2048 (l2/flush)       median    945.7 ns  min    940.5
+## run3
+dependent add chain 2.553 GHz, ymm logic ops 7.66/ns
+dependent add chain 2.547 GHz, ymm logic ops 7.70/ns
+correctness ok
+random m=1536 lowest 4.6711
+random m=2048 lowest 4.7871
+c16_flush/4096                 median    451.1 ns  min    449.3
+c16_l2/4096                    median    410.5 ns  min    408.2
+c32_l2/4096                    median    892.5 ns  min    890.4
+c32z_l2/4096                   median    925.7 ns  min    923.6
+c32_flush/4096                 median    939.5 ns  min    935.2
+c16_tr/4096                    median    340.0 ns  min    338.1
+c32_tr/4096                    median    740.7 ns  min    737.4
+c32z_tr/4096                   median    771.6 ns  min    769.2
+c16_tr/2560                    median    231.1 ns  min    230.2
+c32_tr/1536                    median    358.3 ns  min    357.6
+c32z_tr/1536                   median    364.8 ns  min    364.1
+hybrid m=1536 (tr/tr)          median    647.9 ns  min    646.3
+hybrid m=1536 (ztr/tr)         median    652.6 ns  min    650.2
+hybrid m=1536 (l2/l2)          median    974.4 ns  min    968.7
+hybrid m=1536 (l2/flush)       median    922.8 ns  min    916.2
+hybrid m=2048 (tr/tr)          median    689.4 ns  min    685.7
+hybrid m=2048 (ztr/tr)         median    701.0 ns  min    696.6
+hybrid m=2048 (l2/l2)          median   1000.3 ns  min    997.3
+hybrid m=2048 (l2/flush)       median    950.1 ns  min    945.9

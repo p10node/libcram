@@ -5,20 +5,8 @@ fn finish(hist: &[usize; 256], n: usize) -> f64 {
     if n == 0 {
         return 0.0;
     }
-    // Cache n*log2(n) only for the bounded hot-page domain.
-    static WEIGHTS: OnceLock<Vec<f64>> = OnceLock::new();
     if n <= 4096 {
-        let weights = WEIGHTS.get_or_init(|| {
-            (0..=4096)
-                .map(|v| {
-                    if v == 0 {
-                        0.0
-                    } else {
-                        v as f64 * (v as f64).log2()
-                    }
-                })
-                .collect()
-        });
+        let weights = weights();
         let mut sums = [0.0; 4];
         for counts in hist.as_chunks::<4>().0 {
             sums[0] += weights[counts[0]];
@@ -36,6 +24,18 @@ fn finish(hist: &[usize; 256], n: usize) -> f64 {
         ((n as f64).log2() - sum / n as f64).max(0.0)
     }
 }
+/// `v * log2(v)` for `v` in `0..=4096`, cached for the bounded hot-page domain.
+fn weights() -> &'static [f64; 4097] {
+    static WEIGHTS: OnceLock<[f64; 4097]> = OnceLock::new();
+    WEIGHTS.get_or_init(|| std::array::from_fn(uncached_weight))
+}
+fn uncached_weight(v: usize) -> f64 {
+    if v == 0 {
+        0.0
+    } else {
+        v as f64 * (v as f64).log2()
+    }
+}
 pub fn scalar_entropy(data: &[u8]) -> f64 {
     let mut hist = [0usize; 256];
     for &b in data {
@@ -51,54 +51,78 @@ fn scalar_hist(data: &[u8], hist: &mut [usize; 256]) {
 }
 mod periodic;
 
+/// Largest input whose four-bank u16 counters cannot wrap: a batch contributes
+/// at most 8192 to any counter, and at most 32768 to their sum.
+const BATCH: usize = 32768;
+
 /// Four disjoint banks remove same-symbol dependencies between adjacent bytes.
-/// A batch contributes at most 8192 to any u16 counter, and at most 32768
-/// to their sum. Merge before the next batch to retain arbitrary-length inputs.
+/// Merge before the next batch to retain arbitrary-length inputs.
 #[inline]
-fn banked_hist(mut data: &[u8], hist: &mut [usize; 256]) {
-    let period = periodic::period(data);
-    if let Some(repeats) = data.len().checked_div(period) {
-        // Full byte equality was verified before weighting each reference byte.
-        // Duplicate symbols accumulate normally; the partial tail is counted below.
-        for &byte in &data[..period] {
-            hist[byte as usize] += repeats;
-        }
-        data = &data[repeats * period..];
-    }
+fn banked_hist(data: &[u8], hist: &mut [usize; 256]) {
+    let data = count_periodic(data, periodic::period(data), hist);
     if data.len() < 64 {
         scalar_hist(data, hist);
         return;
     }
-    for batch in data.chunks(32768) {
+    for batch in data.chunks(BATCH) {
         let mut counters = [[0u16; 256]; 4];
-        let [h0, h1, h2, h3] = &mut counters;
-        let (chunks, remainder) = batch.as_chunks::<32>();
-        for chunk in chunks {
-            for bytes in chunk.as_chunks::<8>().0 {
-                let word = u64::from_ne_bytes(*bytes);
-                // Preserve the word load on AArch64 instead of eight byte loads.
-                // SAFETY: register-only identity; no memory or flags are changed.
-                #[cfg(target_arch = "aarch64")]
-                let word = unsafe {
-                    let mut word = word;
-                    std::arch::asm!("/* {word} */", word = inout(reg) word,
-                        options(pure, nomem, nostack, preserves_flags));
-                    word
-                };
-                h0[(word & 255) as usize] += 1;
-                h1[((word >> 8) & 255) as usize] += 1;
-                h2[((word >> 16) & 255) as usize] += 1;
-                h3[((word >> 24) & 255) as usize] += 1;
-                h0[((word >> 32) & 255) as usize] += 1;
-                h1[((word >> 40) & 255) as usize] += 1;
-                h2[((word >> 48) & 255) as usize] += 1;
-                h3[(word >> 56) as usize] += 1;
-            }
-        }
-        for i in 0..256 {
-            hist[i] += (h0[i] + h1[i] + h2[i] + h3[i]) as usize;
-        }
+        let remainder = count_banks(batch, &mut counters);
+        merge_banks(&counters, hist);
         scalar_hist(remainder, hist);
+    }
+}
+
+/// Counts a verified `period` (zero: none) from its first repetition and
+/// returns the bytes still to be counted.
+#[inline(always)]
+fn count_periodic<'a>(data: &'a [u8], period: usize, hist: &mut [usize; 256]) -> &'a [u8] {
+    let Some(repeats) = data.len().checked_div(period) else {
+        return data;
+    };
+    // Full byte equality was verified before weighting each reference byte.
+    // Duplicate symbols accumulate normally; the partial tail is counted later.
+    for &byte in &data[..period] {
+        hist[byte as usize] += repeats;
+    }
+    &data[repeats * period..]
+}
+
+/// Adds whole 32-byte chunks of `batch` (at most `BATCH` bytes in total since
+/// `counters` was zeroed) to bank `lane & 3`, and returns the uncounted tail.
+#[inline(always)]
+fn count_banks<'a>(batch: &'a [u8], counters: &mut [[u16; 256]; 4]) -> &'a [u8] {
+    let [h0, h1, h2, h3] = counters;
+    let (chunks, remainder) = batch.as_chunks::<32>();
+    for chunk in chunks {
+        for bytes in chunk.as_chunks::<8>().0 {
+            let word = u64::from_ne_bytes(*bytes);
+            // Preserve the word load on AArch64 instead of eight byte loads.
+            // SAFETY: register-only identity; no memory or flags are changed.
+            #[cfg(target_arch = "aarch64")]
+            let word = unsafe {
+                let mut word = word;
+                std::arch::asm!("/* {word} */", word = inout(reg) word,
+                    options(pure, nomem, nostack, preserves_flags));
+                word
+            };
+            h0[(word & 255) as usize] += 1;
+            h1[((word >> 8) & 255) as usize] += 1;
+            h2[((word >> 16) & 255) as usize] += 1;
+            h3[((word >> 24) & 255) as usize] += 1;
+            h0[((word >> 32) & 255) as usize] += 1;
+            h1[((word >> 40) & 255) as usize] += 1;
+            h2[((word >> 48) & 255) as usize] += 1;
+            h3[(word >> 56) as usize] += 1;
+        }
+    }
+    remainder
+}
+
+#[inline(always)]
+fn merge_banks(counters: &[[u16; 256]; 4], hist: &mut [usize; 256]) {
+    let [h0, h1, h2, h3] = counters;
+    for i in 0..256 {
+        hist[i] += (h0[i] + h1[i] + h2[i] + h3[i]) as usize;
     }
 }
 
@@ -118,15 +142,23 @@ fn select() -> Kernel {
     }
     scalar_hist
 }
-pub fn shannon_entropy(data: &[u8]) -> f64 {
+/// Adds the byte counts of `data` to `hist` with the runtime-selected kernel.
+#[inline]
+fn count(data: &[u8], hist: &mut [usize; 256]) {
     static KERNEL: OnceLock<Kernel> = OnceLock::new();
-    let mut hist = [0usize; 256];
     // SAFETY: select checks the runtime ISA and kernels bound every vector load.
     unsafe {
-        KERNEL.get_or_init(select)(data, &mut hist);
+        KERNEL.get_or_init(select)(data, hist);
     }
+}
+pub fn shannon_entropy(data: &[u8]) -> f64 {
+    let mut hist = [0usize; 256];
+    count(data, &mut hist);
     finish(&hist, data.len())
 }
+mod coarse;
+mod verdict;
+pub use verdict::entropy_below;
 #[cfg(target_arch = "aarch64")]
 #[target_feature(enable = "neon")]
 unsafe fn neon(data: &[u8], hist: &mut [usize; 256]) {

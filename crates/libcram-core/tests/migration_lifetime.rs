@@ -79,7 +79,7 @@ fn background_holds_mapping_lease_after_owner_drop() {
     p.record_sample(AccessSample {
         reads: 100,
         writes: 0,
-        entropy: 0.0,
+        entropy: 0.0.into(),
     })
     .expect("sample");
     a.start_monitoring(Duration::from_millis(10))
@@ -128,7 +128,7 @@ fn reports_partial_failures_without_marking_entire_allocation_cram() {
     p.record_sample(AccessSample {
         reads: 100,
         writes: 0,
-        entropy: 0.0,
+        entropy: 0.0.into(),
     })
     .expect("sample");
     let other = a.clone();

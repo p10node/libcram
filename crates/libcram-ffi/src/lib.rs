@@ -216,7 +216,7 @@ pub extern "C" fn cram_record_access_sample(
                 libcram_core::migration::AccessSample {
                     reads,
                     writes,
-                    entropy,
+                    entropy: entropy.into(),
                 },
             )
             .map_err(status)
