@@ -1,0 +1,52 @@
+# 2026-11-02T00:49:16Z 6.8.0-146-generic wptrack.c sha256 b8e1a898017616939b2e4c49289d7c94b82e5bda7771379e70b3b94adafc7593, cpu 30, 20 intervals x 100 ms
+## rep1
+RESULT k=0 intervals=20 interval_ms=100 steps_per_s=7269771 tracking_cpu=0.0002% sum=3255307777713450288
+RESULT k=16 intervals=20 interval_ms=100 steps_per_s=7545645 tracking_cpu=0.0699% sum=3255307777713450288
+REGION A pages=4 sampled=80 written=0 written_fraction=0.0000
+REGION B pages=16384 sampled=80 written=0 written_fraction=0.0000
+REGION C pages=4 sampled=80 written=80 written_fraction=1.0000
+REGION D pages=16384 sampled=80 written=80 written_fraction=1.0000
+RESULT k=64 intervals=20 interval_ms=100 steps_per_s=7522770 tracking_cpu=0.1560% sum=3255307777713450288
+REGION A pages=4 sampled=80 written=0 written_fraction=0.0000
+REGION B pages=16384 sampled=320 written=0 written_fraction=0.0000
+REGION C pages=4 sampled=80 written=80 written_fraction=1.0000
+REGION D pages=16384 sampled=320 written=320 written_fraction=1.0000
+RESULT k=256 intervals=20 interval_ms=100 steps_per_s=7418884 tracking_cpu=0.4934% sum=3255307777713450288
+REGION A pages=4 sampled=80 written=0 written_fraction=0.0000
+REGION B pages=16384 sampled=1280 written=0 written_fraction=0.0000
+REGION C pages=4 sampled=80 written=80 written_fraction=1.0000
+REGION D pages=16384 sampled=1280 written=1280 written_fraction=1.0000
+## rep2
+RESULT k=0 intervals=20 interval_ms=100 steps_per_s=7516020 tracking_cpu=0.0002% sum=3255307777713450288
+RESULT k=16 intervals=20 interval_ms=100 steps_per_s=7435294 tracking_cpu=0.0731% sum=3255307777713450288
+REGION A pages=4 sampled=80 written=0 written_fraction=0.0000
+REGION B pages=16384 sampled=80 written=0 written_fraction=0.0000
+REGION C pages=4 sampled=80 written=80 written_fraction=1.0000
+REGION D pages=16384 sampled=80 written=80 written_fraction=1.0000
+RESULT k=64 intervals=20 interval_ms=100 steps_per_s=7542050 tracking_cpu=0.1547% sum=3255307777713450288
+REGION A pages=4 sampled=80 written=0 written_fraction=0.0000
+REGION B pages=16384 sampled=320 written=0 written_fraction=0.0000
+REGION C pages=4 sampled=80 written=80 written_fraction=1.0000
+REGION D pages=16384 sampled=320 written=320 written_fraction=1.0000
+RESULT k=256 intervals=20 interval_ms=100 steps_per_s=7406883 tracking_cpu=0.4757% sum=3255307777713450288
+REGION A pages=4 sampled=80 written=0 written_fraction=0.0000
+REGION B pages=16384 sampled=1280 written=0 written_fraction=0.0000
+REGION C pages=4 sampled=80 written=80 written_fraction=1.0000
+REGION D pages=16384 sampled=1280 written=1280 written_fraction=1.0000
+## rep3
+RESULT k=0 intervals=20 interval_ms=100 steps_per_s=7513967 tracking_cpu=0.0002% sum=3255307777713450288
+RESULT k=16 intervals=20 interval_ms=100 steps_per_s=7505247 tracking_cpu=0.0788% sum=3255307777713450288
+REGION A pages=4 sampled=80 written=0 written_fraction=0.0000
+REGION B pages=16384 sampled=80 written=0 written_fraction=0.0000
+REGION C pages=4 sampled=80 written=80 written_fraction=1.0000
+REGION D pages=16384 sampled=80 written=80 written_fraction=1.0000
+RESULT k=64 intervals=20 interval_ms=100 steps_per_s=7393358 tracking_cpu=0.1554% sum=3255307777713450288
+REGION A pages=4 sampled=80 written=0 written_fraction=0.0000
+REGION B pages=16384 sampled=320 written=0 written_fraction=0.0000
+REGION C pages=4 sampled=80 written=80 written_fraction=1.0000
+REGION D pages=16384 sampled=320 written=320 written_fraction=1.0000
+RESULT k=256 intervals=20 interval_ms=100 steps_per_s=7508417 tracking_cpu=0.4913% sum=3255307777713450288
+REGION A pages=4 sampled=80 written=0 written_fraction=0.0000
+REGION B pages=16384 sampled=1280 written=0 written_fraction=0.0000
+REGION C pages=4 sampled=80 written=80 written_fraction=1.0000
+REGION D pages=16384 sampled=1280 written=1280 written_fraction=1.0000

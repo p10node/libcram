@@ -108,6 +108,14 @@ pub mod broadwell_x {
             },
         ]
     }
+    /// Retired user loads only, for pipelines that take write evidence from
+    /// `telemetry::write_sampler::WriteSampler` (`Bridge::track_writes`)
+    /// instead of PEBS stores, whose attribution is biased on this part
+    /// (`docs/evidence/2026-11-02/source-split`).
+    pub fn load_configs(load_period: u64) -> [ExplicitPebsConfig; 1] {
+        let [load, _] = configs(load_period);
+        [load]
+    }
     /// True only on a GenuineIntel family 6 model 79 CPU.
     pub fn detected() -> bool {
         #[cfg(target_arch = "x86_64")]

@@ -1,0 +1,21 @@
+# 2026-11-02T01:17:18Z 6.8.0-146-generic workload CPU 30, collector CPU 25
+# 2c510973fbfe9b4d87d5b8f3147557715a992623d9081d39d772528d033f0e55  burst-new
+# cfc7baeffc37a320ff995e9c04e46739c5475a524d0d6e553fc00fc80219ee19  burst-head
+## rep1 head burst=10000 idle=0
+Error: PEBS ring loss
+## rep1 head burst=30 idle=400
+base_period=20011 burst_ms=30 idle_ms=400 bursts=24 samples=17832 mean_per_s=1724 worst_100ms_window=879 per_cpu_budget_per_100ms=120 final_scale=6.42 status=NoSamples
+## rep1 head burst=30 idle=70
+base_period=20011 burst_ms=30 idle_ms=70 bursts=100 samples=9601 mean_per_s=956 worst_100ms_window=933 per_cpu_budget_per_100ms=120 final_scale=15.08 status=NoSamples
+## rep2 head burst=10000 idle=0
+base_period=20011 burst_ms=10000 idle_ms=0 bursts=1 samples=12722 mean_per_s=1269 worst_100ms_window=2884 per_cpu_budget_per_100ms=120 final_scale=189.84 status=NoSamples
+## rep2 head burst=30 idle=400
+base_period=20011 burst_ms=30 idle_ms=400 bursts=24 samples=17655 mean_per_s=1707 worst_100ms_window=848 per_cpu_budget_per_100ms=120 final_scale=8.54 status=NoSamples
+## rep2 head burst=30 idle=70
+base_period=20011 burst_ms=30 idle_ms=70 bursts=100 samples=9417 mean_per_s=938 worst_100ms_window=625 per_cpu_budget_per_100ms=120 final_scale=27.71 status=NoSamples
+## rep3 head burst=10000 idle=0
+Error: PEBS ring loss
+## rep3 head burst=30 idle=400
+base_period=20011 burst_ms=30 idle_ms=400 bursts=24 samples=17220 mean_per_s=1664 worst_100ms_window=896 per_cpu_budget_per_100ms=120 final_scale=6.33 status=NoSamples
+## rep3 head burst=30 idle=70
+base_period=20011 burst_ms=30 idle_ms=70 bursts=100 samples=8487 mean_per_s=845 worst_100ms_window=851 per_cpu_budget_per_100ms=120 final_scale=40.31 status=NoSamples

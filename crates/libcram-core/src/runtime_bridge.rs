@@ -16,6 +16,31 @@ use std::{
     time::{Duration, Instant},
 };
 const WINDOW: Duration = Duration::from_millis(100);
+/// Write evidence older than this is discarded.
+pub const WRITE_EVIDENCE_WINDOW: Duration = Duration::from_secs(10);
+/// Write-free checks required, within the window, before reads may count as
+/// read-dominant under write tracking.
+pub const MIN_WRITE_FREE_CHECKS: usize = 3;
+const MAX_CHECKS_PER_ALLOCATION: usize = 16;
+/// One sampled page, checked for writes at the end of a sampling cycle.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct WriteCheck {
+    /// The id passed to [`WriteSource::track`].
+    pub id: u64,
+    pub page: usize,
+    pub written: bool,
+}
+/// Unbiased write evidence for tracked allocations (see
+/// `telemetry::write_sampler::WriteSampler`). Implementations must bound their
+/// work per cycle and report failure as an error.
+pub trait WriteSource: Send + 'static {
+    /// Start tracking writes to `range` under `id`.
+    fn track(&mut self, id: u64, range: std::ops::Range<usize>) -> io::Result<()>;
+    /// Stop tracking `id`; must not fail.
+    fn untrack(&mut self, id: u64);
+    /// Pages checked since the previous call.
+    fn cycle(&mut self) -> io::Result<Vec<WriteCheck>>;
+}
 /// Implementations must bound allocation/work and report loss as an error.
 pub trait RawSource: Send + 'static {
     fn read_events(&mut self) -> io::Result<Vec<AccessEvent>>;
@@ -106,6 +131,21 @@ struct Registered {
     id: u64,
     token: ObservationToken,
 }
+/// Write evidence of one allocation, kept across token refreshes.
+struct WriteTrack {
+    key: u64,
+    token: ObservationToken,
+    checks: VecDeque<(Instant, bool)>,
+}
+impl WriteTrack {
+    fn write_free(&self, now: Instant) -> bool {
+        let recent = self
+            .checks
+            .iter()
+            .filter(|(t, _)| now.duration_since(*t) < WRITE_EVIDENCE_WINDOW);
+        recent.clone().count() >= MIN_WRITE_FREE_CHECKS && recent.clone().all(|(_, w)| !w)
+    }
+}
 struct Sample {
     id: u64,
     page: usize,
@@ -125,8 +165,79 @@ pub struct Bridge<R: RawSource, D: DeviceSource> {
     poison: BTreeSet<u64>,
     tgid: u32,
     clock: fn() -> io::Result<(Instant, u64)>,
+    writes: Option<Box<dyn WriteSource>>,
+    tracks: Vec<WriteTrack>,
+    next_track: u64,
 }
 impl<R: RawSource, D: DeviceSource> Bridge<R, D> {
+    /// Take write evidence from `source` instead of raw write samples.
+    ///
+    /// Raw `Write` events are then ignored. An observed page reports
+    /// `writes == 0` only when its allocation has at least
+    /// [`MIN_WRITE_FREE_CHECKS`] write-free checks and no written check within
+    /// [`WRITE_EVIDENCE_WINDOW`]; otherwise `writes == max(reads, 1)`, which the
+    /// migration policy never treats as read-dominant. Missing evidence
+    /// therefore fails closed. Call once, before the first `device_update`.
+    pub fn track_writes(&mut self, source: impl WriteSource) -> Result<(), Error> {
+        if self.writes.is_some() || !self.registrations.is_empty() {
+            return Err(Error::InvalidSample);
+        }
+        self.writes = Some(Box::new(source));
+        Ok(())
+    }
+    /// Keep one write track per live registered allocation, refresh its token,
+    /// and record the checks of the current sampling cycle.
+    fn sync_writes(&mut self, now: Instant) -> Result<(), Error> {
+        let Some(source) = self.writes.as_mut() else {
+            return Ok(());
+        };
+        for r in &self.registrations {
+            if let Some(t) = self
+                .tracks
+                .iter_mut()
+                .find(|t| t.token.same_allocation(&r.token))
+            {
+                if r.token.created_at() > t.token.created_at() {
+                    t.token = r.token.clone();
+                }
+                continue;
+            }
+            let Some(range) = r.token.range() else {
+                continue;
+            };
+            if self.tracks.len() == self.config.max_registrations {
+                return Err(Error::InvalidSample);
+            }
+            self.next_track = self.next_track.checked_add(1).ok_or(Error::InvalidSample)?;
+            source.track(self.next_track, range)?;
+            self.tracks.push(WriteTrack {
+                key: self.next_track,
+                token: r.token.clone(),
+                checks: VecDeque::new(),
+            });
+        }
+        self.tracks.retain(|t| {
+            let live = t.token.range().is_some()
+                && now.duration_since(t.token.created_at()) <= WRITE_EVIDENCE_WINDOW;
+            if !live {
+                source.untrack(t.key);
+            }
+            live
+        });
+        for check in source.cycle()? {
+            if let Some(t) = self.tracks.iter_mut().find(|t| t.key == check.id) {
+                t.checks.push_back((now, check.written));
+                while t.checks.len() > MAX_CHECKS_PER_ALLOCATION
+                    || t.checks
+                        .front()
+                        .is_some_and(|(at, _)| now.duration_since(*at) >= WRITE_EVIDENCE_WINDOW)
+                {
+                    t.checks.pop_front();
+                }
+            }
+        }
+        Ok(())
+    }
     pub fn new(raw: R, device: D, config: BridgeConfig) -> Result<(Self, Publisher), Error> {
         Self::with_clock(raw, device, config, || {
             // Earlier Instant conservatively accounts for calibration latency.
@@ -174,6 +285,9 @@ impl<R: RawSource, D: DeviceSource> Bridge<R, D> {
                 poison: BTreeSet::new(),
                 tgid: std::process::id(),
                 clock,
+                writes: None,
+                tracks: Vec::new(),
+                next_track: 0,
             },
             publisher,
         ))
@@ -231,6 +345,7 @@ impl<R: RawSource, D: DeviceSource> Bridge<R, D> {
         {
             return Err(Error::InvalidSample);
         }
+        self.sync_writes(now)?;
         let events = self.raw.read_events()?;
         if events.len() > self.config.max_events {
             return Err(Error::InvalidSample);
@@ -241,7 +356,10 @@ impl<R: RawSource, D: DeviceSource> Bridge<R, D> {
             now.duration_since(e.time) < WINDOW && self.registrations.iter().any(|r| r.id == e.id)
         });
         for e in events {
-            if e.tgid != self.tgid || e.time_ns > raw_now {
+            if e.tgid != self.tgid
+                || e.time_ns > raw_now
+                || (self.writes.is_some() && e.kind == AccessKind::Write)
+            {
                 continue;
             }
             let age = Duration::from_nanos(raw_now - e.time_ns);
@@ -297,6 +415,16 @@ impl<R: RawSource, D: DeviceSource> Bridge<R, D> {
                 AccessKind::Write => o.writes += 1,
             };
             o.observed_at = o.observed_at.max(e.time);
+        }
+        if self.writes.is_some() {
+            for o in output.values_mut() {
+                let write_free = self
+                    .tracks
+                    .iter()
+                    .find(|t| t.token.same_allocation(&o.token))
+                    .is_some_and(|t| t.write_free(now));
+                o.writes = if write_free { 0 } else { o.reads.max(1) };
+            }
         }
         if self.lost.load(Ordering::Acquire) {
             return Err(Error::InvalidSample);

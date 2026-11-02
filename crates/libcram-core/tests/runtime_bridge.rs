@@ -3,7 +3,10 @@ use libcram_core::{
     device_adapter::DeviceReading,
     hal::{page_size, CompressionProvenance, MoveReport, Node, Numa, PageStatus, Topology},
     runtime::{Collector, Runtime, RuntimeConfig},
-    runtime_bridge::{Bridge, BridgeConfig, DeviceSource, Publisher, RawSource},
+    runtime_bridge::{
+        Bridge, BridgeConfig, DeviceSource, Publisher, RawSource, WriteCheck, WriteSource,
+        MIN_WRITE_FREE_CHECKS,
+    },
     telemetry::{access::AccessKind, sampling::AccessEvent},
     Error,
 };
@@ -385,4 +388,122 @@ fn trusted_device_mapping_dedup_and_error_clear_pending() {
     assert_eq!(second.poison_pages, vec![33]);
     assert!(bridge.device_update().is_err());
     assert!(bridge.poll().unwrap().is_none());
+}
+
+#[derive(Default)]
+struct WriteState {
+    tracked: Vec<(u64, std::ops::Range<usize>)>,
+    untracked: Vec<u64>,
+    written: bool,
+    fail: bool,
+}
+/// Reports one check per tracked allocation per cycle.
+#[derive(Clone, Default)]
+struct Writes(Arc<Mutex<WriteState>>);
+impl WriteSource for Writes {
+    fn track(&mut self, id: u64, range: std::ops::Range<usize>) -> io::Result<()> {
+        self.0.lock().unwrap().tracked.push((id, range));
+        Ok(())
+    }
+    fn untrack(&mut self, id: u64) {
+        let mut s = self.0.lock().unwrap();
+        s.tracked.retain(|(t, _)| *t != id);
+        s.untracked.push(id);
+    }
+    fn cycle(&mut self) -> io::Result<Vec<WriteCheck>> {
+        let s = self.0.lock().unwrap();
+        if s.fail {
+            return Err(io::Error::other("write tracking lost"));
+        }
+        Ok(s.tracked
+            .iter()
+            .map(|(id, range)| WriteCheck {
+                id: *id,
+                page: range.start,
+                written: s.written,
+            })
+            .collect())
+    }
+}
+
+#[test]
+fn tracked_writes_fail_closed_until_write_free_and_ignore_raw_write_samples() {
+    let (a, _) = allocator();
+    let owned = a
+        .allocate_owned(page_size(), page_size(), AccessHint::Auto)
+        .unwrap();
+    let address = owned.as_slice().as_ptr() as usize;
+    let raw = Raw::default();
+    let writes = Writes::default();
+    let (mut bridge, p) = test_bridge(raw.clone(), Device, BridgeConfig::default()).unwrap();
+    bridge.track_writes(writes.clone()).unwrap();
+    assert!(bridge.track_writes(writes.clone()).is_err());
+    p.register(owned.observation_token(0.0).unwrap()).unwrap();
+    let mut observe = |kind| {
+        raw.0
+            .lock()
+            .unwrap()
+            .push_back(Ok(vec![event(address, kind)]));
+        bridge.device_update().unwrap();
+        let o = bridge.poll().unwrap().unwrap();
+        (o.reads, o.writes)
+    };
+    // Without enough write-free checks, reads never look read-dominant.
+    for checks in 1..MIN_WRITE_FREE_CHECKS as u64 {
+        assert_eq!(observe(AccessKind::Read), (checks, checks));
+    }
+    let reads = MIN_WRITE_FREE_CHECKS as u64;
+    assert_eq!(observe(AccessKind::Read), (reads, 0));
+    // A raw PEBS store sample is not write evidence under tracking.
+    assert_eq!(observe(AccessKind::Write), (reads, 0));
+    writes.0.lock().unwrap().written = true;
+    assert_eq!(observe(AccessKind::Read), (reads + 1, reads + 1));
+    let id = writes.0.lock().unwrap().tracked[0].0;
+    drop(owned);
+    bridge.device_update().unwrap();
+    assert_eq!(writes.0.lock().unwrap().untracked, vec![id]);
+    writes.0.lock().unwrap().fail = true;
+    assert!(bridge.device_update().is_err());
+    let (mut late, p) = test_bridge(Raw::default(), Device, BridgeConfig::default()).unwrap();
+    let owned = a
+        .allocate_owned(page_size(), page_size(), AccessHint::Auto)
+        .unwrap();
+    p.register(owned.observation_token(0.0).unwrap()).unwrap();
+    late.device_update().unwrap();
+    assert!(late.track_writes(Writes::default()).is_err());
+}
+
+#[test]
+fn runtime_promotes_only_after_write_free_evidence_and_reclaims_on_write() {
+    let (a, b) = allocator();
+    let owned = a
+        .allocate_owned(page_size(), page_size(), AccessHint::Auto)
+        .unwrap();
+    let address = owned.as_slice().as_ptr() as usize;
+    let raw = Raw::default();
+    let writes = Writes::default();
+    let (mut bridge, p) = test_bridge(raw.clone(), Device, BridgeConfig::default()).unwrap();
+    bridge.track_writes(writes.clone()).unwrap();
+    p.register(owned.observation_token(0.0).unwrap()).unwrap();
+    let mut runtime = Runtime::new(a, bridge, RuntimeConfig::default()).unwrap();
+    let reads = |n| -> io::Result<Vec<AccessEvent>> {
+        Ok((0..n).map(|_| event(address, AccessKind::Read)).collect())
+    };
+    for _ in 1..MIN_WRITE_FREE_CHECKS {
+        raw.0.lock().unwrap().push_back(reads(100));
+        runtime.tick().unwrap();
+        assert_eq!(runtime.telemetry().cram_bytes, 0);
+    }
+    raw.0.lock().unwrap().push_back(reads(100));
+    runtime.tick().unwrap();
+    assert_eq!(runtime.telemetry().cram_bytes, page_size() as u64);
+    writes.0.lock().unwrap().written = true;
+    raw.0.lock().unwrap().push_back(reads(100));
+    runtime.tick().unwrap();
+    assert_eq!(runtime.telemetry().cram_bytes, 0);
+    // Blocked ticks may keep the page on DRAM (node 0); CRAM (node 1) is
+    // targeted exactly once, after the write-free evidence.
+    let moves = b.0.lock().unwrap().clone();
+    assert_eq!(moves.iter().filter(|n| **n == 1).count(), 1, "{moves:?}");
+    assert_eq!(moves[moves.len() - 2..], [1, 0], "{moves:?}");
 }

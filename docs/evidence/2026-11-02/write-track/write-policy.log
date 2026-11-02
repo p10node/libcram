@@ -1,0 +1,22 @@
+# 2026-11-02T01:42:55Z 6.8.0-146-generic write_policy_acceptance sha256 e4cd9c0cbd4d12ee6b75891aa802fae450e33d06332bca8fb5373762e47d76a2 program-new.bpf 1efb4eced351ba15a2c4a31551bb7a2c9c7b30c08bc4a4567daa0a158e784a08, workload CPU 30, collector CPU 25
+## rep1
+steps=73351168 seconds=10
+REGION A observations=90 write_free_observations=88 read_dominant_observations=0 last_write_free=yes expected=yes OK
+REGION B observations=15492 write_free_observations=15308 read_dominant_observations=0 last_write_free=yes expected=yes OK
+REGION C observations=512 write_free_observations=0 read_dominant_observations=0 last_write_free=no expected=never OK
+REGION D observations=213 write_free_observations=0 read_dominant_observations=0 last_write_free=no expected=never OK
+WRITE_POLICY_PASS
+## rep2
+steps=74448896 seconds=10
+REGION A observations=84 write_free_observations=84 read_dominant_observations=0 last_write_free=yes expected=yes OK
+REGION B observations=15716 write_free_observations=15520 read_dominant_observations=0 last_write_free=yes expected=yes OK
+REGION C observations=505 write_free_observations=0 read_dominant_observations=0 last_write_free=no expected=never OK
+REGION D observations=254 write_free_observations=0 read_dominant_observations=0 last_write_free=no expected=never OK
+WRITE_POLICY_PASS
+## rep3
+steps=74383360 seconds=10
+REGION A observations=123 write_free_observations=122 read_dominant_observations=0 last_write_free=yes expected=yes OK
+REGION B observations=15632 write_free_observations=15425 read_dominant_observations=0 last_write_free=yes expected=yes OK
+REGION C observations=541 write_free_observations=0 read_dominant_observations=0 last_write_free=no expected=never OK
+REGION D observations=240 write_free_observations=0 read_dominant_observations=0 last_write_free=no expected=never OK
+WRITE_POLICY_PASS

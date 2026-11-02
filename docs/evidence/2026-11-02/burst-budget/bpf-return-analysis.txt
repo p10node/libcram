@@ -1,0 +1,18 @@
+====================================================================================================
+ret0-fixed.log
+CONFIG work_cpu=30 collector_cpu=25 load=0x67d1 store=0x82d0 load_periods=[200003, 20011] store_period=companion pairs=15 rounds=100 poll_ms=100 jitter=true cap=None tsc_per_ns=2.095325 bucket_ns=[64, 250, 1000, 2000, 4000, 8000, 16000, 64000]
+period=  200003 pairs=15 block_wall_s med=0.25 samples/s med=    1047 cpu_delta med=+0.26% CI95[-0.05%,+0.95%] wall_delta med=+0.31% collector=0.1677%core (max 0.1975)
+      stolen-time fraction delta med=+0.376% CI95[-0.059,+1.403]
+period=   20011 pairs=15 block_wall_s med=0.26 samples/s med=   10033 cpu_delta med=+4.81% CI95[+4.34%,+4.98%] wall_delta med=+4.81% collector=0.3016%core (max 0.3439)
+      stolen-time fraction delta med=+4.338% CI95[+4.032,+4.552]
+CPU-time regression: cost/sample = 4959 ns CI95[4374,5639] intercept=-0.06%
+Gap-time regression: cost/sample = 4067 ns CI95[3308,4825] intercept=+0.102%
+====================================================================================================
+ret1-fixed.log
+CONFIG work_cpu=30 collector_cpu=25 load=0x67d1 store=0x82d0 load_periods=[200003, 20011] store_period=companion pairs=15 rounds=100 poll_ms=100 jitter=true cap=None tsc_per_ns=2.095232 bucket_ns=[64, 250, 1000, 2000, 4000, 8000, 16000, 64000]
+period=  200003 pairs=15 block_wall_s med=0.25 samples/s med=    1050 cpu_delta med=+0.72% CI95[+0.46%,+0.93%] wall_delta med=+0.79% collector=0.1545%core (max 0.1877)
+      stolen-time fraction delta med=+0.882% CI95[-0.026,+1.131]
+period=   20011 pairs=15 block_wall_s med=0.26 samples/s med=   10049 cpu_delta med=+5.07% CI95[+4.20%,+5.41%] wall_delta med=+4.80% collector=0.2943%core (max 0.4183)
+      stolen-time fraction delta med=+5.053% CI95[+4.764,+5.334]
+CPU-time regression: cost/sample = 4954 ns CI95[4493,5403] intercept=+0.15%
+Gap-time regression: cost/sample = 4759 ns CI95[3974,5439] intercept=+0.191%

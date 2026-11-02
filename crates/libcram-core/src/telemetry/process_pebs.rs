@@ -73,6 +73,20 @@ fn parse_identity(bytes: &[u8], tid: u32) -> io::Result<Identity> {
 }
 /// Minimum spacing of governor updates (PMU count reads, period changes).
 pub const RATE_INTERVAL: std::time::Duration = std::time::Duration::from_millis(100);
+/// Samples one monitored CPU may take per governor interval: twice the
+/// governor's per-second cap times [`RATE_INTERVAL`]. The kernel enforces it
+/// through each event's PERF_EVENT_IOC_REFRESH limit. Events start with
+/// [`INITIAL_GRANT`]; every interval, events that used their limit share what
+/// the CPU's other events do not hold. A burst shorter than an interval can
+/// therefore take at most this many samples (the governor alone reacts only
+/// after an interval). At twice the cap, a steady governed workload (which
+/// stays below the cap) does not reach it, and a truncated count still shows
+/// the governor a rate at least twice its cap, so periods rise at once.
+pub const INITIAL_GRANT: u32 = 2;
+pub fn sample_budget(governor: &crate::telemetry::sampling::RateGovernor) -> u32 {
+    ((2.0 * f64::from(governor.max_samples_per_cpu_sec()) * RATE_INTERVAL.as_secs_f64()) as u32)
+        .max(1)
+}
 /// Add the events counted since `previous`, expressed as samples at the
 /// configured base periods, to `cpu`'s total, then store `counts` as the next
 /// baseline. A count below its baseline is treated as a fresh counter.
@@ -112,7 +126,7 @@ mod live {
             DEFAULT_MAX_SAMPLES_PER_CPU_SEC,
         },
     };
-    use std::{io::Read, time::Instant};
+    use std::{collections::BTreeMap, io::Read, time::Instant};
 
     /// Scaled periods, with the second kept independent of the first so the
     /// two PEBS counters never overflow in lockstep.
@@ -340,8 +354,18 @@ mod live {
                 *b = c.period;
             }
             let mut totals = Vec::with_capacity(self.cpus.len());
-            for a in &mut self.attachments {
+            let budget = u64::from(sample_budget(governor));
+            // Per CPU: (attachment, event, remaining limit, samples this interval).
+            let mut limits: BTreeMap<u32, Vec<(usize, usize, u64, u64)>> = BTreeMap::new();
+            for (index, a) in self.attachments.iter_mut().enumerate() {
                 let counts = a.events.event_counts()?;
+                for (event, (remaining, used)) in a.events.account(&counts)?.into_iter().enumerate()
+                {
+                    limits
+                        .entry(a.key.cpu)
+                        .or_default()
+                        .push((index, event, remaining, used));
+                }
                 add_base_samples(
                     &mut totals,
                     a.key.cpu,
@@ -349,6 +373,33 @@ mod live {
                     &mut a.counts[..n],
                     &base[..n],
                 );
+            }
+            for events in limits.values() {
+                // Events that ran out share what the CPU's other events do not
+                // hold; every other event is topped back up by what it used,
+                // so a steady event never runs dry (a spent limit stops its
+                // counter and would hide the rate from the governor). Grants
+                // never take the CPU's outstanding limits above the budget
+                // (plus one per spent event).
+                let mut free = budget.saturating_sub(events.iter().map(|e| e.2).sum());
+                for &(index, event, remaining, used) in events {
+                    let top = used.min(free);
+                    if remaining > 1 && top > 0 {
+                        self.attachments[index]
+                            .events
+                            .grant(event, u32::try_from(top).unwrap_or(u32::MAX))?;
+                        free -= top;
+                    }
+                }
+                let spent: Vec<_> = events.iter().filter(|e| e.2 <= 1).collect();
+                if !spent.is_empty() {
+                    let share = u32::try_from(free / spent.len() as u64)
+                        .unwrap_or(u32::MAX)
+                        .max(1);
+                    for &&(index, event, _, _) in &spent {
+                        self.attachments[index].events.grant(event, share)?;
+                    }
+                }
             }
             let elapsed_ns = u64::try_from(elapsed.as_nanos()).unwrap_or(u64::MAX);
             if governor.update(elapsed_ns, totals.iter().map(|(_, s)| *s)) {
@@ -405,7 +456,7 @@ mod live {
                         Err(e) => return self.fail(attach_status(&e), e),
                     },
                 };
-                let events =
+                let mut events =
                     match self.programs[program]
                         .1
                         .attach(key.identity.tid, key.cpu, &configs)
@@ -413,6 +464,11 @@ mod live {
                         Ok(events) => events,
                         Err(e) => return self.fail(attach_status(&e), e),
                     };
+                if self.governor.is_some() {
+                    if let Err(e) = events.limit_samples(INITIAL_GRANT) {
+                        return self.fail(ProcessPebsStatus::AttachFailure, e);
+                    }
+                }
                 // Recheck membership and generation after perf_event_open. On race,
                 // the local events and all previous attachments are dropped.
                 match read_identity(key.identity.tid) {
@@ -485,6 +541,14 @@ mod live {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn sample_budget_is_twice_the_per_cpu_cap_over_one_interval() {
+        use crate::telemetry::sampling::{RateGovernor, DEFAULT_MAX_SAMPLES_PER_CPU_SEC};
+        let default = RateGovernor::new(DEFAULT_MAX_SAMPLES_PER_CPU_SEC).expect("cap");
+        assert_eq!(sample_budget(&default), 240);
+        assert_eq!(sample_budget(&RateGovernor::new(1).expect("cap")), 1);
+        assert_eq!(sample_budget(&RateGovernor::new(10).expect("cap")), 2);
+    }
     #[test]
     fn lifecycle_reuse_exit_and_capacity() {
         let old = Identity {

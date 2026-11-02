@@ -1,0 +1,62 @@
+# 2026-11-01T23:48:01Z s5 Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz microcode 0xb000040 6.8.0-146-generic gcc -O2, taskset via sched_setaffinity cpu 30
+# srcsplit.c sha256 76eb758738545044712d44dcc5331240499a412fa094eece8adb21759b6456c8
+## run1 union
+EVENT cfg=0x67d1 period=20011 count=550542296 enabled=7029111690 running=7029111690 samples=26359 expected=27511 lost=2 throttle=0 A=13215 B=11810 C=979 D=298 other=57
+EVENT cfg=0x82d0 period=20323 count=150857868 enabled=7029106626 running=7029106626 samples=7111 expected=7423 lost=2 throttle=0 A=0 B=0 C=13 D=7055 other=43
+TOTAL steps=50000000 loads=550542296 (1.0010 of 11/step) stores=150857868 (1.0057 of 3/step) multiplexed=0 sum=3255307777713450288
+REGION A reads/step est=5.289 true=8 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION B reads/step est=4.727 true=1 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION C reads/step est=0.392 true=1 writes/step est=0.005 true=2 read_dominant est=yes true=no  MISCLASSIFIED
+REGION D reads/step est=0.119 true=1 writes/step est=2.868 true=1 read_dominant est=no true=no
+REGION other reads/step est=0.023 true=0 writes/step est=0.017 true=0 read_dominant est=no true=-
+## run1 split
+EVENT cfg=0x41d1 period=20011 count=448510223 enabled=6801498214 running=6801498214 samples=11256 expected=22413 lost=6 throttle=0 A=4872 B=16 C=6175 D=164 other=29
+EVENT cfg=0x6d1 period=20323 count=3622045 enabled=6801494370 running=6801494370 samples=170 expected=178 lost=2 throttle=0 A=165 B=0 C=0 D=2 other=3
+EVENT cfg=0x20d1 period=20641 count=98015584 enabled=6801493592 running=6801493592 samples=4194 expected=4748 lost=2 throttle=0 A=0 B=4034 C=0 D=160 other=0
+EVENT cfg=0x82d0 period=20963 count=150522223 enabled=6801492498 running=6801492498 samples=4511 expected=7180 lost=6 throttle=0 A=0 B=0 C=0 D=4489 other=22
+TOTAL steps=50000000 loads=550147852 (1.0003 of 11/step) stores=150522223 (1.0035 of 3/step) multiplexed=0 sum=3255307777713450288
+REGION A reads/step est=2.017 true=8 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION B reads/step est=1.672 true=1 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION C reads/step est=2.471 true=1 writes/step est=0.000 true=2 read_dominant est=yes true=no  MISCLASSIFIED
+REGION D reads/step est=0.133 true=1 writes/step est=1.882 true=1 read_dominant est=no true=no
+REGION other reads/step est=0.013 true=0 writes/step est=0.009 true=0 read_dominant est=no true=-
+## run2 union
+EVENT cfg=0x67d1 period=20011 count=550488654 enabled=7066315541 running=7066315541 samples=26234 expected=27509 lost=4 throttle=0 A=13185 B=11820 C=926 D=255 other=48
+EVENT cfg=0x82d0 period=20323 count=150853874 enabled=7066312842 running=7066312842 samples=7076 expected=7422 lost=4 throttle=0 A=0 B=0 C=24 D=7011 other=41
+TOTAL steps=50000000 loads=550488654 (1.0009 of 11/step) stores=150853874 (1.0057 of 3/step) multiplexed=0 sum=3255307777713450288
+REGION A reads/step est=5.277 true=8 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION B reads/step est=4.731 true=1 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION C reads/step est=0.371 true=1 writes/step est=0.010 true=2 read_dominant est=yes true=no  MISCLASSIFIED
+REGION D reads/step est=0.102 true=1 writes/step est=2.850 true=1 read_dominant est=no true=no
+REGION other reads/step est=0.019 true=0 writes/step est=0.017 true=0 read_dominant est=no true=-
+## run2 split
+EVENT cfg=0x41d1 period=20011 count=426821498 enabled=6866693190 running=6866693190 samples=17843 expected=21329 lost=4 throttle=0 A=7370 B=36 C=10120 D=275 other=42
+EVENT cfg=0x6d1 period=20323 count=25660143 enabled=6866690216 running=6866690216 samples=992 expected=1262 lost=0 throttle=0 A=985 B=0 C=0 D=0 other=7
+EVENT cfg=0x20d1 period=20641 count=97867263 enabled=6866689552 running=6866689552 samples=3518 expected=4741 lost=4 throttle=0 A=0 B=3357 C=0 D=161 other=0
+EVENT cfg=0x82d0 period=20963 count=150730605 enabled=6866687973 running=6866687973 samples=5844 expected=7190 lost=4 throttle=0 A=0 B=0 C=0 D=5815 other=29
+TOTAL steps=50000000 loads=550348904 (1.0006 of 11/step) stores=150730605 (1.0049 of 3/step) multiplexed=0 sum=3255307777713450288
+REGION A reads/step est=3.350 true=8 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION B reads/step est=1.400 true=1 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION C reads/step est=4.050 true=1 writes/step est=0.000 true=2 read_dominant est=yes true=no  MISCLASSIFIED
+REGION D reads/step est=0.177 true=1 writes/step est=2.438 true=1 read_dominant est=no true=no
+REGION other reads/step est=0.020 true=0 writes/step est=0.012 true=0 read_dominant est=no true=-
+## run3 union
+EVENT cfg=0x67d1 period=20011 count=550340078 enabled=6917560444 running=6917560444 samples=21058 expected=27501 lost=4 throttle=0 A=10534 B=9372 C=857 D=257 other=38
+EVENT cfg=0x82d0 period=20323 count=150685693 enabled=6917556544 running=6917556544 samples=5678 expected=7414 lost=4 throttle=0 A=0 B=0 C=10 D=5633 other=35
+TOTAL steps=50000000 loads=550340078 (1.0006 of 11/step) stores=150685693 (1.0046 of 3/step) multiplexed=0 sum=3255307777713450288
+REGION A reads/step est=4.216 true=8 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION B reads/step est=3.751 true=1 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION C reads/step est=0.343 true=1 writes/step est=0.004 true=2 read_dominant est=yes true=no  MISCLASSIFIED
+REGION D reads/step est=0.103 true=1 writes/step est=2.290 true=1 read_dominant est=no true=no
+REGION other reads/step est=0.015 true=0 writes/step est=0.014 true=0 read_dominant est=no true=-
+## run3 split
+EVENT cfg=0x41d1 period=20011 count=451488839 enabled=6808087185 running=6808087185 samples=19882 expected=22562 lost=4 throttle=0 A=8941 B=32 C=10593 D=272 other=44
+EVENT cfg=0x6d1 period=20323 count=1004937 enabled=6808083978 running=6808083978 samples=42 expected=49 lost=1 throttle=0 A=36 B=0 C=0 D=2 other=4
+EVENT cfg=0x20d1 period=20641 count=98031339 enabled=6808083212 running=6808083212 samples=4257 expected=4749 lost=4 throttle=0 A=0 B=4078 C=0 D=179 other=0
+EVENT cfg=0x82d0 period=20963 count=150797121 enabled=6808082037 running=6808082037 samples=6601 expected=7193 lost=3 throttle=0 A=0 B=0 C=0 D=6568 other=33
+TOTAL steps=50000000 loads=550525115 (1.0010 of 11/step) stores=150797121 (1.0053 of 3/step) multiplexed=0 sum=3255307777713450288
+REGION A reads/step est=3.593 true=8 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION B reads/step est=1.696 true=1 writes/step est=0.000 true=0 read_dominant est=yes true=yes
+REGION C reads/step est=4.240 true=1 writes/step est=0.000 true=2 read_dominant est=yes true=no  MISCLASSIFIED
+REGION D reads/step est=0.184 true=1 writes/step est=2.754 true=1 read_dominant est=no true=no
+REGION other reads/step est=0.019 true=0 writes/step est=0.014 true=0 read_dominant est=no true=-

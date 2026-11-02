@@ -1,0 +1,7 @@
+====================================================================================================
+gov-new3-cap1200.log
+CONFIG work_cpu=30 collector_cpu=25 load=0x67d1 store=0x82d0 load_periods=[200003] store_period=companion pairs=20 rounds=40000 poll_ms=100 jitter=false cap=Some(1200) tsc_per_ns=2.095308 bucket_ns=[64, 250, 1000, 2000, 4000, 8000, 16000, 64000]
+period=  200003 pairs=20 block_wall_s med=4.61 samples/s med=    1044 cpu_delta med=+0.70% CI95[+0.19%,+1.20%] wall_delta med=+0.59% collector=1.3255%core (max 1.6092)
+      governed: final scale med=23.55 settled samples/s med=1066 CI95[1065,1073] max=1084
+      one-time per attach: transient samples med=4, collector attach CPU med=49.1 ms (2 samplers: workload + collector thread)
+      collector steady CPU (excl. attach) med=0.2770%core CI95[0.2723,0.2795] max=0.3023

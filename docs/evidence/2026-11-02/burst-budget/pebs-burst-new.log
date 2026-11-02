@@ -1,0 +1,23 @@
+# 2026-11-02T01:33:50Z 6.8.0-146-generic workload CPU 30, collector CPU 25
+# 2de976318d9ee03b9b66ad28dd0476e9b7d78fefb25ce5a2c7ceae773b391efd  pebs_burst-new
+# cfc7baeffc37a320ff995e9c04e46739c5475a524d0d6e553fc00fc80219ee19  burst-head
+# 1efb4eced351ba15a2c4a31551bb7a2c9c7b30c08bc4a4567daa0a158e784a08  program-new.bpf
+# d0ac40911a4a3ba690ca830496a88ded7d95ac5af353ef237226a65c184ac73c  program-head.bpf
+## rep1 new burst=10000 idle=0
+base_period=20011 burst_ms=10000 idle_ms=0 bursts=1 samples=11184 mean_per_s=1116 worst_100ms_window=234 per_cpu_budget_per_100ms=240 final_scale=168.29 status=NoSamples
+## rep1 new burst=30 idle=400
+base_period=20011 burst_ms=30 idle_ms=400 bursts=24 samples=6562 mean_per_s=634 worst_100ms_window=472 per_cpu_budget_per_100ms=240 final_scale=1.00 status=NoSamples
+## rep1 new burst=30 idle=70
+base_period=20011 burst_ms=30 idle_ms=70 bursts=100 samples=8294 mean_per_s=826 worst_100ms_window=236 per_cpu_budget_per_100ms=240 final_scale=34.24 status=NoSamples
+## rep2 new burst=10000 idle=0
+base_period=20011 burst_ms=10000 idle_ms=0 bursts=1 samples=10441 mean_per_s=1042 worst_100ms_window=234 per_cpu_budget_per_100ms=240 final_scale=184.04 status=NoSamples
+## rep2 new burst=30 idle=400
+base_period=20011 burst_ms=30 idle_ms=400 bursts=24 samples=6383 mean_per_s=617 worst_100ms_window=472 per_cpu_budget_per_100ms=240 final_scale=1.17 status=NoSamples
+## rep2 new burst=30 idle=70
+base_period=20011 burst_ms=30 idle_ms=70 bursts=100 samples=9236 mean_per_s=920 worst_100ms_window=236 per_cpu_budget_per_100ms=240 final_scale=31.76 status=NoSamples
+## rep3 new burst=10000 idle=0
+base_period=20011 burst_ms=10000 idle_ms=0 bursts=1 samples=11027 mean_per_s=1100 worst_100ms_window=236 per_cpu_budget_per_100ms=240 final_scale=172.22 status=NoSamples
+## rep3 new burst=30 idle=400
+base_period=20011 burst_ms=30 idle_ms=400 bursts=24 samples=6555 mean_per_s=633 worst_100ms_window=473 per_cpu_budget_per_100ms=240 final_scale=1.17 status=NoSamples
+## rep3 new burst=30 idle=70
+base_period=20011 burst_ms=30 idle_ms=70 bursts=100 samples=6792 mean_per_s=676 worst_100ms_window=236 per_cpu_budget_per_100ms=240 final_scale=20.50 status=NoSamples

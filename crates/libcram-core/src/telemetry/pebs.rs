@@ -47,6 +47,9 @@ const PERF_EVENT_IOC_PERIOD: u64 = 0x40082404;
 const PERF_EVENT_IOC_SET_BPF: u64 = 0x40042408;
 /// `_IO('$', 0)`.
 const PERF_EVENT_IOC_ENABLE: u64 = 0x2400;
+/// `_IO('$', 2)`: add N overflows to the event's limit and enable it; the
+/// kernel disables the event when the limit reaches zero.
+const PERF_EVENT_IOC_REFRESH: u64 = 0x2402;
 fn failure(e: impl std::fmt::Display) -> io::Error {
     io::Error::other(e.to_string())
 }
@@ -204,6 +207,7 @@ impl PebsProgram {
         Ok(PebsEvents {
             events,
             periods: configs.iter().map(|c| c.period).collect(),
+            limits: None,
         })
     }
     /// Consume at most budget records from every attachment of this program.
@@ -257,6 +261,18 @@ impl PebsProgram {
 pub struct PebsEvents {
     events: Vec<OwnedFd>,
     periods: Vec<u64>,
+    limits: Option<Limits>,
+}
+/// Per-event sample-limit bookkeeping (see [`PebsEvents::limit_samples`]).
+struct Limits {
+    /// Limit at the last grant (remainder plus the new grant).
+    granted: Vec<u64>,
+    /// Overflows counted since the last grant.
+    used: Vec<u64>,
+    /// PMU count when the current period segment started, and the overflows
+    /// of this segment already added to `used`.
+    segment_start: Vec<u64>,
+    segment_counted: Vec<u64>,
 }
 impl PebsEvents {
     /// Raw PMU counts per configured event, useful to distinguish an idle or
@@ -284,6 +300,84 @@ impl PebsEvents {
     pub fn attached_events(&self) -> usize {
         self.events.len()
     }
+    fn refresh(fd: &OwnedFd, budget: u32) -> io::Result<()> {
+        let budget = libc::c_int::try_from(budget)
+            .map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "sample budget too large"))?;
+        // SAFETY: PERF_EVENT_IOC_REFRESH takes an integer argument and a live perf fd.
+        if unsafe { libc::ioctl(fd.as_raw_fd(), PERF_EVENT_IOC_REFRESH, budget) } < 0 {
+            return Err(io::Error::last_os_error());
+        }
+        Ok(())
+    }
+    /// Bound every event's samples with the kernel's PERF_EVENT_IOC_REFRESH
+    /// limit, starting with `initial` each: an event that reaches its limit is
+    /// disabled in the overflow handler until [`grant`](Self::grant) adds
+    /// more, so a burst cannot exceed what was granted however fast it runs
+    /// (`docs/evidence/2026-11-02/burst-budget`). Requires the libcram BPF
+    /// program to return nonzero (Linux >= 6.10 skips the limit otherwise).
+    pub fn limit_samples(&mut self, initial: u32) -> io::Result<()> {
+        if initial == 0 || self.limits.is_some() {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "sample limit must be positive and set once",
+            ));
+        }
+        let counts = self.event_counts()?;
+        for fd in &self.events {
+            Self::refresh(fd, initial)?;
+        }
+        let n = self.events.len();
+        self.limits = Some(Limits {
+            granted: vec![u64::from(initial); n],
+            used: vec![0; n],
+            segment_start: counts,
+            segment_counted: vec![0; n],
+        });
+        Ok(())
+    }
+    /// Count the overflows since the previous call from `counts` (as returned
+    /// by [`event_counts`](Self::event_counts)). Returns, per event, the
+    /// remaining limit and the overflows counted by this call. The overflow
+    /// estimate never exceeds the real count, so a returned remainder is never
+    /// below the kernel's. Empty without limits.
+    pub fn account(&mut self, counts: &[u64]) -> io::Result<Vec<(u64, u64)>> {
+        let Some(limits) = self.limits.as_mut() else {
+            return Ok(Vec::new());
+        };
+        if counts.len() != self.events.len() {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "one count per event required",
+            ));
+        }
+        let mut result = Vec::with_capacity(counts.len());
+        for (i, &count) in counts.iter().enumerate() {
+            let total = count.saturating_sub(limits.segment_start[i]) / self.periods[i];
+            let new = total.saturating_sub(limits.segment_counted[i]);
+            limits.used[i] += new;
+            limits.segment_counted[i] = total;
+            result.push((limits.granted[i].saturating_sub(limits.used[i]), new));
+        }
+        Ok(result)
+    }
+    /// Add `samples` to event `index`'s kernel limit and re-enable it.
+    pub fn grant(&mut self, index: usize, samples: u32) -> io::Result<()> {
+        let Some(limits) = self.limits.as_mut() else {
+            return Ok(());
+        };
+        let fd = self
+            .events
+            .get(index)
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "no such event"))?;
+        if samples == 0 {
+            return Ok(());
+        }
+        Self::refresh(fd, samples)?;
+        limits.granted[index] =
+            limits.granted[index].saturating_sub(limits.used[index]) + u64::from(samples);
+        limits.used[index] = 0;
+        Ok(())
+    }
     /// Current sample period of each configured event, in `attach` order.
     pub fn periods(&self) -> &[u64] {
         &self.periods
@@ -302,9 +396,26 @@ impl PebsEvents {
                 "one nonzero period below 2^63 per configured event, pairwise distinct and coprime, required",
             ));
         }
-        for ((fd, current), period) in self.events.iter().zip(&mut self.periods).zip(periods) {
+        // A period change restarts the countdown: close the limit segment.
+        let counts = match self.limits {
+            Some(_) => Some(self.event_counts()?),
+            None => None,
+        };
+        for (i, ((fd, current), period)) in self
+            .events
+            .iter()
+            .zip(&mut self.periods)
+            .zip(periods)
+            .enumerate()
+        {
             if current == period {
                 continue;
+            }
+            if let (Some(limits), Some(counts)) = (self.limits.as_mut(), &counts) {
+                let total = counts[i].saturating_sub(limits.segment_start[i]) / *current;
+                limits.used[i] += total.saturating_sub(limits.segment_counted[i]);
+                limits.segment_start[i] = counts[i];
+                limits.segment_counted[i] = 0;
             }
             // SAFETY: fd is a live owned perf fd; PERF_EVENT_IOC_PERIOD reads
             // exactly one u64 through the pointer and retains nothing.

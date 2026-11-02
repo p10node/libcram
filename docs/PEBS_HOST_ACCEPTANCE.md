@@ -27,6 +27,7 @@ this host, not a proven diagnosis of the CPU/firmware/kernel address issue. The
 probe keeps all-loads as its default and does not silently switch to the passing
 but narrower event. L1-hit counts exclude misses and cannot justify an unbiased
 all-memory read/write ratio, CRAM workload attribution or universal CPU support.
+(Current `pebs_acceptance` defaults to `retired-loads`, `0x67d1`; see 2026-11-01 below.)
 
 **NOT ESTABLISHED:** total active telemetry below 1% of one core. Three ABBA
 cycles compared six sampled and six baseline executions of the same workload.
@@ -81,6 +82,33 @@ See [evidence/2026-11-01/governor](evidence/2026-11-01/governor/README.md).
 - **Not covered by <1%:** ≈40–50 ms of collector CPU once per selected CPU,
   the first ≤100 ms at the base period, and load bursts shorter than the
   100 ms governor interval (bounded only by the kernel's sample-rate limit).
+
+## 2026-11-02: write evidence and burst limit
+
+See [evidence/2026-11-02](evidence/2026-11-02/README.md).
+
+- **Store bias:** on a four-region workload, PEBS store samples landed on
+  the store retiring after a DRAM stall. A write-heavy, cache-resident region
+  was estimated write-free and classified read-dominant in 6/6 runs. Splitting
+  loads by data source (`0x41d1`/`0x06d1`/`0x20d1`) did not remove the load
+  bias and lost 8–50% of samples silently.
+- **Write evidence:** `WriteSampler` write-protects one random page per
+  allocation every 100 ms (async userfaultfd, Linux ≥ 6.7, no privilege) and
+  reads the uffd-wp bit back. `Bridge::track_writes` uses it instead of store
+  samples and fails closed until three write-free checks exist. End to end
+  with governed PEBS loads only: read-only regions reported write-free,
+  write-heavy ones never (`WRITE_POLICY_PASS` 3/3). Cost ≈3.6 µs per sampled
+  page, 0.070–0.079% of a core for 16 pages per 100 ms (standalone probe).
+- **Burst limit:** `ProcessPebsCollector` arms every event with
+  `PERF_EVENT_IOC_REFRESH` limits and regrants them each interval, so no CPU
+  takes more than 240 samples per 100 ms (2 × cap). The governor alone allowed
+  625–2,884 per window, averaged 1,664–1,724 samples/s after idle (above its
+  cap), and failed 2/3 streaming runs with ring loss. Governed steady state:
+  1,066 samples/s, collector 0.28%, worst case **0.90%: PASS**.
+- **BPF:** the programs now return 1 (Linux ≥ 6.10 skips the limit on 0);
+  per-sample cost 4,954 vs 4,959 ns, no measurable change.
+- **Procedure:** [PEBS_PROFILE_AUDIT.md](PEBS_PROFILE_AUDIT.md) lists every
+  step and criterion for a new CPU model.
 
 ## Independent all-load diagnostic follow-up
 

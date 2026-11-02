@@ -39,7 +39,9 @@ than allocation creation. This API makes no allocator/runtime decisions.
   `0x67d1` (retired loads: L1/L2/L3 hit, L3 miss, LFB hit) and `0x82d0` (all
   stores), user-only, after `broadwell_x::detected()` confirms family 6
   model 79. It replaces ALL_LOADS `0x81d0`, whose PEBS address is wrong on
-  this part.
+  this part. `broadwell_x::load_configs(load_period)` returns the load event
+  alone, for pipelines that take writes from `WriteSampler`
+  (`Bridge::track_writes`, see `runtime-bridge.md`).
 - Two configured events must have distinct, coprime periods
   (`sampling::periods_independent`). `PebsSampler::attach`, `set_periods` and
   `ProcessPebsCollector::new` reject other pairs. Reason: PEBS format 2 drops
@@ -48,8 +50,8 @@ than allocation creation. This API makes no allocator/runtime decisions.
   sample. `companion_period(p)` gives the store period ≈ p·65/64, so read and
   write sample weights differ by only ~1.6%.
 - `pebs::PebsProgram::load` loads the object once; `PebsProgram::attach`
-  returns `PebsEvents` (perf FDs, counts, `set_periods`) for one TID/CPU.
-  `PebsSampler` is the single-target wrapper over both.
+  returns `PebsEvents` (perf FDs, counts, `set_periods`, sample limits) for
+  one TID/CPU. `PebsSampler` is the single-target wrapper over both.
 - `ProcessPebsCollector` runs a `RateGovernor` by default, capping each
   monitored CPU at `DEFAULT_MAX_SAMPLES_PER_CPU_SEC` (1,200). It reads PMU
   counts at most every `RATE_INTERVAL` (100 ms) inside `poll`, scales every
@@ -58,6 +60,14 @@ than allocation creation. This API makes no allocator/runtime decisions.
   `with_rate_limit(None)` disables it before the first poll. `period_scale()`
   and `periods()` report the current weights: each sample stands for about
   `periods()[i]` events of its kind.
+- With the governor on, every event also gets a kernel sample limit
+  (`PebsEvents::limit_samples`, `PERF_EVENT_IOC_REFRESH`) starting at
+  `INITIAL_GRANT` (2). Each interval, `PebsEvents::account` estimates the
+  overflows used and `PebsEvents::grant` tops events back up, so one CPU's
+  outstanding limits stay within `process_pebs::sample_budget` (2 × cap ×
+  `RATE_INTERVAL`, plus one per spent event). An event that reaches its limit
+  is disabled by the kernel until the next grant. The BPF programs return 1:
+  Linux ≥ 6.10 skips the limit when they return 0.
 
 ## Bounds and lifecycle
 
@@ -96,7 +106,9 @@ profile (`0x67d1` loads, `0x82d0` stores) is not evidence for other CPUs.
 ALL_LOADS `0x81d0` stays wrong on that part. With mixed-latency loads, PEBS
 samples concentrate on loads that retire after a stall, so per-page sample
 counts over-represent cache-missing loads
-([evidence](evidence/2026-11-01/governor/README.md)).
+([evidence](evidence/2026-11-01/governor/README.md)). Store samples are biased
+the same way, so a write-heavy cache-resident page can look write-free
+([evidence](evidence/2026-11-02/source-split/README.md)).
 
 Proc scans are not atomic. Threads created after a scan wait until the next
 poll; short-lived threads can be missed. Churn can force fail-closed retries
@@ -114,11 +126,13 @@ handler (format-2 collisions, which independent periods prevent). A successful
 empty poll is not evidence of hardware availability, workload inactivity, or
 zero memory accesses. Sampling cost on s5 Broadwell-X: ≈4.7 µs per sample on
 the sampled core plus ≈0.3% of a core for the governed collector. At the
-default cap of 1,200 samples/s per CPU the worst steady state is 0.89% of one
-core. One-time costs are not in that figure: ≈40–50 ms of collector CPU per
-selected CPU (program load), ≈0.15 ms per thread attach + detach, and up to
-100 ms at the base period after the first attachment. Load bursts shorter
-than 100 ms are bounded only by the kernel's sample-rate limit.
+default cap of 1,200 samples/s per CPU the worst steady state is 0.90% of one
+core ([evidence](evidence/2026-11-02/burst-budget/README.md)). One-time costs
+are not in that figure: ≈40–50 ms of collector CPU per selected CPU (program
+load), ≈0.15 ms per thread attach + detach, and up to 100 ms at the base
+period after the first attachment. Bursts shorter than
+one interval are bounded by the kernel sample limits above, not by the
+governor.
 
 ## Executed checks
 

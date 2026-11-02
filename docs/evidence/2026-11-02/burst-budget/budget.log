@@ -1,0 +1,27 @@
+# 2026-11-01T23:50:47Z 6.8.0-146-generic budget.c sha256 070cb68c7283e23044b8e249d4035514c3ab173e33a7224d27ba21730dfc6493, cpu 30
+interval=0 loads=113709056 unbudgeted_samples=568 samples=120 lost=0 stopped=1
+interval=1 loads=107790336 unbudgeted_samples=538 samples=120 lost=0 stopped=1
+interval=2 loads=124313600 unbudgeted_samples=621 samples=120 lost=0 stopped=1
+interval=3 loads=115290112 unbudgeted_samples=576 samples=120 lost=0 stopped=1
+interval=4 loads=132456448 unbudgeted_samples=662 samples=120 lost=0 stopped=1
+interval=5 loads=137019392 unbudgeted_samples=685 samples=120 lost=0 stopped=1
+RESULT cfg=0x67d1 period=200003 budget=120 worst_interval_samples=120 rearms=6 BUDGET_HELD sum=0
+interval=0 loads=140980224 unbudgeted_samples=7045 samples=120 lost=0 stopped=1
+interval=1 loads=134774784 unbudgeted_samples=6735 samples=120 lost=0 stopped=1
+interval=2 loads=122728448 unbudgeted_samples=6133 samples=120 lost=0 stopped=1
+interval=3 loads=103297024 unbudgeted_samples=5162 samples=120 lost=0 stopped=1
+interval=4 loads=141369344 unbudgeted_samples=7064 samples=120 lost=0 stopped=1
+interval=5 loads=143130624 unbudgeted_samples=7152 samples=120 lost=0 stopped=1
+RESULT cfg=0x67d1 period=20011 budget=120 worst_interval_samples=120 rearms=6 BUDGET_HELD sum=0
+interval=0 loads=143081472 unbudgeted_samples=71433 samples=120 lost=0 stopped=1
+interval=1 loads=143626240 unbudgeted_samples=71705 samples=120 lost=0 stopped=1
+interval=2 loads=143634432 unbudgeted_samples=71709 samples=120 lost=0 stopped=1
+interval=3 loads=142778368 unbudgeted_samples=71282 samples=120 lost=0 stopped=1
+interval=4 loads=143486976 unbudgeted_samples=71636 samples=120 lost=0 stopped=1
+interval=5 loads=142696448 unbudgeted_samples=71241 samples=120 lost=0 stopped=1
+RESULT cfg=0x67d1 period=2003 budget=120 worst_interval_samples=120 rearms=6 BUDGET_HELD sum=0
+interval=0 loads=143855616 unbudgeted_samples=7188 samples=120 lost=0 stopped=1
+interval=1 loads=137523200 unbudgeted_samples=6872 samples=120 lost=0 stopped=1
+interval=2 loads=144379904 unbudgeted_samples=7215 samples=120 lost=0 stopped=1
+interval=3 loads=142409728 unbudgeted_samples=7116 samples=120 lost=0 stopped=1
+RESULT cfg=0x82d0 period=20011 budget=120 worst_interval_samples=120 rearms=4 BUDGET_HELD sum=0

@@ -30,12 +30,62 @@ let mut allocation = runtime.allocate_owned(size, align, AccessHint::WriteHeavy)
 // Unique borrow: no concurrent unsynchronized reads of mutable application data.
 allocation.as_mut_slice().fill(0);
 // Known initialized zeros have entropy zero; real applications supply independently
-// synchronized, current entropy metadata (finite [0,8]), not an invented constant.
+// synchronized, current entropy metadata (a finite value in [0,8] or an exact
+// `migration::Entropy` verdict), not an invented constant.
 publisher.register(allocation.observation_token(0.0)?)?;
 runtime.tick()?; // or consume runtime.start() for the managed worker
 // Refresh metadata before token TTL, after synchronizing with payload mutation.
 // Check errors/status; successful publication is enqueue, not registration ACK.
 ```
+
+## Write evidence (Linux >= 6.7)
+
+On Broadwell-X, PEBS store samples land on the first store that retires after
+a stall, so a write-heavy page that stays in cache can look write-free and be
+judged read-dominant (`evidence/2026-11-02/source-split`). Production wiring
+on Linux should therefore take writes from page protection instead.
+`Bridge::track_writes` accepts any `runtime_bridge::WriteSource`;
+`telemetry::write_sampler::WriteSampler` is the Linux implementation:
+
+```rust,ignore
+use libcram_core::telemetry::{sampling::broadwell_x, write_sampler::WriteSampler};
+
+let raw = ProcessPebsCollector::new(
+    trusted_object_bytes, selected_cpus,
+    broadwell_x::load_configs(base_period).to_vec(), // loads only
+    max_attachments, 8192,
+)?;
+let (mut bridge, publisher) = Bridge::new(raw, device, BridgeConfig::default())?;
+bridge.track_writes(WriteSampler::new(
+    WriteSampler::DEFAULT_PAGES_PER_CYCLE,
+    WriteSampler::DEFAULT_MIN_INTERVAL,
+)?)?; // before the first device_update
+```
+
+How write tracking works:
+
+- At most every 100 ms (one cycle per `device_update`), `WriteSampler`
+  write-protects one random full page in each of up to 16 registered
+  allocations (round robin), using asynchronous userfaultfd
+  (`UFFD_FEATURE_WP_ASYNC`). At the next cycle it reads the page's uffd-wp
+  bit from `/proc/self/pagemap`; a cleared bit means the page was written.
+  The kernel resolves the write fault itself: the application sees no
+  signal and no stall beyond one in-kernel fault.
+- The fd uses `UFFD_USER_MODE_ONLY`, so it works without privilege even with
+  `vm.unprivileged_userfaultfd=0`. Seccomp profiles that deny `userfaultfd`
+  make `WriteSampler::new` fail; it then returns an error and nothing falls
+  back silently.
+- Evidence is kept per allocation across token refreshes. An observed page
+  reports `writes == 0` only after at least `MIN_WRITE_FREE_CHECKS` (3)
+  write-free checks and no written check within `WRITE_EVIDENCE_WINDOW`
+  (10 s). Otherwise it reports `writes == max(reads, 1)`, which the policy
+  never treats as read-dominant. Raw `Write` samples are ignored.
+- Cost on s5: ≈3.6 µs per sampled page (0.070–0.079% of a core measured at
+  16 pages per 100 ms, the default). Pages only partly inside an allocation
+  are never sampled.
+
+`crates/libcram-core/examples/write_policy_acceptance.rs` checks this end to
+end on hardware.
 
 Set bridge `max_output <= RuntimeConfig.max_observations`; defaults both use 32.
 A batch not fully drained before the next `device_update` is rejected/cleared,
@@ -48,7 +98,8 @@ Publisher/bridge registration does not itself prove membership in that runtime.
 ## Admission, clocks and generations
 
 Every update drains at most `input_capacity` token commands, reads a new device
-snapshot, then polls the raw source once and prepares the entire output batch.
+snapshot, runs one write-source cycle when writes are tracked, then polls the
+raw source once and prepares the entire output batch.
 `poll` only drains that batch. Invalid device data/raw failure discards pending
 observations and all history before returning an error. Runtime revokes cached
 health on **every** failed tick, including oversized poison lists, before any
@@ -86,13 +137,13 @@ this bridge and a fake NUMA backend, not actual page movement by the OS.
 
 ## Bounds and loss
 
-| Limit | Default | Accepted maximum |
-|---|---:|---:|
-| registrations | 128 | 4096 |
-| input token queue / commands per tick | 128 | 4096 |
-| raw events per read | 8192 | 8192 |
-| total retained history events | 8192 | 65536 |
-| output observations per batch | 32 | 128 |
+| Limit                                 | Default | Accepted maximum |
+| ------------------------------------- | ------: | ---------------: |
+| registrations                         |     128 |             4096 |
+| input token queue / commands per tick |     128 |             4096 |
+| raw events per read                   |    8192 |             8192 |
+| total retained history events         |    8192 |            65536 |
+| output observations per batch         |      32 |              128 |
 
 All limits must be positive. Retained objects and temporary output maps are
 bounded; vector spare capacity/allocator overhead and caller-owned source Vecs
@@ -102,8 +153,8 @@ linear in registrations for each event; no overhead target is claimed.
 
 Input queue or registration overflow latches failure permanently; rebuild the
 bridge/runtime to resume. This includes publisher send after consumer shutdown.
-Raw loss, history/output overflow, device errors, and incomplete prior batches
-clear history/output and fail the current tick; a later valid new snapshot/raw
+Raw loss, history/output overflow, device or write-source errors, and incomplete
+prior batches clear history/output and fail the current tick; a later valid new snapshot/raw
 batch can recover. Real ProcessPebsCollector reports observed loss as error;
 undetectable PMU scheduling loss remains outside this contract. A concurrent
 publisher failure is observed at the next bridge boundary, not an atomic fence
@@ -144,7 +195,7 @@ are **not real CRAM hardware**. Trust of physical capacity, producer provenance,
 freshness, filesystem ancestry and report publication follows DEVICE_ADAPTER.md.
 A new report is required every successful update; replay must not renew health.
 Parent retains native Linux/perf/hardware and packaging acceptance. No universal
-raw event profile, all-load coverage, <1% overhead or realCRAM result is claimed.
+raw event profile, all-load coverage, <1% overhead or real CRAM result is claimed.
 
 Local RED: oversized poison health retained; stop retained health; no-observation
 pressure did not evacuate (each exit 101). Initial bridge API test was compile

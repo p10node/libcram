@@ -5,7 +5,7 @@ use aya_ebpf::{
     EbpfContext,
     bindings::bpf_perf_event_data,
     helpers::{bpf_get_current_pid_tgid, bpf_ktime_get_ns},
-    macros::{map, perf_event},
+    macros::map,
     maps::{PerCpuArray, RingBuf},
     programs::PerfEventContext,
 };
@@ -17,13 +17,18 @@ static LICENSE: [u8; 4] = *b"GPL\0";
 static EVENTS: RingBuf = RingBuf::with_byte_size(256 * 1024, 0);
 #[map]
 static DROPPED: PerCpuArray<u64> = PerCpuArray::with_max_entries(1, 0);
-#[perf_event]
-pub fn sample_load(ctx: PerfEventContext) -> u32 {
-    sample(ctx, 1)
+// Entry points are written out instead of `#[perf_event]`: that macro (aya-ebpf
+// 0.1) discards the function's result and always returns 0, which on Linux
+// >= 6.10 skips the kernel's PERF_EVENT_IOC_REFRESH sample limit.
+#[unsafe(no_mangle)]
+#[unsafe(link_section = "perf_event")]
+pub fn sample_load(ctx: *mut core::ffi::c_void) -> u32 {
+    sample(PerfEventContext::new(ctx.cast()), 1)
 }
-#[perf_event]
-pub fn sample_store(ctx: PerfEventContext) -> u32 {
-    sample(ctx, 2)
+#[unsafe(no_mangle)]
+#[unsafe(link_section = "perf_event")]
+pub fn sample_store(ctx: *mut core::ffi::c_void) -> u32 {
+    sample(PerfEventContext::new(ctx.cast()), 2)
 }
 fn sample(ctx: PerfEventContext, operation: u64) -> u32 {
     // SAFETY: perf_event programs receive bpf_perf_event_data, whose addr field
@@ -39,7 +44,11 @@ fn sample(ctx: PerfEventContext, operation: u64) -> u32 {
     } else {
         lost();
     }
-    0
+    // Nonzero keeps the kernel's overflow accounting: since Linux 6.10 a zero
+    // return skips the PERF_EVENT_IOC_REFRESH sample limit (event_limit) that
+    // bounds sampling bursts. The default output that follows has no perf ring
+    // to write to (libcram never mmaps one), so it records nothing.
+    1
 }
 fn lost() {
     if let Some(counter) = DROPPED.get_ptr_mut(0) {

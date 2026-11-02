@@ -7,6 +7,8 @@ pub mod pebs;
 #[cfg(any(test, all(target_os = "linux", feature = "ebpf")))]
 pub mod process_pebs;
 pub mod sampling;
+#[cfg(target_os = "linux")]
+pub mod write_sampler;
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct PsiLine {
     pub avg10: f64,
