@@ -26,8 +26,10 @@ entropy. Doing so races with application writes and is undefined behavior in
 Rust even if the intention is approximate telemetry. Applications must supply
 observations taken under their own synchronization, or an explicitly supported
 instrumentation mechanism must obtain them safely. Read/write classification
-must come from an appropriate PMU event or explicit application observation;
-page faults and generic scheduler samples are not substitutes.
+must come from an appropriate PMU event, sampled write-protection of owned
+pages (`telemetry::write_sampler::WriteSampler`), or explicit application
+observation; generic page-fault counts and scheduler samples are not
+substitutes.
 
 PMU event encodings are CPU-specific. Precise memory samples require supported
 hardware, a compatible kernel, suitable capabilities/perf policy, and actual

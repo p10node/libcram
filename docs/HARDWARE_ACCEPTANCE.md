@@ -1,10 +1,12 @@
 # Hardware acceptance checklist
 
 These are deployment gates, not claims that ordinary CI has physical CRAM/PEBS.
-Current recorded outcome: see `VERIFICATION.md` and `evidence/2026-10-09/`.
-The available Linux container lacks CPU PMU/CXL/CRAM; real BPF load returned
-EPERM. ASCII/random entropy also remains over budget on the measured host.
-These checklist items are therefore still open, not waived by passing CI.
+Current recorded outcome: see `IMPLEMENTATION_STATUS.md` (earlier gates:
+`VERIFICATION.md` and `evidence/2026-10-09/`). The available Linux container
+lacks CPU PMU/CXL/CRAM; real BPF load returned EPERM. The entropy verdict and
+PEBS cost gates pass only on the measured machines, and no CRAM device was
+available. These checklist items are therefore still open, not waived by
+passing CI.
 
 Run only against an explicitly owned test workload and the intended Linux kernel.
 Do not change system-wide NUMA/perf settings or induce pressure on production data.
@@ -22,14 +24,21 @@ Do not change system-wide NUMA/perf settings or induce pressure on production da
    Verify write-heavy/high-entropy stays on DRAM and low-entropy/read-heavy
    placement changes only when CRAM is positively identified and healthy.
 5. Load the built Aya BPF ELF on a supported PMU. Configure independently verified
-   load/store event encodings. Execute known read-only and write-only workloads
-   over separate page ranges, then compare rolling per-page observations. Check
-   dropped samples, privilege errors, CPU hotplug and process teardown.
+   load/store event encodings (`PEBS_PROFILE_AUDIT.md`). Store samples are
+   biased on Broadwell-X, so take write evidence from `WriteSampler`
+   (`Bridge::track_writes`, Linux ≥ 6.7). Execute known read-only and
+   write-only workloads over separate page ranges, then compare rolling
+   per-page observations. Check dropped samples, privilege errors, CPU hotplug
+   and process teardown.
 6. Measure profiler CPU consumption over sustained sampling. The <1% single-core
    target must include kernel BPF cost and userspace collection; an idle process
    or missing sampler is not evidence of compliance.
-7. Benchmark 4KB entropy for zero, realistic text and pseudorandom data. Require
-   <1 microsecond for the intended distribution/CPU, not just the zero fast path.
+7. Benchmark the 4KB exact entropy policy verdict (`entropy < 4.5`) for zero,
+   realistic text and pseudorandom data with `just entropy-budget`. Require the
+   calibrated SLA, max(1 microsecond, 1.5x the same-run scatter-store floor),
+   for every distribution, not just the zero fast path. Record the strict
+   1 microsecond result, the full entropy value and the near-threshold
+   diagnostic as well.
    Retain compiler flags and confidence intervals; emulation results are not
    native CPU performance evidence.
 8. Exercise Normal/High/Critical/Emergency with a hardware-approved fault/pressure

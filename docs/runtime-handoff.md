@@ -8,9 +8,9 @@
 - `ManagedRuntime::allocate_owned` delegates to the same private `Arc<CramAllocator>` used by the worker. Existing and newly created owned allocations can outlive the worker. Allocation remains available after stop; collection does not restart.
 - `ManagedRuntime::status() -> RuntimeStatus` reads shared last-completed-tick counters. `telemetry() -> TelemetrySnapshot` reads live allocator accounting. These are individual snapshots, not an atomic joint snapshot or hardware compression measurement.
 - `ManagedRuntime::stop(&mut self)` wakes the interval wait, joins, and releases the owned collector and its descriptors. Repeated stop succeeds; `Drop` also stops/joins. Runtime destruction publishes `stopped`; successful stop returns only after collector destruction. Worker panic unwinding publishes stopped, and join returns existing `Error::Poisoned`; Drop cannot report that error.
-- `OwnedAllocation::observation_token(entropy)` creates cloneable metadata with a **weak** allocation identity, validated finite entropy in `[0,8]`, and creation time. It does not extend the mapping lifetime or read payload bytes. Obtain a token before collecting events, refresh it within the configured TTL, and use the event's original monotonic timestamp.
+- `OwnedAllocation::observation_token(entropy: impl Into<migration::Entropy>)` creates cloneable metadata with a **weak** allocation identity, validated entropy (a finite value in `[0,8]` or an exact `Entropy::Compressible` verdict), and creation time. It does not extend the mapping lifetime or read payload bytes. Obtain a token before collecting events, refresh it within the configured TTL, and use the event's original monotonic timestamp.
 - Once managed, legacy `record_sample` (including `OwnedAllocation::profile`, which submits a legacy sample) returns `Error::Unsupported`, even after stopping. Normal payload borrows and new observation tokens remain available.
-- No actual hardware attachment and no production channel collector adapter are included. Parent-owned device/perf adapters should implement this unchanged trait, with their own bounded nonblocking intake (e.g. `sync_channel`/`try_send`). The lifecycle test demonstrates bounded channel ingestion without adding an adapter API.
+- No actual hardware attachment and no production channel collector adapter are included. Parent-owned device/perf adapters should implement this unchanged trait, with their own bounded nonblocking intake (e.g. `sync_channel`/`try_send`). The lifecycle test demonstrates bounded channel ingestion without adding an adapter API. (Later: `runtime_bridge::Bridge` is that adapter; see `runtime-bridge.md`.)
 
 ## Admission and limits
 
@@ -36,13 +36,13 @@ A device update with more than **64 poison entries** is rejected as `InvalidSamp
 
 New regression RED runs (each `cargo test -p libcram-core --test runtime <filter>`):
 
-| Filter | RED exit | Reason | GREEN exit |
-| --- | --- | --- | --- |
-| `event_before_token_creation_is_rejected` | 101 | dropped 0 instead of 1 | 0 |
-| `dynamic_owned` | 101 | missing ManagedRuntime allocation/status/telemetry methods (API compile RED) | 0 |
-| `oversized_poison` | 101 | reached poll instead of rejecting oversized poison batch | 0 |
-| `managed_ownership` | 101 | legacy sample accepted under managed ownership | 0 |
-| `page_quota` | 101 | discarded drained event not counted | 0 |
+| Filter                                    | RED exit | Reason                                                                       | GREEN exit |
+| ----------------------------------------- | -------- | ---------------------------------------------------------------------------- | ---------- |
+| `event_before_token_creation_is_rejected` | 101      | dropped 0 instead of 1                                                       | 0          |
+| `dynamic_owned`                           | 101      | missing ManagedRuntime allocation/status/telemetry methods (API compile RED) | 0          |
+| `oversized_poison`                        | 101      | reached poll instead of rejecting oversized poison batch                     | 0          |
+| `managed_ownership`                       | 101      | legacy sample accepted under managed ownership                               | 0          |
+| `page_quota`                              | 101      | discarded drained event not counted                                          | 0          |
 
 Final commands executed after implementation:
 

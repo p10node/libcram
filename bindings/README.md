@@ -20,10 +20,12 @@ with `cargo build -p libcram-ffi` (add `--release` for production).
 * Telemetry output must be valid aligned writable storage. See the generated
   header for Rust safety contracts, which apply equally to C consumers.
 * Pressure callbacks run asynchronously, must be thread-safe and must not unwind,
-  throw or longjmp. Registration replaces the previous callback. **Unregister is
-  not quiescent**: queued delivery may still execute. Callback code and userdata
-  must remain valid until process exit, even after unregister/replacement.
-  Do not unload the callback library early. No Go pointer may be userdata.
+  throw or longjmp. Registration replaces the previous callback. **Replacement and
+  NULL unregister are not quiescent**: queued delivery may still execute.
+  Callback code and userdata must remain valid until
+  `cram_unregister_pressure_callback_and_wait()` returns `CRAM_OK`, or until
+  process exit. Do not unload the callback library early. No Go pointer may be
+  userdata.
 
 ## C++17
 

@@ -49,18 +49,18 @@ ssh s5 'incus stop libcram-numa-test'
 
 ## Actual results
 
-| Gate | Result |
-|---|---|
-| Rust core + FFI tests, including 64-thread stress, with `ebpf` enabled | PASS |
-| Real `SystemNuma.bind`, 16 owned pages | PASS after fix |
-| Migration 0 -> 1 -> 0, independent `move_pages` placement queries | PASS |
-| Byte-for-byte payload preservation after each migration | PASS |
-| BPF `sample_load` and `sample_store` kernel verifier load | PASS |
-| Basic user-space PMU cycle counting | PASS |
-| Precise `cycles:upp` sampling | FAIL: guest PMU refuses sampling/overflow interrupts |
-| CRAM driver/physical occupancy | Unavailable: no CRAM adapter flags or CXL devices exposed |
-| Active PEBS read/write attribution and total CPU overhead <1% | Not established |
-| Entropy 4096 B, unchanged 1000 ns upper-mean-confidence-bound gate | FAIL |
+| Gate                                                                   | Result                                                    |
+| ---------------------------------------------------------------------- | --------------------------------------------------------- |
+| Rust core + FFI tests, including 64-thread stress, with `ebpf` enabled | PASS                                                      |
+| Real `SystemNuma.bind`, 16 owned pages                                 | PASS after fix                                            |
+| Migration 0 -> 1 -> 0, independent `move_pages` placement queries      | PASS                                                      |
+| Byte-for-byte payload preservation after each migration                | PASS                                                      |
+| BPF `sample_load` and `sample_store` kernel verifier load              | PASS                                                      |
+| Basic user-space PMU cycle counting                                    | PASS                                                      |
+| Precise `cycles:upp` sampling                                          | FAIL: guest PMU refuses sampling/overflow interrupts      |
+| CRAM driver/physical occupancy                                         | Unavailable: no CRAM adapter flags or CXL devices exposed |
+| Active PEBS read/write attribution and total CPU overhead <1%          | Not established                                           |
+| Entropy 4096 B, unchanged 1000 ns upper-mean-confidence-bound gate     | FAIL                                                      |
 
 Entropy final upper bounds: zero **464.960 ns**, ASCII **4046.514 ns**, random
 **3778.157 ns**. The distributions, budget and validator were not changed.
@@ -105,7 +105,7 @@ retained in the manifest, and the original files remain in the VM.
 The archived validator reproduces exit 1:
 
 ```sh
-python3 scripts/entropy_budget.py docs/evidence/2026-10-09/s5-vm/criterion
+python3 scripts/entropy_budget.py --sla strict docs/evidence/2026-10-09/s5-vm/criterion
 ```
 
 No device was labelled CRAM to manufacture a passing migration result. A

@@ -11,8 +11,9 @@
 - Bounded background migration (32 allocations / 256 pages per tick), circular
   allocation/page cursors, per-page accounting, mapping Arc leases, and diagnostic
   reports. Explicit access/entropy metadata only; no background payload reads.
-- Owned `profile` borrows the buffer and samples at most its first 4096 bytes.
-  This prefix estimate is not claimed to characterize all allocation contents.
+- Owned `profile` borrows the buffer and records the exact compressibility
+  verdict (`migration::Entropy::of`) of at most its first 4096 bytes. This
+  prefix verdict is not claimed to characterize all allocation contents.
 - PSI-driven asynchronous callbacks on a separate worker, capacity-one queue,
   generation-based replacement, panic isolation, no callback under internal locks.
 
@@ -73,7 +74,8 @@ is performed. Raw users must provide independently synchronized access/entropy
 samples and stop accesses before free or allocator drop.
 
 Callback replacement/unregistration is NOT quiescent: a selected/in-flight callback
-may finish after unregister or allocator destruction. Its captured state must stay
+may finish after unregister or allocator destruction. (Later:
+`CramAllocator::unregister_pressure_callback_and_wait` is the quiescent barrier.) Its captured state must stay
 valid through delivery; use Weak allocator references to avoid cycles. The bounded
 queue drops notifications under load. Monitor destruction joins its worker;
 callback workers are not joined, so arbitrary callback code cannot block allocator

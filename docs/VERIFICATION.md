@@ -39,20 +39,20 @@ Host: Apple M1 Pro, macOS aarch64, rustc 1.99.0. Linux checks: `linux/amd64`
 container image `libcram-sdk-test:local`, kernel 7.0.14-linuxkit. Container results
 are functional evidence, not native x86 performance measurements.
 
-| Gate | Result | Evidence |
-|---|---|---|
-| Workspace tests, including 64-thread allocation stress | PASS | `final-host.log` |
-| Formatting, workspace/all-target Clippy with warnings denied | PASS | `final-host.log` |
-| Generated C header comparison, C/C++17/Go race + cgo pointer checks | PASS | `final-host.log`, `final-linux.log` |
-| Python buffer suite | PASS: 10 tests on each OS | same logs |
-| Real CPU PyTorch tensor/alias suite | PASS: 2 tests on each OS | same logs, `final-linux-torch.log` |
-| Separate BPF ELF build and Criterion executables | PASS | `final-host.log` |
-| Linux core/FFI tests, `ebpf` feature tests + strict Clippy, release build | PASS | `final-linux.log` |
-| Rust 1.89 host workspace/all-target check | PASS | `final-msrv-host.log` |
-| Rust 1.89 Linux x86_64 core/all-target + `ebpf` check | PASS | `final-msrv-linux.log` |
-| 4096-byte entropy latency budget | FAIL | `final-entropy-budget.json` |
-| Actual BPF load attempt in available Linux container | BLOCKED: EPERM, exit 1 | `hardware-probe.log` |
-| Real two-tier CRAM migration, PEBS attribution, active profiler CPU <1% | NOT ACCEPTED: hardware unavailable | hardware checklist remains open |
+| Gate                                                                      | Result                             | Evidence                            |
+| ------------------------------------------------------------------------- | ---------------------------------- | ----------------------------------- |
+| Workspace tests, including 64-thread allocation stress                    | PASS                               | `final-host.log`                    |
+| Formatting, workspace/all-target Clippy with warnings denied              | PASS                               | `final-host.log`                    |
+| Generated C header comparison, C/C++17/Go race + cgo pointer checks       | PASS                               | `final-host.log`, `final-linux.log` |
+| Python buffer suite                                                       | PASS: 10 tests on each OS          | same logs                           |
+| Real CPU PyTorch tensor/alias suite                                       | PASS: 2 tests on each OS           | same logs, `final-linux-torch.log`  |
+| Separate BPF ELF build and Criterion executables                          | PASS                               | `final-host.log`                    |
+| Linux core/FFI tests, `ebpf` feature tests + strict Clippy, release build | PASS                               | `final-linux.log`                   |
+| Rust 1.89 host workspace/all-target check                                 | PASS                               | `final-msrv-host.log`               |
+| Rust 1.89 Linux x86_64 core/all-target + `ebpf` check                     | PASS                               | `final-msrv-linux.log`              |
+| 4096-byte entropy latency budget                                          | FAIL                               | `final-entropy-budget.json`         |
+| Actual BPF load attempt in available Linux container                      | BLOCKED: EPERM, exit 1             | `hardware-probe.log`                |
+| Real two-tier CRAM migration, PEBS attribution, active profiler CPU <1%   | NOT ACCEPTED: hardware unavailable | hardware checklist remains open     |
 
 Logs and their SHA-256 manifest are in `docs/evidence/2026-10-09/summary.json`.
 Repeated blank lines at EOF were removed from two logs for Git whitespace checks;
@@ -70,10 +70,10 @@ the mean**, with an unchanged strict budget of 1000 ns. These are warm steady-st
 measurements; lazy dispatch/table initialization is not a cold-call guarantee.
 
 | 4096-byte input | Upper mean bound, ns | Status |
-|---|---:|---|
-| Zero | 153.365 | PASS |
-| ASCII | 1159.222 | FAIL |
-| Pseudorandom | 1110.068 | FAIL |
+| --------------- | -------------------: | ------ |
+| Zero            |              153.365 | PASS   |
+| ASCII           |             1159.222 | FAIL   |
+| Pseudorandom    |             1110.068 | FAIL   |
 
 The follow-up [component profiler investigation](performance/entropy-m1-investigation.md)
 identifies histogram construction, rather than final entropy calculation, as the
@@ -83,12 +83,13 @@ Several histogram lane layouts and native CPU tuning were explored; they did not
 make all distributions meet the target. The SIMD improvement is integrated, but
 **further performance work is still required**. Do not re-label this as complete
 merely because the zero case is fast or the benchmark process exits successfully.
+(Gate B is now defined on the exact verdict; current status: [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).)
 
 Raw Criterion estimates and benchmark identities are archived. This command
 reproduces the recorded failure, with all three distributions present:
 
 ```sh
-python3 scripts/entropy_budget.py docs/evidence/2026-10-09/criterion
+python3 scripts/entropy_budget.py --sla strict docs/evidence/2026-10-09/criterion
 # exit 1: ASCII and random exceed 1000 ns
 ```
 
@@ -125,8 +126,8 @@ cargo +1.89.0 check --workspace --all-targets --locked
 cargo +1.89.0 check --target x86_64-unknown-linux-gnu \
   -p libcram-core --all-targets --features ebpf --locked
 cargo bench -p libcram-bench --bench entropy --locked -- \
-  'entropy/dispatch/.*/4096' --warm-up-time 1 --measurement-time 2 --sample-size 30
-python3 scripts/entropy_budget.py
+  'entropy/(dispatch/.*|verdict/.*|diagnostic/mid|floor/scatter_store)/4096' --warm-up-time 1 --measurement-time 2 --sample-size 30
+python3 scripts/entropy_budget.py --target verdict   # gate B; add --sla strict for 1000 ns, --target value for the full value
 ```
 
 Optional dependency setup: `just python-tools torch-tools`; local header/BPF tools:

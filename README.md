@@ -24,10 +24,13 @@ mock-topology/container fallback tests:
   audited L1-hot load/store profile passes address attribution, owned-thread
   arrival/exit and descriptor cleanup checks. ALL_LOADS addresses fail because
   the CPU records microcode-issued loads in the PEBS address field. The audited
-  `0x67d1` retired-load profile replaces it and passes attribution. A rate
-  governor (default 1,200 samples/s per CPU) holds the measured worst steady
-  state at 0.89% of one core. One BPF program per CPU is shared by its
-  threads, so attaching a thread costs ≈0.13 ms of collector CPU.
+  `0x67d1` retired-load profile replaces it and passes attribution. PEBS store
+  samples are biased, so writes come from sampled userfaultfd write-protection
+  (`WriteSampler`, Linux ≥ 6.7). A rate governor (default 1,200 samples/s per
+  CPU) plus kernel-enforced per-CPU sample limits hold the measured worst
+  steady state at 0.90% of one core and bound bursts. One BPF program per CPU
+  is shared by its threads, so attaching a thread costs ≈0.13 ms of collector
+  CPU.
 - **Managed Rust runtime:** bounded event/device intake, weak allocation-generation
   tokens, rolling access counts, worker shutdown and pressure/source-failure
   evacuation are implemented with deterministic integration tests. The optional
@@ -39,16 +42,28 @@ mock-topology/container fallback tests:
 
 The tested NUMA nodes are DRAM, not CRAM. Physical CRAM placement, compression
 and device-occupancy integration still require compatible hardware and a driver.
-The unchanged 4 KiB entropy budget of 1000 ns still fails for pseudorandom input
-on both the Apple M1 Pro and the Linux x86_64 VM. Exact runtime-verified periodic
-counting brings the unchanged ASCII benchmark below budget on both. VM timings
-are not isolated bare-metal performance results. This is not a production-ready
+Entropy gate B gates the exact policy verdict `entropy < 4.5`
+(`entropy::entropy_below`, used by `OwnedAllocation::profile`). The verdict
+equals comparing the full Shannon value but stops early once certified bounds
+decide it. On x86_64 with AVX2, a store-free bound from coarse byte-cell counts
+decides high-entropy pages without any exact count. The budget is
+max(1000 ns, 1.5 × a same-run floor of 4096 scattered counter stores). For
+pseudorandom 4 KiB pages, both machines pass even strict 1000 ns (3/3 runs):
+
+- Apple M1 Pro: 607–610 ns;
+- Linux x86_64 VM (Broadwell): 797–812 ns, 0.48–0.49× its floor.
+
+Pages near the threshold are counted completely and take 5–17% longer than the
+value. The full value (`shannon_entropy`) is still reported. It passes
+calibrated on the M1 and fails on x86, and fails strict on both. See
+[entropy SLA evidence](docs/performance/entropy-sla/README.md). VM timings are not
+isolated bare-metal performance results. This is not a production-ready
 or all-requirements-complete claim.
 
 See [current A–E feature matrix and open acceptance gates](docs/IMPLEMENTATION_STATUS.md),
 [Linux NUMA VM acceptance](docs/S5_VM_ACCEPTANCE.md),
 [native PEBS scope/evidence](docs/PEBS_HOST_ACCEPTANCE.md),
-[latest strict entropy measurements](docs/performance/entropy-periodic/README.md), and
+[latest entropy measurements](docs/performance/entropy-sla/README.md), and
 [verification history](docs/VERIFICATION.md). These separate software correctness,
 ordinary DRAM NUMA movement and actual hardware/performance acceptance.
 
@@ -113,14 +128,20 @@ header for callback lifetime and telemetry contracts.
   syscalls, with explicit fallback/error handling.
 - `entropy`: exact byte Shannon entropy (0..8 bits), runtime SIMD dispatch and a
   scalar reference; constant buffers and arbitrary tails are covered.
+  `entropy_below` returns the exact threshold verdict, with a store-free AVX2
+  coarse bound on x86_64.
 - `allocator`: aligned owned/raw allocations, tier policy, thread-safe ownership
   tracking and DRAM fallback.
 - `migration`: bounded page batches and individual syscall outcomes; application
   observations avoid unsynchronized background reads of mutable payloads.
+  Entropy evidence is a value or an exact verdict (`migration::Entropy`).
 - `guard`: pressure watermarks and safety mechanisms. Logical allocated bytes
   are not a substitute for hardware compressed-capacity accounting.
 - `telemetry`: memory PSI and bounded page-access samples; optional Linux Aya/PMU
-  support is enabled with the core `ebpf` feature.
+  support is enabled with the core `ebpf` feature. Linux `write_sampler`
+  provides userfaultfd write evidence without the PMU.
+- `runtime`, `runtime_bridge`, `device_adapter`: opt-in managed runtime, its
+  bounded PEBS/device bridge and the trusted device-report adapter.
 - `crates/libcram-ebpf`: separately built kernel BPF program. Building an ELF does
   not imply the running kernel/PMU can load or use it.
 - `crates/libcram-ffi`, `bindings/`: language ownership and ABI adapters.
@@ -134,8 +155,9 @@ migration, kernel verifier and PMU results. [Verification history](docs/VERIFICA
 records earlier cross-platform gates and their limits. Real DRAM NUMA migration
 has been tested; neither it nor passing mock-topology/container fallback tests
 establishes physical CRAM support.
-The requested <1 microsecond per 4KB entropy and <1% sampling CPU targets are
-hardware/workload acceptance gates, not unconditional API guarantees.
+The <1% sampling CPU target and the 4KB entropy SLA (calibrated and strict
+<1 microsecond, both reported) are hardware/workload acceptance gates,
+not unconditional API guarantees.
 
 Read docs/SAFETY.md before using raw pointers, pressure callbacks or migration.
 Use docs/HARDWARE_ACCEPTANCE.md to qualify a real deployment. In particular,

@@ -49,6 +49,8 @@ Python rather than reuse this stub-linked wheel, and run C/C++/Go on Linux.
 Exercise actual pressure monitor emission, replacement and shutdown in core
 acceptance. C callback unregister deliberately promises no quiescence; userdata
 and callback code have process lifetime. No test claims otherwise.
+(Later: `cram_unregister_pressure_callback_and_wait()` adds a quiescent barrier;
+see `docs/BINDINGS.md`.)
 
 The root Cargo.toml was never changed. Temporary core files and generated
 Cargo.lock were removed before committing only lane-owned artifacts.
